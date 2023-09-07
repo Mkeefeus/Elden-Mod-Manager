@@ -1,9 +1,7 @@
-import React from 'react'
+import React from 'react';
 
 const Mods = () => {
-  return (
-    <div>Mods</div>
-  )
-}
+  return <div>Mods</div>;
+};
 
-export default Mods
+export default Mods;

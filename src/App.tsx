@@ -1,21 +1,21 @@
-import { useState } from "react";
+import { useState } from 'react';
 import {
   Link,
   createHashRouter,
   RouterProvider,
   Outlet,
-} from "react-router-dom";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-import { Container, Stack } from "@mui/material";
-import Home from "./pages/Home/Home";
-import Profiles from "./pages/Profiles";
-import Mods from "./pages/Mods";
-import DLLs from "./pages/DLLs";
-import Settings from "./pages/Settings";
-import About from "./pages/About";
+} from 'react-router-dom';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import { Container, Stack } from '@mui/material';
+import Home from './pages/Home/Home';
+import Profiles from './pages/Profiles';
+import Mods from './pages/Mods';
+import DLLs from './pages/DLLs';
+import Settings from './pages/Settings';
+import About from './pages/About';
 
-import Background from "./Background";
+import Background from './Background';
 
 // Setup Paths
 const router = createHashRouter([
@@ -23,27 +23,27 @@ const router = createHashRouter([
     element: <NavBar />,
     children: [
       {
-        path: "/",
+        path: '/',
         element: <Home />,
       },
       {
-        path: "profiles",
+        path: 'profiles',
         element: <Profiles />,
       },
       {
-        path: "mods",
+        path: 'mods',
         element: <Mods />,
       },
       {
-        path: "dlls",
+        path: 'dlls',
         element: <DLLs />,
       },
       {
-        path: "settings",
+        path: 'settings',
         element: <Settings />,
       },
       {
-        path: "about",
+        path: 'about',
         element: <About />,
       },
     ],
@@ -60,7 +60,7 @@ function NavBar() {
   const [selectedTab, setSelectedTab] = useState(0);
 
   return (
-    <Container maxWidth={false} disableGutters sx={{ height: "100vh" }}>
+    <Container maxWidth={false} disableGutters sx={{ height: '100vh' }}>
       <Stack direction="row" spacing={2}>
         <Tabs
           value={selectedTab}

@@ -1,9 +1,7 @@
-import React from 'react'
+import React from 'react';
 
 const DLLs = () => {
-  return (
-    <div>DLLs</div>
-  )
-}
+  return <div>DLLs</div>;
+};
 
-export default DLLs
+export default DLLs;

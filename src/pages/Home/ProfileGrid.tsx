@@ -4,10 +4,10 @@ import {
   Button,
   Typography,
   IconButton,
-} from "@mui/material";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import ProfileOptionsMenu from "./ProfileOptionsMenu";
-import {useState} from 'react'
+} from '@mui/material';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import ProfileOptionsMenu from './ProfileOptionsMenu';
+import { useState } from 'react';
 
 const ProfileGrid = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -29,18 +29,22 @@ const ProfileGrid = () => {
           <Paper
             elevation={12}
             sx={{
-              display: "flex",
+              display: 'flex',
               p: 2,
-              justifyContent: "space-between",
-              alignItems: "center",
+              justifyContent: 'space-between',
+              alignItems: 'center',
             }}
           >
-            <Button variant="contained">{"Play"}</Button>
-            <Typography>{"Profile " + index}</Typography>
+            <Button variant="contained">{'Play'}</Button>
+            <Typography>{'Profile ' + index}</Typography>
             <IconButton id="profile-options-menu" onClick={handleClick}>
               <MoreVertIcon />
             </IconButton>
-            <ProfileOptionsMenu isOpen={isOpen} handleClose={handleClose} anchorEl={anchorEl}/>
+            <ProfileOptionsMenu
+              isOpen={isOpen}
+              handleClose={handleClose}
+              anchorEl={anchorEl}
+            />
           </Paper>
         </Grid>
       ))}

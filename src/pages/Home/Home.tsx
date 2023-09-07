@@ -1,5 +1,5 @@
-import { Button, Typography, Box, Stack } from "@mui/material";
-import ProfileGrid from "./ProfileGrid";
+import { Button, Typography, Box, Stack } from '@mui/material';
+import ProfileGrid from './ProfileGrid';
 
 const Home = () => {
   const homeContainerStyle = {
@@ -17,7 +17,12 @@ const Home = () => {
       <Typography variant="h4" sx={{ mb: 2 }}>
         Quick Actions
       </Typography>
-      <Stack spacing={5} direction={"column"} justifyContent={"space-between"} alignItems={'flex-start'}>
+      <Stack
+        spacing={5}
+        direction={'column'}
+        justifyContent={'space-between'}
+        alignItems={'flex-start'}
+      >
         <Button variant="contained">Play Unmodded</Button>
         <Button variant="contained">Create a Profile</Button>
         <Button variant="contained">Add a File Mod</Button>
