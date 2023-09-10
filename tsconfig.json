@@ -27,7 +27,8 @@
       "@assets/*": ["src/assets/*"],
       "@pages/*": ["src/pages/*"],
       "@types/*": ["src/types/*"],
-      "@dev/*": ["src/dev/*"]
+      "@dev/*": ["src/dev/*"],
+      "@components/*": ["src/components/*"]
     }
   },
   "include": ["src", "electron"],

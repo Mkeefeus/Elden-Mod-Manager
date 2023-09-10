@@ -13,9 +13,7 @@ const Home = () => {
       <Stack spacing={2}>
         <Typography variant="h4">Recent Profiles</Typography>
         <ProfileGrid />
-        <Typography variant="h4">
-          Quick Actions
-        </Typography>
+        <Typography variant="h4">Quick Actions</Typography>
         <Stack spacing={3} direction={'column'} alignSelf={'start'}>
           <Button variant="contained">Play Unmodded</Button>
           <Button variant="contained">Create a Profile</Button>
