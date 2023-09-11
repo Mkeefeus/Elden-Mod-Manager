@@ -1,4 +1,5 @@
 import { app, BrowserWindow } from 'electron';
+import CreateEvents from './events_main';
 import path from 'node:path';
 
 // The built directory structure
@@ -25,6 +26,10 @@ function createWindow() {
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },
+    width: 1280,
+    height: 720,
+    minWidth: 850,
+    minHeight: 650,
   });
 
   // Test active push message to Renderer-process.
@@ -32,15 +37,17 @@ function createWindow() {
     win?.webContents.send('main-process-message', new Date().toLocaleString());
   });
 
+  CreateEvents();
+
   if (VITE_DEV_SERVER_URL) {
     win.loadURL(VITE_DEV_SERVER_URL);
   } else {
-    // win.loadFile('dist/index.html')
     win.loadFile(path.join(process.env.DIST, 'index.html'));
   }
 }
 
 app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') app.quit();
   win = null;
 });
 

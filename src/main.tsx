@@ -7,7 +7,7 @@ import Home from './pages/Home/Home';
 import Profiles from './pages/Profiles';
 import Mods from './pages/Mods';
 import DLLs from './pages/DLLs';
-import Settings from './pages/Settings';
+import Settings from './pages/Settings/Settings';
 import About from './pages/About';
 import { createHashRouter, RouterProvider } from 'react-router-dom';
 import App from './components/App';
