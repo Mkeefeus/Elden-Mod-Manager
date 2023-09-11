@@ -47,7 +47,7 @@ const Background = ({ children }: BackgroundProps) => {
     >
       <div
         style={{
-          background: 'linear-gradient(to bottom, transparent 0%, black 100%)',
+          background: 'linear-gradient(to top, transparent, black)',
           height: '100%',
           overflowY: 'auto',
         }}
