@@ -1,6 +1,7 @@
 import { app, BrowserWindow } from 'electron';
 import CreateEvents from './events_main';
 import path from 'node:path';
+import { connectToDB } from './sqlite';
 
 // The built directory structure
 //
@@ -19,6 +20,8 @@ process.env.PUBLIC = app.isPackaged
 let win: BrowserWindow | null;
 // 🚧 Use ['ENV_NAME'] avoid vite:define plugin - Vite@2.x
 const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL'];
+
+connectToDB();
 
 function createWindow() {
   win = new BrowserWindow({

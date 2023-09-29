@@ -1,4 +1,4 @@
-import CreateEvents from "./events_renderer";
+import CreateEvents from "../frontend/events_renderer";
 
 CreateEvents();
 

@@ -23,14 +23,15 @@
     "baseUrl": "./",
     "paths": {
       "@src/*": ["src/*"],
-      "@electron/*": ["electron/*"],
-      "@assets/*": ["src/assets/*"],
-      "@pages/*": ["src/pages/*"],
-      "@types/*": ["src/types/*"],
-      "@dev/*": ["src/dev/*"],
-      "@components/*": ["src/components/*"]
+      "@src/frontend/*": ["src/frontend/*"],
+      "@electron/*": ["src/backend/*"],
+      "@assets/*": ["src/frontend/assets/*"],
+      "@pages/*": ["src/frontend/pages/*"],
+      "@types/*": ["src/frontend/types/*"],
+      "@dev/*": ["src/frontend/dev/*"],
+      "@components/*": ["src/frontend/components/*"]
     }
   },
-  "include": ["src", "electron"],
+  "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
