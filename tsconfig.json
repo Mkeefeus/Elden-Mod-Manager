@@ -1,37 +1,16 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "useDefineForClassFields": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    "module": "ESNext",
+    "target": "ESNext",
+    "module": "commonjs",
+    "allowJs": true,
     "skipLibCheck": true,
-
-    /* Bundler mode */
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react-jsx",
-
-    /* Linting */
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
-
-    "baseUrl": "./",
-    "paths": {
-      "@src/*": ["src/*"],
-      "@src/frontend/*": ["src/frontend/*"],
-      "@electron/*": ["src/backend/*"],
-      "@assets/*": ["src/frontend/assets/*"],
-      "@pages/*": ["src/frontend/pages/*"],
-      "@types/*": ["src/frontend/types/*"],
-      "@dev/*": ["src/frontend/dev/*"],
-      "@components/*": ["src/frontend/components/*"]
-    }
+    "esModuleInterop": true,
+    "noImplicitAny": true,
+    "sourceMap": true,
+    "baseUrl": ".",
+    "outDir": "dist",
+    "moduleResolution": "node",
+    "resolveJsonModule": true
   },
-  "include": ["src"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "include": ["src"]
 }
