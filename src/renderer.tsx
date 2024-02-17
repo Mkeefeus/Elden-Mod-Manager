@@ -38,8 +38,8 @@ const rootElement = document.getElementById('root') as Element;
 
 const childRoutes: RouteObject[] = pages.map((page) => {
   return {
-    path: page.Route,
-    element: <page.Element />,
+    path: page.route,
+    element: <page.element />,
   };
 });
 

@@ -25,9 +25,9 @@ const App = () => {
       <AppShell.Navbar p="md">
         <Flex mih={50} gap="md" justify="flex-start" align="stretch" direction="column" wrap="nowrap">
           {pages.map((page) => (
-            <Link to={page.Route} key={page.Route}>
+            <Link to={page.route} key={page.route}>
               <Button fullWidth variant="outline">
-                {page.DisplayName}
+                {page.displayName}
               </Button>
             </Link>
           ))}
