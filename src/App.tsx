@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import './App.css'
+import { Outlet } from 'react-router-dom'
 
 function App() {
   const [count, setCount] = useState(0)
 
   return (
     <>
+      <Outlet />
       <div>
         <a href="https://vitejs.dev" target="_blank">
           <img src={'/vite.svg'} className="logo" alt="Vite logo" />

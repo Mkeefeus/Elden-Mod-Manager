@@ -26,14 +26,38 @@
  * ```
  */
 
-import React from 'react'
-import ReactDOM from 'react-dom/client'
+import {StrictMode} from 'react'
+import {createRoot} from 'react-dom/client'
+import { RouterProvider, createBrowserRouter } from 'react-router-dom'
 import App from './App'
 import './index.css'
 
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+const rootElement = document.getElementById('root') as Element
+
+const TempHome = () => {
+  return (
+    <div>
+      <h1>Home</h1>
+    </div>
+  )
+}
+
+const browserRouter = createBrowserRouter([{
+  element: <App />,
+  children: [
+    {
+      path: '/',
+      element: <TempHome />
+    }
+  ]
+}])
+
+if (!rootElement) {
+  throw new Error('Could not find root element')
+}
+
+createRoot(rootElement).render(
+  <StrictMode>
+    <RouterProvider router={browserRouter} />
+  </StrictMode>,
 )
