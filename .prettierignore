@@ -1,1 +1,4 @@
 dist
+.vite
+node_modules
+public

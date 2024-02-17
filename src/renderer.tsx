@@ -26,36 +26,38 @@
  * ```
  */
 
-import { StrictMode } from "react"
-import { createRoot } from "react-dom/client"
-import { RouterProvider, createBrowserRouter } from "react-router-dom"
-import App from "./App"
-import "@mantine/core/styles.css"
-import { MantineProvider } from "@mantine/core"
-import ViteDemo from "@pages/ViteDemo"
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import { RouterProvider, createBrowserRouter, RouteObject } from 'react-router-dom';
+import App from './App';
+import '@mantine/core/styles.css';
+import { MantineProvider } from '@mantine/core';
+import { pages } from './pages/pages';
 
-const rootElement = document.getElementById("root") as Element
+const rootElement = document.getElementById('root') as Element;
+
+const childRoutes: RouteObject[] = pages.map((page) => {
+  return {
+    path: page.Route,
+    element: <page.Element />,
+  };
+});
 
 const browserRouter = createBrowserRouter([
-    {
-        element: <App />,
-        children: [
-            {
-                path: "/",
-                element: <ViteDemo />,
-            },
-        ],
-    },
-])
+  {
+    element: <App />,
+    children: childRoutes,
+  },
+]);
 
 if (!rootElement) {
-    throw new Error("Could not find root element")
+  throw new Error('Could not find root element');
 }
 
 createRoot(rootElement).render(
-    <StrictMode>
-        <MantineProvider defaultColorScheme="dark">
-            <RouterProvider router={browserRouter} />
-        </MantineProvider>
-    </StrictMode>
-)
+  <StrictMode>
+    <MantineProvider defaultColorScheme="dark">
+      <RouterProvider router={browserRouter} />
+    </MantineProvider>
+  </StrictMode>
+);
