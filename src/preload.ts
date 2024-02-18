@@ -3,17 +3,17 @@
 import { contextBridge, ipcRenderer } from 'electron';
 
 export interface IElectronAPI {
-  openExternalLink: (href: string) => void,
+  openExternalLink: (href: string) => void;
 }
 
 declare global {
   interface Window {
-    electronAPI: IElectronAPI
+    electronAPI: IElectronAPI;
   }
 }
 
 contextBridge.exposeInMainWorld('electronAPI', {
   openExternalLink: (href: string): void => {
-    ipcRenderer.send('open-external-link', href)
-  }
-})
+    ipcRenderer.send('open-external-link', href);
+  },
+});

@@ -36,7 +36,7 @@ const Home = () => {
       <Title order={1}>Quick Actions</Title>
       <Flex gap={'lg'}>
         {quickActions.map((action, index) => (
-          <Button variant="contained" style={{ flex: action.flex }} key={index}>
+          <Button variant="outline" style={{ flex: action.flex }} key={index}>
             {action.label}
           </Button>
         ))}
@@ -46,9 +46,13 @@ const Home = () => {
       <Title order={2}>Links</Title>
       <Flex gap={'lg'}>
         {links.map((link) => (
-          <Button variant="outline" onClick={() => {
-            window.electronAPI.openExternalLink(link.href);
-          }} key={link.href}>
+          <Button
+            variant="outline"
+            onClick={() => {
+              window.electronAPI.openExternalLink(link.href);
+            }}
+            key={link.href}
+          >
             <FontAwesomeIcon icon={link.icon} />
           </Button>
         ))}
