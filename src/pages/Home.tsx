@@ -22,7 +22,7 @@ const quickActions: { label: string; flex: number }[] = [
 const links: { icon: IconDefinition; href: string }[] = [
   {
     icon: faGithub,
-    href: 'https://www.github.com',
+    href: 'https://www.github.com/mkeefeus/elden-mod-manager',
   },
   {
     icon: faCoffee,
@@ -35,8 +35,8 @@ const Home = () => {
     <Flex direction={'column'} gap={'lg'}>
       <Title order={1}>Quick Actions</Title>
       <Flex gap={'lg'}>
-        {quickActions.map((action) => (
-          <Button variant="contained" style={{ flex: action.flex }}>
+        {quickActions.map((action, index) => (
+          <Button variant="contained" style={{ flex: action.flex }} key={index}>
             {action.label}
           </Button>
         ))}
@@ -46,7 +46,9 @@ const Home = () => {
       <Title order={2}>Links</Title>
       <Flex gap={'lg'}>
         {links.map((link) => (
-          <Button variant="outline">
+          <Button variant="outline" onClick={() => {
+            window.electronAPI.openExternalLink(link.href);
+          }} key={link.href}>
             <FontAwesomeIcon icon={link.icon} />
           </Button>
         ))}
