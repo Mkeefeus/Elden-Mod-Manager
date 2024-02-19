@@ -10,7 +10,7 @@ const App = () => {
     <AppShell
       header={{ height: { base: 60, md: 70, lg: 80 } }}
       navbar={{
-        width: { base: 200, md: 300, lg: 400 },
+        width: 250,
         breakpoint: 'sm',
         collapsed: { mobile: !opened },
       }}
