@@ -10,7 +10,7 @@ type ModTableHeaderProps = {
 
 const ModTableHeader = ({ label, sortIcon, handleSort }: ModTableHeaderProps) => {
   return (
-    <Table.Th>
+    <Table.Th style={{ textAlign: 'center' }}>
       <Button variant="transparent" color="gray" onClick={handleSort}>
         <Flex gap="xs" align="center">
           {label}
