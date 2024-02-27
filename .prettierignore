@@ -2,3 +2,4 @@ dist
 .vite
 node_modules
 public
+pnpm-lock.yaml

@@ -1,42 +1,8 @@
 import ModTableHeader from '../components/ModTableHeader';
+import { Mod } from 'types';
 import { useEffect, useState } from 'react';
 import { Table, Checkbox, Button, Flex, Center } from '@mantine/core';
 import ModTableMenu from '../components/ModTableMenu';
-
-type Mod = {
-  enabled: boolean;
-  loadOrder?: number;
-  name: string;
-  installDate: number;
-  isDll: boolean;
-  isFileMod: boolean;
-};
-
-const debugMods: Mod[] = [
-  {
-    enabled: true,
-    loadOrder: 2,
-    name: 'Seemless Co-Op',
-    installDate: 1621483200000,
-    isDll: true,
-    isFileMod: false,
-  },
-  {
-    enabled: false,
-    name: 'Item and Enemy Randomizer',
-    installDate: 1600574400000,
-    isDll: false,
-    isFileMod: true,
-  },
-  {
-    enabled: true,
-    loadOrder: 1,
-    name: 'Melania Big Tiddy Mod',
-    installDate: 1665374400000,
-    isDll: false,
-    isFileMod: true,
-  },
-];
 
 type SortObject = {
   column: string;
@@ -53,7 +19,8 @@ const columns = [
 ];
 
 const Mods = () => {
-  const [mods, setMods] = useState<Mod[]>(debugMods);
+  const [mods, setMods] = useState<Mod[]>([]);
+  const [sortedMods, setSortedMods] = useState<Mod[]>([]);
   const [sort, setSort] = useState<SortObject>({ column: 'installDate', order: 'desc' });
 
   const getComparable = (value: Date | boolean | number | string | undefined): number | string => {
@@ -78,26 +45,54 @@ const Mods = () => {
     return 0;
   };
 
-  useEffect(() => {
+  const sortMods = () => {
     if (sort.column === 'loadOrder') {
       const disabledMods = mods.filter((mod) => !mod.enabled);
       const enabledMods = [...mods].filter((mod) => mod.enabled).sort((a, b) => loadOrderSorter(a, b, sort.order));
-      setMods([...enabledMods, ...disabledMods]);
+      setSortedMods([...enabledMods, ...disabledMods]);
     } else {
-      setMods([...mods].sort((a, b) => columnSorter(a, b, sort.column as keyof Mod, sort.order)));
+      setSortedMods([...mods].sort((a, b) => columnSorter(a, b, sort.column as keyof Mod, sort.order)));
     }
-  }, [sort]);
+    return sortedMods;
+  };
 
   useEffect(() => {
-    console.log('Mods changed', mods);
-  }, [mods]);
+    window.electronAPI
+      .loadMods()
+      .then((result) => {
+        setMods(result);
+      })
+      .catch(console.error);
+  }, []);
 
-  const handleSort = (column: string) => {
+  useEffect(() => {
+    sortMods();
+  }, [sort, mods]);
+
+  const handleSortChange = (column: string) => {
     if (sort.column === column) {
       setSort({ column, order: sort.order === 'asc' ? 'desc' : 'asc' });
     } else {
       setSort({ column, order: 'asc' });
     }
+  };
+
+  // const saveMods = (newMods: Mod[]) => {
+  //   console.log('Saving mods');
+  //   window.electronAPI
+  //     .saveMods(newMods)
+  //     .then(([success, error]) => {
+  //       if (!success) {
+  //         console.log('Unable to save mods: ', error?.message);
+  //         return;
+  //       }
+  //       setMods(newMods);
+  //     })
+  //     .catch(console.error);
+  // };
+
+  const handleCheckboxChange = (index: number) => {
+    console.log('Checkbox change', mods[index].name);
   };
 
   const handleDelete = (mod: Mod) => {
@@ -108,7 +103,7 @@ const Mods = () => {
     console.log('Move', mod.name, direction);
   };
 
-  const rows = mods.map((mod, index) => {
+  const rows = sortedMods.map((mod, index) => {
     return (
       <Table.Tr key={mod.name} bg={mod.enabled ? 'var(--mantine-color-blue-light)' : undefined}>
         <Table.Td>
@@ -117,9 +112,7 @@ const Mods = () => {
               aria-label="Select row"
               checked={mod.enabled}
               onChange={() => {
-                const newMods = [...mods];
-                newMods[index].enabled = !newMods[index].enabled;
-                setMods(newMods);
+                handleCheckboxChange(index);
               }}
             />
           </Center>
@@ -143,6 +136,7 @@ const Mods = () => {
       </Table.Tr>
     );
   });
+
   return (
     <Flex gap="xl" direction={'column'} justify={'center'}>
       <Table style={{ tableLayout: 'fixed', width: '100%', textAlign: 'center' }}>
@@ -153,7 +147,7 @@ const Mods = () => {
                 key={sortKey}
                 label={label}
                 sortIcon={sort.column === sortKey ? sort.order : false}
-                handleSort={() => handleSort(sortKey)}
+                handleSort={() => handleSortChange(sortKey)}
               />
             ))}
             <Table.Th style={{ textAlign: 'center' }}>More</Table.Th>
