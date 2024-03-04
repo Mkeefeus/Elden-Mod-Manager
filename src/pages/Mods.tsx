@@ -20,7 +20,6 @@ const columns = [
 
 const Mods = () => {
   const [mods, setMods] = useState<Mod[]>([]);
-  const [sortedMods, setSortedMods] = useState<Mod[]>([]);
   const [sort, setSort] = useState<SortObject>({ column: 'installDate', order: 'desc' });
 
   const getComparable = (value: Date | boolean | number | string | undefined): number | string => {
@@ -45,67 +44,104 @@ const Mods = () => {
     return 0;
   };
 
-  const sortMods = () => {
+  const sortMods = (unsortedMods: Mod[]) => {
     if (sort.column === 'loadOrder') {
-      const disabledMods = mods.filter((mod) => !mod.enabled);
-      const enabledMods = [...mods].filter((mod) => mod.enabled).sort((a, b) => loadOrderSorter(a, b, sort.order));
-      setSortedMods([...enabledMods, ...disabledMods]);
+      const disabledMods = unsortedMods.filter((mod) => !mod.enabled);
+      const enabledMods = [...unsortedMods]
+        .filter((mod) => mod.enabled)
+        .sort((a, b) => loadOrderSorter(a, b, sort.order));
+      // setMods([...enabledMods, ...disabledMods]);
+      return [...enabledMods, ...disabledMods];
     } else {
-      setSortedMods([...mods].sort((a, b) => columnSorter(a, b, sort.column as keyof Mod, sort.order)));
+      // setMods([...unsortedMods].sort((a, b) => columnSorter(a, b, sort.column as keyof Mod, sort.order)));
+      return [...unsortedMods].sort((a, b) => columnSorter(a, b, sort.column as keyof Mod, sort.order));
     }
-    return sortedMods;
   };
 
   useEffect(() => {
     window.electronAPI
       .loadMods()
       .then((result) => {
-        setMods(result);
+        setMods(sortMods(result));
       })
       .catch(console.error);
   }, []);
 
   useEffect(() => {
-    sortMods();
-  }, [sort, mods]);
+    setMods(sortMods(mods));
+  }, [sort]);
 
   const handleSortChange = (column: string) => {
     if (sort.column === column) {
       setSort({ column, order: sort.order === 'asc' ? 'desc' : 'asc' });
     } else {
-      setSort({ column, order: 'asc' });
+      setSort({ column, order: 'desc' });
     }
   };
 
-  // const saveMods = (newMods: Mod[]) => {
-  //   console.log('Saving mods');
-  //   window.electronAPI
-  //     .saveMods(newMods)
-  //     .then(([success, error]) => {
-  //       if (!success) {
-  //         console.log('Unable to save mods: ', error?.message);
-  //         return;
-  //       }
-  //       setMods(newMods);
-  //     })
-  //     .catch(console.error);
-  // };
+  const validateLoadOrder = (newMods: Mod[]) => {
+    const enabledMods = newMods.filter((mod) => mod.enabled);
+
+    // Sort enabled mods by their current load order
+    const sortedMods = [...enabledMods].sort(
+      (a, b) => (a.loadOrder || enabledMods.length) - (b.loadOrder || enabledMods.length)
+    );
+
+    // Assign new load orders
+    sortedMods.forEach((mod, index) => {
+      mod.loadOrder = index + 1;
+    });
+
+    const disabledMods = newMods.filter((mod) => !mod.enabled).map((mod) => ({ ...mod, loadOrder: undefined }));
+    return [...sortedMods, ...disabledMods];
+  };
+
+  const saveMods = async (newMods: Mod[]) => {
+    const sortedMods = sortMods(newMods);
+    const validatedMods = validateLoadOrder(sortedMods);
+    await Promise.resolve();
+    // const [success, error] = await window.electronAPI.saveMods(validatedMods);
+    // if (!success) {
+    //   console.log('Unable to save mods: ', error?.message);
+    //   return;
+    // }
+    setMods(validatedMods);
+  };
 
   const handleCheckboxChange = (index: number) => {
     console.log('Checkbox change', mods[index].name);
+    const newMods = [...mods];
+    const mod = newMods[index];
+    mod.enabled = !mod.enabled;
+    saveMods(newMods).catch(console.error);
   };
 
   const handleDelete = (mod: Mod) => {
     console.log('Delete', mod.name);
+    const newMods = mods.filter((m) => m.uuid !== mod.uuid);
+    saveMods(newMods).catch(console.error);
   };
 
   const handleMove = (mod: Mod, direction: 'up' | 'down') => {
     console.log('Move', mod.name, direction);
+    const index = mods.findIndex((m) => m.uuid === mod.uuid);
+    const swapIndex = direction === 'up' ? index - 1 : index + 1;
+    console.log('Index', index, 'Swap index', swapIndex);
+    // Check if swapIndex is within the valid range
+    if (swapIndex < 0 || swapIndex >= mods.length) {
+      return;
+    }
+
+    const newMods = [...mods];
+    const temp = newMods[index].loadOrder;
+    newMods[index].loadOrder = newMods[swapIndex].loadOrder;
+    newMods[swapIndex].loadOrder = temp;
+    saveMods(newMods).catch(console.error);
   };
 
-  const rows = sortedMods.map((mod, index) => {
+  const rows = mods.map((mod, index) => {
     return (
-      <Table.Tr key={mod.name} bg={mod.enabled ? 'var(--mantine-color-blue-light)' : undefined}>
+      <Table.Tr key={mod.uuid} bg={mod.enabled ? 'var(--mantine-color-blue-light)' : undefined}>
         <Table.Td>
           <Center>
             <Checkbox
@@ -129,7 +165,10 @@ const Mods = () => {
         <Table.Td style={{ textAlign: 'center' }}>{mod.isDll ? '✓' : undefined}</Table.Td>
         <Table.Td style={{ textAlign: 'center' }}>{mod.isFileMod ? '✓' : undefined}</Table.Td>
         <ModTableMenu
-          isEnabled={mod.enabled}
+          canMove={{
+            up: (mod.enabled && mod.loadOrder && mod.loadOrder > 1) || false,
+            down: (mod.enabled && mod.loadOrder && mod.loadOrder < mods.filter((mod) => mod.enabled).length) || false,
+          }}
           handleDelete={() => handleDelete(mod)}
           handleMove={(direction: 'up' | 'down') => handleMove(mod, direction)}
         />

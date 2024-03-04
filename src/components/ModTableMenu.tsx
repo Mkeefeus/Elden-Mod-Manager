@@ -3,12 +3,12 @@ import { faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
 import { Button, Center, Menu, Table } from '@mantine/core';
 
 type ModTableMenuProps = {
-  isEnabled: boolean;
+  canMove: { up: boolean; down: boolean };
   handleMove: (direction: 'up' | 'down') => void;
   handleDelete: () => void;
 };
 
-const ModTableMenu = ({ isEnabled, handleMove, handleDelete }: ModTableMenuProps) => {
+const ModTableMenu = ({ canMove, handleMove, handleDelete }: ModTableMenuProps) => {
   return (
     <Table.Td>
       <Menu shadow="md" width={200}>
@@ -20,10 +20,10 @@ const ModTableMenu = ({ isEnabled, handleMove, handleDelete }: ModTableMenuProps
           </Center>
         </Menu.Target>
         <Menu.Dropdown>
-          <Menu.Item disabled={!isEnabled} onClick={() => handleMove('up')}>
+          <Menu.Item disabled={!canMove.up} onClick={() => handleMove('up')}>
             Move Up
           </Menu.Item>
-          <Menu.Item disabled={!isEnabled} onClick={() => handleMove('down')}>
+          <Menu.Item disabled={!canMove.down} onClick={() => handleMove('down')}>
             Move Down
           </Menu.Item>
           <Menu.Item color="red" onClick={handleDelete}>
