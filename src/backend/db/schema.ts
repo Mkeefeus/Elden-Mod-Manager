@@ -28,6 +28,15 @@ const debugMods: Mod[] = [
     isDll: false,
     isFileMod: true,
   },
+  {
+    uuid: 'f6beac13-19c9-4f49-9f72-0377380393f6',
+    enabled: true,
+    loadOrder: 3,
+    name: 'Doom Eternal',
+    installDate: 1621483200000,
+    isDll: true,
+    isFileMod: false,
+  },
 ];
 
 export interface ModSchema {

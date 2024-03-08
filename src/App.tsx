@@ -1,4 +1,4 @@
-import { AppShell, Burger, Button, Flex, Group } from '@mantine/core';
+import { AppShell, Burger, Button, Stack, Group } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { MantineLogo } from '@mantinex/mantine-logo';
 import { Outlet, Link } from 'react-router-dom';
@@ -23,7 +23,7 @@ const App = () => {
         </Group>
       </AppShell.Header>
       <AppShell.Navbar p="md">
-        <Flex mih={50} gap="md" justify="flex-start" align="stretch" direction="column" wrap="nowrap">
+        <Stack mih={50} gap="md" justify="flex-start" align="stretch">
           {pages.map((page) => (
             <Link to={page.route} key={page.route}>
               <Button fullWidth variant="outline">
@@ -31,7 +31,7 @@ const App = () => {
               </Button>
             </Link>
           ))}
-        </Flex>
+        </Stack>
       </AppShell.Navbar>
       <AppShell.Main>
         <Outlet />
