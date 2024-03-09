@@ -1,8 +1,8 @@
-import ModTableHeader from '../components/ModTableHeader';
+import ModTableHeader from '@components/ModTableHeader';
 import { Mod } from 'types';
 import { useEffect, useState } from 'react';
 import { Table, Checkbox, Center } from '@mantine/core';
-import ModTableMenu from '../components/ModTableMenu';
+import ModTableMenu from '@components/ModTableMenu';
 
 type SortObject = {
   column: string;

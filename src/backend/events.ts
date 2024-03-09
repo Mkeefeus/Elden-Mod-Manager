@@ -5,9 +5,7 @@ import { Mod } from 'types';
 async function browseForModZip() {
   const { canceled, filePaths } = await dialog.showOpenDialog({
     properties: ['openFile'],
-    filters: [
-      { name: 'Compressed Files', extensions: ['zip'] },
-    ],
+    filters: [{ name: 'Compressed Files', extensions: ['zip'] }],
   });
   if (!canceled) {
     return filePaths[0];

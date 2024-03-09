@@ -1,7 +1,7 @@
 import { Button, Group, Modal, Stack } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import ModTable from '@src/components/ModTable';
-import AddModModal from '@src/components/AddModModal';
+import ModTable from '@components/ModTable';
+import AddModModal from '@components/AddModModal';
 
 const Mods = () => {
   const [opened, { open, close }] = useDisclosure(false);

@@ -19,7 +19,7 @@ const AddModModal = () => {
     console.log(path);
     form.setFieldValue('path', path);
   };
-  console.log(form.values)
+  console.log(form.values);
   return (
     <form onSubmit={form.onSubmit((values) => console.log(values))}>
       <Stack gap="md">
@@ -37,7 +37,13 @@ const AddModModal = () => {
         </Group>
         Or
         <Group align="end">
-          <TextInput withAsterisk label="Path" {...form.getInputProps('path')} style={{ flex: '4' }} disabled={!!form.values.zip}/>
+          <TextInput
+            withAsterisk
+            label="Path"
+            {...form.getInputProps('path')}
+            style={{ flex: '4' }}
+            disabled={!!form.values.zip}
+          />
           <Button
             onClick={() => {
               handleGetFilePath().catch(console.error);
