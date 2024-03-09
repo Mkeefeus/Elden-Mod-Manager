@@ -12,6 +12,15 @@ async function browseForModZip() {
   }
 }
 
+async function browseForModPath() {
+  const { canceled, filePaths } = await dialog.showOpenDialog({
+    properties: ['openDirectory'],
+  });
+  if (!canceled) {
+    return filePaths[0];
+  }
+}
+
 app
   .whenReady()
   .then(() => {
@@ -21,5 +30,6 @@ app
     ipcMain.handle('load-mods', loadMods);
     ipcMain.handle('set-mods', (_, mods: Mod[]) => saveMods(mods));
     ipcMain.handle('browse-mod-zip', browseForModZip);
+    ipcMain.handle('browse-mod-path', browseForModPath);
   })
   .catch(console.error);

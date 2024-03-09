@@ -9,7 +9,6 @@ const debugMods: Mod[] = [
     name: 'Seemless Co-Op',
     installDate: 1621483200000,
     isDll: true,
-    isFileMod: false,
   },
   {
     uuid: '0785a376-d5fe-43df-b4f8-d5bed9f6008e',
@@ -17,7 +16,6 @@ const debugMods: Mod[] = [
     name: 'Item and Enemy Randomizer',
     installDate: 1600574400000,
     isDll: false,
-    isFileMod: true,
   },
   {
     uuid: '64bb53fe-94f5-42b0-9e9d-3b4dde3bf426',
@@ -26,7 +24,6 @@ const debugMods: Mod[] = [
     name: 'Melania Big Tiddy Mod',
     installDate: 1665374400000,
     isDll: false,
-    isFileMod: true,
   },
   {
     uuid: 'f6beac13-19c9-4f49-9f72-0377380393f6',
@@ -35,7 +32,6 @@ const debugMods: Mod[] = [
     name: 'Doom Eternal',
     installDate: 1621483200000,
     isDll: true,
-    isFileMod: false,
   },
 ];
 
@@ -63,9 +59,6 @@ export interface ModSchema {
         isDll: {
           type: string;
         };
-        isFileMod: {
-          type: string;
-        };
       };
       required: string[];
     };
@@ -85,9 +78,8 @@ const schema: Schema<ModSchema> = {
         name: { type: 'string' },
         installDate: { type: 'number' },
         isDll: { type: 'boolean' },
-        isFileMod: { type: 'boolean' },
       },
-      required: ['uuid', 'enabled', 'name', 'installDate', 'isDll', 'isFileMod'],
+      required: ['uuid', 'enabled', 'name', 'installDate', 'isDll'],
     },
     default: debugMods,
   },

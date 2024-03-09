@@ -20,5 +20,4 @@
       "@backend/*": ["src/backend/*"]
     }
   }
-  // "include": ["src", "types"]
 }

@@ -7,5 +7,4 @@ export type Mod = {
   name: string;
   installDate: number;
   isDll: boolean;
-  isFileMod: boolean;
 };

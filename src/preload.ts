@@ -8,6 +8,7 @@ export interface IElectronAPI {
   loadMods: () => Promise<Mod[]>;
   saveMods: (mods: Mod[]) => Promise<[boolean, Error?]>;
   browseForModZip: () => Promise<string | undefined>;
+  browseForModPath: () => Promise<string | undefined>;
 }
 
 declare global {
@@ -24,4 +25,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
   saveMods: (mods: Mod[]): Promise<[boolean, Error?]> =>
     ipcRenderer.invoke('set-mods', mods) as Promise<[boolean, Error?]>,
   browseForModZip: () => ipcRenderer.invoke('browse-mod-zip') as Promise<string | undefined>,
+  browseForModPath: () => ipcRenderer.invoke('browse-mod-path') as Promise<string | undefined>,
 });
