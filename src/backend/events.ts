@@ -2,14 +2,11 @@ import { app, dialog, ipcMain, shell } from 'electron';
 import { loadMods, saveMods } from './db/api';
 import { Mod } from 'types';
 
-async function getFilePath() {
+async function browseForModZip() {
   const { canceled, filePaths } = await dialog.showOpenDialog({
     properties: ['openFile'],
     filters: [
-      // { name: 'Executable Files', extensions: ['exe'] },
-      { name: 'Compressed Files', extensions: ['zip', 'rar', '7z'] },
-      { name: 'Folder', extensions: [''] },
-      { name: 'All Files', extensions: ['*'] },
+      { name: 'Compressed Files', extensions: ['zip'] },
     ],
   });
   if (!canceled) {
@@ -25,6 +22,6 @@ app
     });
     ipcMain.handle('load-mods', loadMods);
     ipcMain.handle('set-mods', (_, mods: Mod[]) => saveMods(mods));
-    ipcMain.handle('get-file-path', getFilePath);
+    ipcMain.handle('browse-mod-zip', browseForModZip);
   })
   .catch(console.error);
