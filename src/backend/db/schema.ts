@@ -35,38 +35,11 @@ const debugMods: Mod[] = [
   },
 ];
 
-export interface ModSchema {
-  mods: {
-    type: string;
-    items: {
-      type: string;
-      properties: {
-        uuid: {
-          type: string;
-        };
-        enabled: {
-          type: string;
-        };
-        loadOrder: {
-          type: string;
-        };
-        name: {
-          type: string;
-        };
-        installDate: {
-          type: string;
-        };
-        isDll: {
-          type: string;
-        };
-      };
-      required: string[];
-    };
-    default: Mod[];
-  };
-}
+export type DBSchema = {
+  mods: Mod[];
+};
 
-const schema: Schema<ModSchema> = {
+const schema: Schema<DBSchema> = {
   mods: {
     type: 'array',
     items: {

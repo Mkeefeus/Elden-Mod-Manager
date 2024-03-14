@@ -53,6 +53,7 @@ const Mods = () => {
   const loadMods = async () => {
     try {
       const dbMods = await window.electronAPI.loadMods();
+      if (!dbMods) return;
       setMods(sortMods(dbMods));
     } catch (error) {
       console.warn(error);
@@ -88,11 +89,8 @@ const Mods = () => {
     const validatedMods = validateLoadOrder(newMods);
     const sortedMods = sortMods(validatedMods);
     await Promise.resolve();
-    // const [success, error] = await window.electronAPI.saveMods(validatedMods);
-    // if (!success) {
-    //   console.log('Unable to save mods: ', error?.message);
-    //   return;
-    // }
+    const success = await window.electronAPI.saveMods(validatedMods);
+    if (!success) return;
     setMods(sortedMods);
   };
 
@@ -109,7 +107,7 @@ const Mods = () => {
       <ModTable mods={mods} sort={sort} saveMods={saveMods} changeSort={handleSortChange} />
       <Group gap={'md'}>
         <Modal opened={opened} onClose={close} title={`Add Mod From ${fromZip ? 'Zip' : 'Folder'}`} centered>
-          <AddModModal fromZip={fromZip} loadMods={loadMods} />
+          <AddModModal fromZip={fromZip} loadMods={loadMods} closeModal={close} />
         </Modal>
         <Button
           onClick={() => {

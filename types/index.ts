@@ -8,3 +8,9 @@ export type Mod = {
   installDate: number;
   isDll: boolean;
 };
+
+export type AddModFormValues = {
+  modName: string;
+  isDll: boolean;
+  path: string;
+};

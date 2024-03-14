@@ -1,17 +1,25 @@
 import store from './init';
-import { Mod } from 'types';
+import tryCatch from '../tryCatchHandler';
+import { randomUUID } from 'crypto';
+import { Mod, AddModFormValues } from 'types';
 
-export const loadMods = () => {
-  return store.get('mods');
-};
+export const loadMods = tryCatch(() => store.get('mods'));
 
-export const saveMods = (mods: Mod[]): [boolean, Error?] => {
-  try {
-    store.set('mods', mods);
-    return [true];
-  } catch (e) {
-    const error = e as Error;
-    console.error(error.message);
-    return [false, error];
+export const saveMods = tryCatch((mods: Mod[]) => store.set('mods', mods));
+
+export const addMod = tryCatch((formData: AddModFormValues) => {
+  const mods = loadMods();
+  if (!mods) {
+    return false;
   }
-};
+  const newMod: Mod = {
+    uuid: randomUUID(),
+    enabled: false,
+    name: formData.modName,
+    installDate: Date.now(),
+    isDll: formData.isDll,
+  };
+  const newMods = [...(mods as Mod[]), newMod];
+  saveMods(newMods);
+  return true;
+});

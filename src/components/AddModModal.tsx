@@ -1,18 +1,14 @@
 import { TextInput, Checkbox, Button, Group, Stack } from '@mantine/core';
 import { useForm } from '@mantine/form';
-
-type FormValues = {
-  modName: string;
-  isDll: boolean;
-  path: string;
-};
+import { AddModFormValues } from 'types';
 
 interface AddModModalProps {
   fromZip: boolean;
   loadMods: () => void;
+  closeModal: () => void;
 }
 
-const AddModModal = ({ fromZip, loadMods }: AddModModalProps) => {
+const AddModModal = ({ fromZip, loadMods, closeModal }: AddModModalProps) => {
   const form = useForm({
     initialValues: {
       modName: '',
@@ -21,14 +17,25 @@ const AddModModal = ({ fromZip, loadMods }: AddModModalProps) => {
     },
   });
 
-  const handleSubmit = (values: FormValues) => {
+  const handleSubmit = async (values: AddModFormValues) => {
     // Send form data to backend, have backend validate and save the mod, if the save was successful, close the modal and have the main window refresh the mod list using loadMods function
     console.log(values);
+    const success = await window.electronAPI.addMod(values);
+    if (!success) return;
+    closeModal();
+    form.reset();
     loadMods();
   };
 
   const handleGetFilePath = async (fromZip?: boolean) => {
-    const path = fromZip ? await window.electronAPI.browseForModZip() : await window.electronAPI.browseForModPath();
+    // const path = fromZip ? await window.electronAPI.browseForModZip() : await window.electronAPI.browseForModPath();
+    let path: string | undefined;
+    if (fromZip) {
+      path = await window.electronAPI.browseForModZip();
+    } else {
+      path = await window.electronAPI.browseForModPath();
+    }
+    console.log(path);
     if (!path) {
       return;
     }
