@@ -27,15 +27,8 @@ const AddModModal = ({ fromZip, loadMods, closeModal }: AddModModalProps) => {
     loadMods();
   };
 
-  const handleGetFilePath = async (fromZip?: boolean) => {
-    // const path = fromZip ? await window.electronAPI.browseForModZip() : await window.electronAPI.browseForModPath();
-    let path: string | undefined;
-    if (fromZip) {
-      path = await window.electronAPI.browseForModZip();
-    } else {
-      path = await window.electronAPI.browseForModPath();
-    }
-    console.log(path);
+  const handleGetFilePath = async (fromZip: boolean) => {
+    const path = await window.electronAPI.browseForMod(fromZip);
     if (!path) {
       return;
     }

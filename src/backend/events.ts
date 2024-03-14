@@ -1,21 +1,14 @@
 import tryCatch from './tryCatchHandler';
-import { app, dialog, ipcMain, shell } from 'electron';
+import { app, dialog, ipcMain, shell, OpenDialogOptions } from 'electron';
 import { loadMods, saveMods, addMod } from './db/api';
 import { Mod } from 'types';
 
-const browseForModZip = tryCatch(() => {
-  const filePaths = dialog.showOpenDialogSync({
-    properties: ['openFile'],
-    filters: [{ name: 'Compressed Files', extensions: ['zip'] }],
-  });
-  return filePaths?.[0];
-});
-
-const browseForModPath = tryCatch(() => {
-  const filePaths = dialog.showOpenDialogSync({
-    properties: ['openDirectory'],
-  });
-  return filePaths?.[0];
+const browseForMod = tryCatch((fromZip: boolean) => {
+  const options: OpenDialogOptions = fromZip
+    ? { properties: ['openFile'], filters: [{ name: 'Compressed Files', extensions: ['zip'] }] }
+    : { properties: ['openDirectory'] };
+  const filePath = dialog.showOpenDialogSync(options)?.[0];
+  return filePath || false;
 });
 
 app
@@ -26,8 +19,7 @@ app
     });
     ipcMain.handle('load-mods', loadMods);
     ipcMain.handle('set-mods', (_, mods: Mod[]) => saveMods(mods));
-    ipcMain.handle('browse-mod-zip', browseForModZip);
-    ipcMain.handle('browse-mod-path', browseForModPath);
+    ipcMain.handle('browse-mod', (_, fromZip) => browseForMod(fromZip));
     ipcMain.handle('add-mod', (_, formData) => {
       return addMod(formData);
     });

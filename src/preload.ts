@@ -7,8 +7,7 @@ interface IElectronAPI {
   openExternalLink: (href: string) => void;
   loadMods: () => Promise<Mod[]>;
   saveMods: (mods: Mod[]) => Promise<boolean>;
-  browseForModZip: () => Promise<string | undefined>;
-  browseForModPath: () => Promise<string | undefined>;
+  browseForMod: (fromZip: boolean) => Promise<string | undefined>;
   addMod: (formData: AddModFormValues) => Promise<boolean>;
 }
 
@@ -24,8 +23,7 @@ const electronAPI: IElectronAPI = {
   },
   loadMods: () => ipcRenderer.invoke('load-mods'),
   saveMods: (mods) => ipcRenderer.invoke('set-mods', mods),
-  browseForModZip: () => ipcRenderer.invoke('browse-mod-zip'),
-  browseForModPath: () => ipcRenderer.invoke('browse-mod-path'),
+  browseForMod: (fromZip) => ipcRenderer.invoke('browse-mod', fromZip),
   addMod: (formData) => ipcRenderer.invoke('add-mod', formData),
 };
 

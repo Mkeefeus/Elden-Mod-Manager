@@ -5,7 +5,10 @@ import { Mod, AddModFormValues } from 'types';
 
 export const loadMods = tryCatch(() => store.get('mods'));
 
-export const saveMods = tryCatch((mods: Mod[]) => store.set('mods', mods));
+export const saveMods = tryCatch((mods: Mod[]) => {
+  store.set('mods', mods);
+  return true;
+});
 
 export const addMod = tryCatch((formData: AddModFormValues) => {
   const mods = loadMods();
