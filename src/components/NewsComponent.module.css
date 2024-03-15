@@ -1,0 +1,16 @@
+.firstLetterStyle::first-letter {
+  font-size: 2rem;
+  color: #4dabf7;
+  padding-right: 0.15rem;
+  font-weight: bold;
+  padding: 0;
+  margin: 0;
+}
+
+.newsContainer {
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.089);
+  border-radius: 5px;
+  padding: 0 0.75rem 0.75rem 0.75rem;
+  border: 1px solid rgba(0, 0, 0, 0.253);
+}

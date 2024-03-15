@@ -3,6 +3,7 @@ import { faCoffee } from '@fortawesome/free-solid-svg-icons';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button, Group, Stack, Title } from '@mantine/core';
+import NewsComponent from '@src/components/NewsComponent';
 
 const quickActions: string[] = ['Play', 'Play Vanilla', 'Add a Mod'];
 
@@ -28,9 +29,7 @@ const Home = () => {
           </Button>
         ))}
       </Group>
-      <Title order={2}>News or updates or something idk</Title>
-      Maybe I can pull the latest patch notes or somethin here
-      <Title order={2}>Links</Title>
+      <NewsComponent />
       <Group gap={'lg'}>
         {links.map((link) => (
           <Button
