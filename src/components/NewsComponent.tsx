@@ -1,5 +1,5 @@
-import { React, useState } from 'react';
-import { Title, Container, Flex, Text, Image, ScrollArea } from '@mantine/core';
+import { useState } from 'react';
+import { Title, Container, Text, ScrollArea } from '@mantine/core';
 import classes from './NewsComponent.module.css';
 
 interface NewsComponentProps {
