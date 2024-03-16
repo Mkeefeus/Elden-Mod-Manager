@@ -56,6 +56,7 @@
     "@mantine/core": "^7.5.3",
     "@mantine/form": "^7.6.1",
     "@mantine/hooks": "^7.5.3",
+    "@tabler/icons-react": "^3.1.0",
     "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^8.1.0",
     "react": "^18.2.0",

@@ -17,7 +17,8 @@
       "@src/*": ["src/*"],
       "@components/*": ["src/components/*"],
       "@pages/*": ["src/pages/*"],
-      "@backend/*": ["src/backend/*"]
+      "@backend/*": ["src/backend/*"],
+      "@providers/*": ["src/providers/*"]
     }
   }
 }

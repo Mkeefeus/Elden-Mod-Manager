@@ -3,6 +3,7 @@ import { useDisclosure } from '@mantine/hooks';
 import { MantineLogo } from '@mantinex/mantine-logo';
 import { Outlet, Link } from 'react-router-dom';
 import { pages } from './pages/pages';
+import NewsProvider from '@src/providers/NewsProvider';
 
 const App = () => {
   const [opened, { toggle }] = useDisclosure();
@@ -34,7 +35,9 @@ const App = () => {
         </Stack>
       </AppShell.Navbar>
       <AppShell.Main>
-        <Outlet />
+        <NewsProvider>
+          <Outlet />
+        </NewsProvider>
       </AppShell.Main>
     </AppShell>
   );

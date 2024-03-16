@@ -1,56 +1,95 @@
-import { useState } from 'react';
-import { Title, Container, Text, ScrollArea } from '@mantine/core';
+import { React, useEffect, useState } from 'react';
+import {
+  Title,
+  Container,
+  Flex,
+  Text,
+  Image,
+  ScrollArea,
+  Divider,
+  Group,
+  ActionIcon,
+  rem,
+  useMantineTheme,
+  Badge,
+  Center,
+  Avatar,
+} from '@mantine/core';
 import classes from './NewsComponent.module.css';
+import { IconBookmark, IconHeart, IconShare } from '@tabler/icons-react';
+import { useNews } from '@src/providers/NewsProvider';
 
 interface NewsComponentProps {
   title: string;
   body: string;
+  imageLink: string;
+  author: string;
+  authorAvatar: string;
+  postCategory: string[];
+}
+
+interface ReadMoreStates {
+  [index: number]: boolean;
 }
 
 const NewsComponent = () => {
-  const [readMore, setReadMore] = useState(false);
-  const [news, setNews] = useState([
-    {
-      title: 'New Mod',
-      body: 'Oremlay ipsumyay olorday itsay ametyay, onsectetuercay adipiscingyay elityay. Edsay itaevay eolay inyay iamday empersay orttitorpay. Ullamnay idyay augueyay. Aecenasmay atyay acuslay isquay islnay auctoryay imperdietyay. Integeryay incidunttay acinialay elitvay. Uspendissesay aretraphay. Uisday ariusvay. Ellentesquepay abitanthay orbimay istiquetray enectussay etyay etusnay etyay alesuadamay amesfay acyay urpistay egestasyay. Oinpray ullamcorperyay aretraphay uruspay. Ullanay itaevay ortortay. Etiamyay acinialay ictumday anteyay. Ullamnay oremlay igulalay, incidunttay isquay, empustay etyay, osuerepay idyay, isusray. Uncnay itaevay elitvay euyay estyay anditblay iverravay. Uisday osuerepay onguecay ectuslay. Urabiturcay isusray. Uspendissesay accumsanyay olutpatvay agnamay.',
-      readMore: readMore,
-    },
-    {
-      title: 'New Feature',
-      body: 'Oremlay ipsumyay olorday itsay ametyay, onsectetuercay adipiscingyay elityay. Edsay itaevay eolay inyay iamday empersay orttitorpay. Ullamnay idyay augueyay. Aecenasmay atyay acuslay isquay islnay auctoryay imperdietyay. Integeryay incidunttay acinialay elitvay. Uspendissesay aretraphay. Uisday ariusvay. Ellentesquepay abitanthay orbimay istiquetray enectussay etyay etusnay etyay alesuadamay amesfay acyay urpistay egestasyay. Oinpray ullamcorperyay aretraphay uruspay. Ullanay itaevay ortortay. Etiamyay acinialay ictumday anteyay. Ullamnay oremlay igulalay, incidunttay isquay, empustay etyay, osuerepay idyay, isusray. Uncnay itaevay elitvay euyay estyay anditblay iverravay. Uisday osuerepay onguecay ectuslay. Urabiturcay isusray. Uspendissesay accumsanyay olutpatvay agnamay.',
-      readMore: readMore,
-    },
-    {
-      title: 'New Bug Fix',
-      body: 'Oremlay ipsumyay olorday itsay ametyay, onsectetuercay adipiscingyay elityay. Edsay itaevay eolay inyay iamday empersay orttitorpay. Ullamnay idyay augueyay. Aecenasmay atyay acuslay isquay islnay auctoryay imperdietyay. Integeryay incidunttay acinialay elitvay. Uspendissesay aretraphay. Uisday ariusvay. Ellentesquepay abitanthay orbimay istiquetray enectussay etyay etusnay etyay alesuadamay amesfay acyay urpistay egestasyay. Oinpray ullamcorperyay aretraphay uruspay. Ullanay itaevay ortortay. Etiamyay acinialay ictumday anteyay. Ullamnay oremlay igulalay, incidunttay isquay, empustay etyay, osuerepay idyay, isusray. Uncnay itaevay elitvay euyay estyay anditblay iverravay. Uisday osuerepay onguecay ectuslay. Urabiturcay isusray. Uspendissesay accumsanyay olutpatvay agnamay.',
-      readMore: readMore,
-    },
-    {
-      title: 'New Bug Fix',
-      body: 'Oremlay ipsumyay olorday itsay ametyay, onsectetuercay adipiscingyay elityay. Edsay itaevay eolay inyay iamday empersay orttitorpay. Ullamnay idyay augueyay. Aecenasmay atyay acuslay isquay islnay auctoryay imperdietyay. Integeryay incidunttay acinialay elitvay. Uspendissesay aretraphay. Uisday ariusvay. Ellentesquepay abitanthay orbimay istiquetray enectussay etyay etusnay etyay alesuadamay amesfay acyay urpistay egestasyay. Oinpray ullamcorperyay aretraphay uruspay. Ullanay itaevay ortortay. Etiamyay acinialay ictumday anteyay. Ullamnay oremlay igulalay, incidunttay isquay, empustay etyay, osuerepay idyay, isusray. Uncnay itaevay elitvay euyay estyay anditblay iverravay. Uisday osuerepay onguecay ectuslay. Urabiturcay isusray. Uspendissesay accumsanyay olutpatvay agnamay.',
-      readMore: readMore,
-    },
-  ]);
+  const theme = useMantineTheme();
+  const [readMoreStates, setReadMoreStates] = useState<ReadMoreStates>({});
+
+  const { news } = useNews();
 
   return (
     <>
-      <ScrollArea.Autosize mah={400}>
-        {news.map((item: NewsComponentProps) => {
+      <ScrollArea.Autosize mah={290}>
+        {news.map((item: NewsComponentProps, index) => {
+          const isReadMore = readMoreStates[index] || false;
           return (
-            <Container classNames={{ root: classes.newsContainer }}>
-              <Title order={3}>{item.title}</Title>
-              <img
-                src="https://placekitten.com/125/125"
-                alt="Mantine logo"
-                width="80"
-                height="80"
-                style={{ float: 'left', paddingRight: '10px' }}
-              />
-
-              <Text lineClamp={3} style={{ marginRight: 'auto' }}>
-                {item.body}
-              </Text>
-              <Text span>Read More</Text>
+            <Container classNames={{ root: classes.newsContainer }} key={index} pl={5}>
+              <Flex align="center" justify="space-between" direction={'column'} pr={5} pt={5}>
+                <img src={item.imageLink} alt="Mantine logo" className={classes.image} id="featuredImage" />
+                <Badge id="badgeTag" variant="gradient" gradient={{ from: 'cyan', to: 'purple' }}>
+                  {item.postCategory}
+                </Badge>
+                <Group gap={8} align="space-between" pb={5} pt={8}>
+                  <ActionIcon className={classes.action} color={theme.colors.dark[6]}>
+                    <IconHeart style={{ width: rem(16), height: rem(16) }} color={theme.colors.red[6]} />
+                  </ActionIcon>
+                  <ActionIcon className={classes.action} color={theme.colors.dark[6]}>
+                    <IconBookmark style={{ width: rem(16), height: rem(16) }} color={theme.colors.yellow[7]} />
+                  </ActionIcon>
+                  <ActionIcon className={classes.action} color={theme.colors.dark[6]}>
+                    <IconShare style={{ width: rem(16), height: rem(16) }} color={theme.colors.blue[6]} />
+                  </ActionIcon>
+                </Group>
+              </Flex>
+              <Divider orientation="vertical" mt={8} mb={8} pr={6} />
+              <Group gap={0}>
+                <Title order={2}>{item.title}</Title>
+                <Text lineClamp={isReadMore ? 100 : 3} style={{ marginRight: 'auto' }}>
+                  {item.body}
+                </Text>
+                <Center mb={isReadMore ? 8 : 0}>
+                  <Avatar src={item.authorAvatar} size={22} radius="xl" mr={8} />
+                  <Text fz="sm" fs="italic" fw="lighter" inline>
+                    {item.author}
+                  </Text>
+                </Center>
+                <Text
+                  mb={isReadMore ? 8 : 0}
+                  className={classes.readMore}
+                  onClick={() =>
+                    setReadMoreStates({
+                      ...readMoreStates,
+                      [index]: !isReadMore,
+                    })
+                  }
+                  style={{
+                    marginLeft: 'auto',
+                  }}
+                >
+                  {isReadMore ? 'Read Less' : 'Read More'}
+                </Text>
+              </Group>
             </Container>
           );
         })}

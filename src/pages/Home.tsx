@@ -2,21 +2,12 @@ import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { faCoffee } from '@fortawesome/free-solid-svg-icons';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Button, Group, Stack, Title } from '@mantine/core';
-import NewsComponent from '@components/NewsComponent';
+import { Button, Group, Stack, Title, Divider } from '@mantine/core';
+import NewsComponent from '@src/components/NewsComponent';
+import { ArticleCard } from '@src/components/ArticleCard';
+import Footer from '@src/components/Footer';
 
 const quickActions: string[] = ['Play', 'Play Vanilla', 'Add a Mod'];
-
-const links: { icon: IconDefinition; href: string }[] = [
-  {
-    icon: faGithub,
-    href: 'https://www.github.com/mkeefeus/elden-mod-manager',
-  },
-  {
-    icon: faCoffee,
-    href: 'https://www.ko-fi.com',
-  },
-];
 
 const Home = () => {
   return (
@@ -29,20 +20,10 @@ const Home = () => {
           </Button>
         ))}
       </Group>
+      <Divider />
+      {/* <ArticleCard /> */}
       <NewsComponent />
-      <Group gap={'lg'}>
-        {links.map((link) => (
-          <Button
-            variant="outline"
-            onClick={() => {
-              window.electronAPI.openExternalLink(link.href);
-            }}
-            key={link.href}
-          >
-            <FontAwesomeIcon icon={link.icon} />
-          </Button>
-        ))}
-      </Group>
+      <Footer />
     </Stack>
   );
 };
