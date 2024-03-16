@@ -33,6 +33,7 @@ import App from './App';
 import '@mantine/core/styles.css';
 import { MantineProvider } from '@mantine/core';
 import { pages } from './pages/pages';
+import { theme } from './themes';
 
 const rootElement = document.getElementById('root') as Element;
 
@@ -56,7 +57,7 @@ if (!rootElement) {
 
 createRoot(rootElement).render(
   <StrictMode>
-    <MantineProvider defaultColorScheme="dark">
+    <MantineProvider defaultColorScheme="dark" theme={theme}>
       <RouterProvider router={browserRouter} />
     </MantineProvider>
   </StrictMode>

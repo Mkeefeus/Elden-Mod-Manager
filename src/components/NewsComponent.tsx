@@ -24,11 +24,35 @@ interface NewsComponentProps {
   imageLink: string;
   author: string;
   authorAvatar: string;
-  postCategory: string[];
+  postCategory: string;
+  postDate: string;
 }
 
 interface ReadMoreStates {
   [index: number]: boolean;
+}
+
+function formatISODateToCustom(isoDateString: string): string {
+  console.log(isoDateString); // Debug: Inspect the input string (ISO date format)
+  const date = new Date(isoDateString);
+  console.log(date); // Debug: Inspect the parsed Date object
+
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  const year = date.getFullYear();
+
+  let hours = date.getHours();
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+  const seconds = date.getSeconds().toString().padStart(2, '0');
+
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12;
+  hours = hours ? hours : 12; // the hour '0' should be '12'
+  const strHours = hours.toString().padStart(2, '0');
+
+  console.log(`${strHours}:${minutes}:${seconds} ${ampm}`); // Debug: Inspect the time components
+
+  return `${month}/${day}/${year} ${strHours}:${minutes}:${seconds} ${ampm}`;
 }
 
 const NewsComponent = () => {
@@ -40,13 +64,21 @@ const NewsComponent = () => {
   return (
     <>
       <ScrollArea.Autosize mah={290}>
-        {news.map((item: NewsComponentProps, index) => {
+        {news.map((item: NewsComponentProps, index: number) => {
+          let postDate = formatISODateToCustom(item.postDate);
           const isReadMore = readMoreStates[index] || false;
           return (
             <Container classNames={{ root: classes.newsContainer }} key={index} pl={5}>
-              <Flex align="center" justify="space-between" direction={'column'} pr={5} pt={5}>
+              <Flex
+                align="center"
+                justify="space-between"
+                direction={'column'}
+                pr={5}
+                pt={5}
+                className={classes.leftContainer}
+              >
                 <img src={item.imageLink} alt="Mantine logo" className={classes.image} id="featuredImage" />
-                <Badge id="badgeTag" variant="gradient" gradient={{ from: 'cyan', to: 'purple' }}>
+                <Badge fullWidth id="badgeTag" radius="xs" variant="gradient">
                   {item.postCategory}
                 </Badge>
                 <Group gap={8} align="space-between" pb={5} pt={8}>
@@ -64,12 +96,15 @@ const NewsComponent = () => {
               <Divider orientation="vertical" mt={8} mb={8} pr={6} />
               <Group gap={0}>
                 <Title order={2}>{item.title}</Title>
-                <Text lineClamp={isReadMore ? 100 : 3} style={{ marginRight: 'auto' }}>
+                <Text fs="italic" span style={{ fontSize: '0.65rem', marginLeft: 'auto' }}>
+                  {postDate}
+                </Text>
+                <Text size={theme.fontSizes.md} lineClamp={isReadMore ? 100 : 3} style={{ marginRight: 'auto' }}>
                   {item.body}
                 </Text>
                 <Center mb={isReadMore ? 8 : 0}>
                   <Avatar src={item.authorAvatar} size={22} radius="xl" mr={8} />
-                  <Text fz="sm" fs="italic" fw="lighter" inline>
+                  <Text size={theme.fontSizes.xs} fs="italic" fw="lighter" inline>
                     {item.author}
                   </Text>
                 </Center>

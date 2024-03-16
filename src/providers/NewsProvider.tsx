@@ -34,6 +34,7 @@ interface Post {
   featured_image: string;
   author: Author;
   categories: Categories;
+  date: string;
 }
 
 interface NewsData {
@@ -54,6 +55,7 @@ const cleanNewsData = (data: NewsData) => {
       author: post.author.name,
       authorAvatar: post.author.avatar_URL,
       postCategory: postCategoties,
+      postDate: post.date,
     };
   });
   return cleanedData;

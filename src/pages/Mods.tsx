@@ -4,6 +4,7 @@ import ModTable from '@components/ModTable';
 import AddModModal from '@components/AddModModal';
 import { useState, useEffect } from 'react';
 import { Mod } from 'types';
+import { useLocation } from 'react-router-dom';
 
 type SortObject = {
   column: string;
@@ -11,10 +12,19 @@ type SortObject = {
 };
 
 const Mods = () => {
+  const location = useLocation();
   const [opened, { open, close }] = useDisclosure(false);
   const [fromZip, setFromZip] = useState(false);
   const [mods, setMods] = useState<Mod[]>([]);
   const [sort, setSort] = useState<SortObject>({ column: 'installDate', order: 'desc' });
+
+  useEffect(() => {
+    if (location.state) {
+      const { opened, fromZip } = location.state as { opened: boolean; fromZip: boolean };
+      if (opened) open();
+      setFromZip(fromZip);
+    }
+  }, [location]);
 
   const getComparable = (value: Date | boolean | number | string | undefined): number | string => {
     if (value instanceof Date) return value.getTime();
