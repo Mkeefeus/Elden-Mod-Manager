@@ -3,7 +3,7 @@ import { faCoffee } from '@fortawesome/free-solid-svg-icons';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button, Group, Stack, Title } from '@mantine/core';
-import NewsComponent from '@src/components/NewsComponent';
+import NewsComponent from '@components/NewsComponent';
 
 const quickActions: string[] = ['Play', 'Play Vanilla', 'Add a Mod'];
 
