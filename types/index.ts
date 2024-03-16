@@ -15,3 +15,13 @@ export type AddModFormValues = {
   path: string;
   fromZip: boolean;
 };
+
+export type NewsComponentProps = {
+  title: string;
+  body: string;
+  imageLink: string;
+  author: string;
+  authorAvatar: string;
+  postCategory: string[];
+  postDate: string;
+};

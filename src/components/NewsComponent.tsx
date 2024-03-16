@@ -18,16 +18,6 @@ import classes from './NewsComponent.module.css';
 import { IconBookmark, IconHeart, IconShare } from '@tabler/icons-react';
 import { useNews } from '@src/providers/NewsProvider';
 
-interface NewsComponentProps {
-  title: string;
-  body: string;
-  imageLink: string;
-  author: string;
-  authorAvatar: string;
-  postCategory: string;
-  postDate: string;
-}
-
 interface ReadMoreStates {
   [index: number]: boolean;
 }
@@ -64,8 +54,8 @@ const NewsComponent = () => {
   return (
     <>
       <ScrollArea.Autosize mah={290}>
-        {news.map((item: NewsComponentProps, index: number) => {
-          let postDate = formatISODateToCustom(item.postDate);
+        {news.map((item, index) => {
+          const postDate = formatISODateToCustom(item.postDate);
           const isReadMore = readMoreStates[index] || false;
           return (
             <Container classNames={{ root: classes.newsContainer }} key={index} pl={5}>

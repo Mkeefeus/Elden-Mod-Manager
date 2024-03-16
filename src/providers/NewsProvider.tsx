@@ -1,13 +1,5 @@
 import { useContext, createContext, useEffect, useState, ReactNode, Context } from 'react';
-
-interface NewsComponentProps {
-  title: string;
-  body: string;
-  imageLink: string;
-  author: string;
-  authorAvatar: string;
-  postCategory: string[];
-}
+import { NewsComponentProps } from 'types';
 
 interface NewsCtxValue {
   news: NewsComponentProps[];

@@ -1,17 +1,28 @@
 import { Button, Group, Stack, Title, Divider } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
 import NewsComponent from '@src/components/NewsComponent';
 import Footer from '@src/components/Footer';
 import { useNavigate } from 'react-router-dom';
 
-const quickActions: string[] = ['Play', 'Play Vanilla', 'Add a Mod (Zip)'];
+const quickActions: string[] = ['Play', 'Play Vanilla', 'Add a Mod (Zip)', 'Add a Mod (Folder)'];
 
 const Home = () => {
   const navigate = useNavigate();
 
-  const handleAddModClick = () => {
-    navigate('/mods', { state: { fromZip: true, opened: true } });
+  const handleAddModClick = (index: number) => {
+    switch (index) {
+      case 0:
+        break;
+      case 1:
+        break;
+      case 2:
+        navigate('/mods', { state: { fromZip: true, opened: true } });
+        break;
+      case 3:
+        navigate('/mods', { state: { fromZip: false, opened: true } });
+        break;
+    }
   };
+
   return (
     <Stack gap={'lg'}>
       <Title order={1}>Quick Actions</Title>
@@ -20,8 +31,8 @@ const Home = () => {
           <Button
             variant="outline"
             key={index}
-            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-              e.currentTarget.innerText === quickActions[2] ? handleAddModClick() : null;
+            onClick={() => {
+              handleAddModClick(index);
             }}
           >
             {action}
