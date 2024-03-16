@@ -107,7 +107,12 @@ const Mods = () => {
       <ModTable mods={mods} sort={sort} saveMods={saveMods} changeSort={handleSortChange} />
       <Group gap={'md'}>
         <Modal opened={opened} onClose={close} title={`Add Mod From ${fromZip ? 'Zip' : 'Folder'}`} centered>
-          <AddModModal fromZip={fromZip} loadMods={loadMods} closeModal={close} />
+          <AddModModal
+            fromZip={fromZip}
+            loadMods={loadMods}
+            closeModal={close}
+            namesInUse={mods.map((mod) => mod.name.toLowerCase())}
+          />
         </Modal>
         <Button
           onClick={() => {

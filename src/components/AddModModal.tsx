@@ -1,24 +1,40 @@
 import { TextInput, Checkbox, Button, Group, Stack } from '@mantine/core';
-import { useForm } from '@mantine/form';
+import { isNotEmpty, useForm } from '@mantine/form';
 import { AddModFormValues } from 'types';
 
 interface AddModModalProps {
   fromZip: boolean;
   loadMods: () => void;
   closeModal: () => void;
+  namesInUse: string[];
 }
 
-const AddModModal = ({ fromZip, loadMods, closeModal }: AddModModalProps) => {
+const AddModModal = ({ fromZip, loadMods, closeModal, namesInUse }: AddModModalProps) => {
+  const nameNotInUse = (value: string) => {
+    if (namesInUse.includes(value.toLowerCase())) {
+      return 'Mod name is already in use';
+    }
+  };
+
   const form = useForm({
     initialValues: {
       modName: '',
       isDll: false,
       path: '',
+      fromZip: fromZip,
+    },
+
+    validate: {
+      modName: isNotEmpty('Mod name is required') && nameNotInUse,
+
+      path: isNotEmpty('Path is required'),
     },
   });
 
   const handleSubmit = async (values: AddModFormValues) => {
     // Send form data to backend, have backend validate and save the mod, if the save was successful, close the modal and have the main window refresh the mod list using loadMods function
+    values.modName = values.modName.trim();
+    form.isValid;
     console.log(values);
     const success = await window.electronAPI.addMod(values);
     if (!success) return;

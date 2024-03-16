@@ -1,5 +1,5 @@
 //import { IconBookmark, IconHeart, IconShare } from '@tabler/icons-react';
-import { Card, Image, Text, ActionIcon, Badge, Group, Center, Avatar, useMantineTheme, rem } from '@mantine/core';
+import { Card, Image, Text, ActionIcon, Badge, Group, Center, Avatar, useMantineTheme } from '@mantine/core';
 import classes from './ArticleCard.module.css';
 
 export function ArticleCard() {

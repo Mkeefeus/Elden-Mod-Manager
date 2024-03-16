@@ -1,4 +1,4 @@
-const handleError = (e: unknown) => {
+export const handleError = (e: unknown) => {
   let message = 'Unknown Error';
   if (e instanceof Error) {
     message = e.message;

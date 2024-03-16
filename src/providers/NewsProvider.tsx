@@ -13,12 +13,38 @@ interface NewsCtxValue {
   news: NewsComponentProps[];
   setNews: (news: NewsComponentProps[]) => void;
 }
+interface Author {
+  name: string;
+  avatar_URL: string;
+}
+
+interface Categories {
+  [key: string]: {
+    ID: number;
+    name: string;
+    description: string;
+    parent: number;
+    post_count: number;
+  };
+}
+
+interface Post {
+  title: string;
+  content: string;
+  featured_image: string;
+  author: Author;
+  categories: Categories;
+}
+
+interface NewsData {
+  posts: Post[];
+}
 
 const NewsContext = createContext<NewsCtxValue | null>(null);
 
-const cleanNewsData = (data: any) => {
-  const cleanedData = data.posts.map((post: any) => {
-    let postCategoties = Object.entries(post.categories).map((category: any) => {
+const cleanNewsData = (data: NewsData) => {
+  const cleanedData = data.posts.map((post) => {
+    const postCategoties = Object.entries(post.categories).map((category) => {
       return category[0];
     });
     return {
@@ -48,7 +74,8 @@ const NewsProvider = ({ children }: { children: ReactNode }) => {
         const response = await fetch(
           'https://public-api.wordpress.com/rest/v1.1/sites/eldenringmm.wordpress.com/posts/'
         );
-        const data = await response.json();
+        const data: NewsData = await response.json();
+        console.log(data);
         setNews(cleanNewsData(data));
       } catch (error) {
         console.error('Error fetching news data', error);

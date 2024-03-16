@@ -28,7 +28,7 @@
 
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { RouterProvider, createBrowserRouter, RouteObject } from 'react-router-dom';
+import { RouterProvider, createHashRouter, RouteObject } from 'react-router-dom';
 import App from './App';
 import '@mantine/core/styles.css';
 import { MantineProvider } from '@mantine/core';
@@ -43,7 +43,7 @@ const childRoutes: RouteObject[] = pages.map((page) => {
   };
 });
 
-const browserRouter = createBrowserRouter([
+const browserRouter = createHashRouter([
   {
     element: <App />,
     children: childRoutes,

@@ -1,7 +1,10 @@
-import tryCatch from './tryCatchHandler';
+import tryCatch, { handleError } from './tryCatchHandler';
 import { app, dialog, ipcMain, shell, OpenDialogOptions } from 'electron';
-import { loadMods, saveMods, addMod } from './db/api';
-import { Mod } from 'types';
+import { loadMods, saveMods } from './db/api';
+import { AddModFormValues, Mod } from 'types';
+import { randomUUID } from 'crypto';
+import { cpSync } from 'fs';
+import decompress from 'decompress';
 
 const browseForMod = tryCatch((fromZip: boolean) => {
   const options: OpenDialogOptions = fromZip
@@ -9,6 +12,51 @@ const browseForMod = tryCatch((fromZip: boolean) => {
     : { properties: ['openDirectory'] };
   const filePath = dialog.showOpenDialogSync(options)?.[0];
   return filePath || false;
+});
+
+const genUUID = (): string => {
+  const uuid = randomUUID();
+  const mods = loadMods();
+  if (!mods) {
+    throw new Error('Failed to load mods');
+  }
+  const existingUUIDs = mods.map((mod) => mod.uuid);
+  return existingUUIDs?.includes(uuid) ? genUUID() : uuid;
+};
+
+const installMod = async (source: string, mod: Mod, fromZip: boolean) => {
+  const installPath = `./mods/${mod.uuid}`;
+  if (fromZip) {
+    await decompress(source, installPath);
+  } else
+    cpSync(source, installPath, {
+      recursive: true,
+    });
+};
+
+const handleAddMod = tryCatch((formData: AddModFormValues) => {
+  const mods = loadMods();
+  if (!mods) {
+    return false;
+  }
+  const newMod: Mod = {
+    uuid: genUUID(),
+    enabled: false,
+    name: formData.modName,
+    installDate: Date.now(),
+    isDll: formData.isDll,
+  };
+
+  try {
+    installMod(formData.path, newMod, formData.fromZip);
+  } catch (err) {
+    handleError(err);
+    return false;
+  }
+
+  const newMods = [...(mods as Mod[]), newMod];
+  saveMods(newMods);
+  return true;
 });
 
 app
@@ -21,7 +69,7 @@ app
     ipcMain.handle('set-mods', (_, mods: Mod[]) => saveMods(mods));
     ipcMain.handle('browse-mod', (_, fromZip) => browseForMod(fromZip));
     ipcMain.handle('add-mod', (_, formData) => {
-      return addMod(formData);
+      return handleAddMod(formData);
     });
   })
   .catch(console.error);

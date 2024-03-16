@@ -13,4 +13,5 @@ export type AddModFormValues = {
   modName: string;
   isDll: boolean;
   path: string;
+  fromZip: boolean;
 };

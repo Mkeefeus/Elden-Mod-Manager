@@ -1,10 +1,9 @@
-import { React, useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   Title,
   Container,
   Flex,
   Text,
-  Image,
   ScrollArea,
   Divider,
   Group,
