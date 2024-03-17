@@ -84,7 +84,7 @@ const AddModModal = ({ fromZip, loadMods, namesInUse, disclosure }: AddModModalP
             </Button>
           </Group>
           <Checkbox mt="md" label="Is DLL?" {...form.getInputProps('isDll', { type: 'checkbox' })} />
-          <Checkbox mt="md" label="Delete after import?" {...form.getInputProps('isDll', { type: 'checkbox' })} />
+          <Checkbox mt="md" label="Delete after import?" {...form.getInputProps('delete', { type: 'checkbox' })} />
           <Group justify="flex-end" mt="md">
             <Button loading={showLoader} type="submit">
               Submit

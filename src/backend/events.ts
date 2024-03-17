@@ -3,8 +3,9 @@ import { app, dialog, ipcMain, shell, OpenDialogOptions } from 'electron';
 import { loadMods, saveMods } from './db/api';
 import { AddModFormValues, Mod } from 'types';
 import { randomUUID } from 'crypto';
-import { cpSync, existsSync } from 'fs';
+import { cpSync, existsSync, unlinkSync, rmdirSync } from 'fs';
 import decompress from 'decompress';
+import { resolve } from 'path';
 
 const browseForMod = tryCatch((fromZip: boolean) => {
   const options: OpenDialogOptions = fromZip
@@ -27,7 +28,7 @@ const genUUID = (): string => {
 const installMod = tryCatch(async (source: string, mod: Mod, fromZip: boolean) => {
   // const installPath = `./mods/${mod.uuid}/`;
   const pathName = mod.name.replace(/\s/g, '-').toLowerCase();
-  console.log(fromZip, pathName)
+  console.log(fromZip, pathName);
   const installPath = `./mods/${pathName}/`;
   if (existsSync(installPath)) {
     return false;
@@ -60,6 +61,20 @@ const handleAddMod = tryCatch(async (formData: AddModFormValues, fromZip: boolea
     return false;
   }
 
+  if (formData.delete) {
+    try {
+      if (existsSync(formData.path)) {
+        if (fromZip) {
+          unlinkSync(formData.path);
+        } else {
+          rmdirSync(formData.path, { recursive: true });
+        }
+      }
+    } catch (err) {
+      handleError(err);
+    }
+  }
+
   const newMods = [...(mods as Mod[]), newMod];
   saveMods(newMods);
   return true;
@@ -73,8 +88,8 @@ app
     });
     ipcMain.handle('load-mods', loadMods);
     ipcMain.handle('set-mods', (_, mods: Mod[]) => saveMods(mods));
-    ipcMain.handle('browse-mod', (_, fromZip) => browseForMod(fromZip));
-    ipcMain.handle('add-mod', (_, formData, fromZip) => {
+    ipcMain.handle('browse-mod', (_, fromZip: boolean) => browseForMod(fromZip));
+    ipcMain.handle('add-mod', (_, formData: AddModFormValues, fromZip: boolean) => {
       return handleAddMod(formData, fromZip);
     });
   })
