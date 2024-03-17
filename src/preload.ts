@@ -8,7 +8,7 @@ interface IElectronAPI {
   loadMods: () => Promise<Mod[]>;
   saveMods: (mods: Mod[]) => Promise<boolean>;
   browseForMod: (fromZip: boolean) => Promise<string | undefined>;
-  addMod: (formData: AddModFormValues) => Promise<boolean>;
+  addMod: (formData: AddModFormValues, fromZip: boolean) => Promise<boolean>;
 }
 
 declare global {
@@ -22,9 +22,9 @@ const electronAPI: IElectronAPI = {
     ipcRenderer.send('open-external-link', href);
   },
   loadMods: () => ipcRenderer.invoke('load-mods'),
-  saveMods: (mods) => ipcRenderer.invoke('set-mods', mods),
-  browseForMod: (fromZip) => ipcRenderer.invoke('browse-mod', fromZip),
-  addMod: (formData) => ipcRenderer.invoke('add-mod', formData),
+  saveMods: (...args) => ipcRenderer.invoke('set-mods', ...args),
+  browseForMod: (...args) => ipcRenderer.invoke('browse-mod', ...args),
+  addMod: (...args) => ipcRenderer.invoke('add-mod', ...args),
 };
 
 contextBridge.exposeInMainWorld('electronAPI', electronAPI);

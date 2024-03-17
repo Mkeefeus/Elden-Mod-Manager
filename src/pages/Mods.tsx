@@ -1,10 +1,10 @@
-import { Button, Group, Modal, Stack } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
+import { Button, Group, Stack } from '@mantine/core';
 import ModTable from '@components/ModTable';
 import AddModModal from '@components/AddModModal';
 import { useState, useEffect } from 'react';
 import { Mod } from 'types';
 import { useLocation } from 'react-router-dom';
+import { useDisclosure } from '@mantine/hooks';
 
 type SortObject = {
   column: string;
@@ -13,10 +13,10 @@ type SortObject = {
 
 const Mods = () => {
   const location = useLocation();
-  const [opened, { open, close }] = useDisclosure(false);
   const [fromZip, setFromZip] = useState(false);
   const [mods, setMods] = useState<Mod[]>([]);
   const [sort, setSort] = useState<SortObject>({ column: 'installDate', order: 'desc' });
+  const [opened, { open, close }] = useDisclosure();
 
   useEffect(() => {
     if (location.state) {
@@ -116,14 +116,12 @@ const Mods = () => {
     <Stack gap="xl" justify={'center'}>
       <ModTable mods={mods} sort={sort} saveMods={saveMods} changeSort={handleSortChange} />
       <Group gap={'md'}>
-        <Modal opened={opened} onClose={close} title={`Add Mod From ${fromZip ? 'Zip' : 'Folder'}`} centered>
-          <AddModModal
-            fromZip={fromZip}
-            loadMods={loadMods}
-            closeModal={close}
-            namesInUse={mods.map((mod) => mod.name.toLowerCase())}
-          />
-        </Modal>
+        <AddModModal
+          fromZip={fromZip}
+          loadMods={loadMods}
+          namesInUse={mods.map((mod) => mod.name.toLowerCase())}
+          disclosure={{ opened, close }}
+        />
         <Button
           onClick={() => {
             setFromZip(true);

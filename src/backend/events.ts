@@ -3,7 +3,7 @@ import { app, dialog, ipcMain, shell, OpenDialogOptions } from 'electron';
 import { loadMods, saveMods } from './db/api';
 import { AddModFormValues, Mod } from 'types';
 import { randomUUID } from 'crypto';
-import { cpSync } from 'fs';
+import { cpSync, existsSync } from 'fs';
 import decompress from 'decompress';
 
 const browseForMod = tryCatch((fromZip: boolean) => {
@@ -24,17 +24,23 @@ const genUUID = (): string => {
   return existingUUIDs?.includes(uuid) ? genUUID() : uuid;
 };
 
-const installMod = async (source: string, mod: Mod, fromZip: boolean) => {
-  const installPath = `./mods/${mod.uuid}`;
+const installMod = tryCatch(async (source: string, mod: Mod, fromZip: boolean) => {
+  // const installPath = `./mods/${mod.uuid}/`;
+  const pathName = mod.name.replace(/\s/g, '-').toLowerCase();
+  console.log(fromZip, pathName)
+  const installPath = `./mods/${pathName}/`;
+  if (existsSync(installPath)) {
+    return false;
+  }
   if (fromZip) {
     await decompress(source, installPath);
   } else
     cpSync(source, installPath, {
       recursive: true,
     });
-};
+});
 
-const handleAddMod = tryCatch((formData: AddModFormValues) => {
+const handleAddMod = tryCatch(async (formData: AddModFormValues, fromZip: boolean) => {
   const mods = loadMods();
   if (!mods) {
     return false;
@@ -48,7 +54,7 @@ const handleAddMod = tryCatch((formData: AddModFormValues) => {
   };
 
   try {
-    installMod(formData.path, newMod, formData.fromZip);
+    await installMod(formData.path, newMod, fromZip);
   } catch (err) {
     handleError(err);
     return false;
@@ -68,8 +74,8 @@ app
     ipcMain.handle('load-mods', loadMods);
     ipcMain.handle('set-mods', (_, mods: Mod[]) => saveMods(mods));
     ipcMain.handle('browse-mod', (_, fromZip) => browseForMod(fromZip));
-    ipcMain.handle('add-mod', (_, formData) => {
-      return handleAddMod(formData);
+    ipcMain.handle('add-mod', (_, formData, fromZip) => {
+      return handleAddMod(formData, fromZip);
     });
   })
   .catch(console.error);
