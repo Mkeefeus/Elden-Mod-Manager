@@ -5,7 +5,6 @@ import { AddModFormValues, Mod } from 'types';
 import { randomUUID } from 'crypto';
 import { cpSync, existsSync, unlinkSync, rmdirSync } from 'fs';
 import decompress from 'decompress';
-import { resolve } from 'path';
 
 const browseForMod = tryCatch((fromZip: boolean) => {
   const options: OpenDialogOptions = fromZip
