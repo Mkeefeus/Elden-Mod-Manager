@@ -3,7 +3,7 @@ import { app, dialog, ipcMain, shell, OpenDialogOptions } from 'electron';
 import { loadMods, saveMods } from './db/api';
 import { AddModFormValues, Mod } from 'types';
 import { randomUUID } from 'crypto';
-import { cpSync, existsSync } from 'fs';
+import { cpSync, existsSync, unlinkSync, rmdirSync } from 'fs';
 import decompress from 'decompress';
 
 const browseForMod = tryCatch((fromZip: boolean) => {
@@ -67,6 +67,20 @@ const handleAddMod = tryCatch(async (formData: AddModFormValues, fromZip: boolea
   } catch (err) {
     handleError(err);
     return false;
+  }
+
+  if (formData.delete) {
+    try {
+      if (existsSync(formData.path)) {
+        if (fromZip) {
+          unlinkSync(formData.path);
+        } else {
+          rmdirSync(formData.path, { recursive: true });
+        }
+      }
+    } catch (err) {
+      handleError(err);
+    }
   }
 
   const newMods = [...(mods as Mod[]), newMod];

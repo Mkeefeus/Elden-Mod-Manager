@@ -13,6 +13,7 @@ export type AddModFormValues = {
   modName: string;
   isDll: boolean;
   path: string;
+  delete: boolean;
 };
 
 export type NewsComponentProps = {

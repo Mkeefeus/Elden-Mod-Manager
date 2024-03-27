@@ -1,6 +1,6 @@
 import ModTableHeader from '@components/ModTableHeader';
 import { Mod } from 'types';
-import { Table, Checkbox, Center } from '@mantine/core';
+import { Table, Checkbox, Center, ScrollArea } from '@mantine/core';
 import ModTableMenu from '@components/ModTableMenu';
 
 const columns = [
@@ -93,22 +93,25 @@ const ModTable = ({ mods, sort, saveMods, changeSort }: ModTableProps) => {
     );
   });
   return (
-    <Table style={{ tableLayout: 'fixed', width: '100%', textAlign: 'center' }}>
-      <Table.Thead>
-        <Table.Tr>
-          {columns.map(({ label, sortKey }) => (
-            <ModTableHeader
-              key={sortKey}
-              label={label}
-              sortIcon={sort.column === sortKey ? sort.order : false}
-              handleSort={() => changeSort(sortKey)}
-            />
-          ))}
-          <Table.Th style={{ textAlign: 'center' }}>More</Table.Th>
-        </Table.Tr>
-      </Table.Thead>
-      <Table.Tbody>{rows}</Table.Tbody>
-    </Table>
+    <ScrollArea>
+      <Table style={{ tableLayout: 'fixed', width: '100%', textAlign: 'center' }}>
+        <Table.Thead>
+          <Table.Tr>
+            {columns.map(({ label, sortKey }) => (
+              <ModTableHeader
+                key={sortKey}
+                sortedBy={sort.column === sortKey}
+                label={label}
+                sortIcon={sort.order || false}
+                handleSort={() => changeSort(sortKey)}
+              />
+            ))}
+            <Table.Th style={{ textAlign: 'center' }}>More</Table.Th>
+          </Table.Tr>
+        </Table.Thead>
+        <Table.Tbody>{rows}</Table.Tbody>
+      </Table>
+    </ScrollArea>
   );
 };
 
