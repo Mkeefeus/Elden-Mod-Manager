@@ -24,12 +24,12 @@ const Home = () => {
   };
 
   return (
-    <Stack gap={'lg'}>
-      <Title order={1}>Quick Actions</Title>
+    <Stack gap={'sm'}>
+      <Title order={2}>Quick Actions</Title>
       <Group gap={'lg'} justify="space-between" grow>
         {quickActions.map((action, index) => (
           <Button
-            variant="outline"
+            variant="light"
             key={index}
             onClick={() => {
               handleAddModClick(index);

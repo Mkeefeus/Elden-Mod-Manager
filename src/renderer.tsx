@@ -26,7 +26,7 @@
  * ```
  */
 
-import { StrictMode } from 'react';
+import { StrictMode, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { RouterProvider, createHashRouter, RouteObject } from 'react-router-dom';
 import App from './App';

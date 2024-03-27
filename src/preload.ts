@@ -9,6 +9,7 @@ interface IElectronAPI {
   saveMods: (mods: Mod[]) => Promise<boolean>;
   browseForMod: (fromZip: boolean) => Promise<string | undefined>;
   addMod: (formData: AddModFormValues, fromZip: boolean) => Promise<boolean>;
+  browseForExe: () => Promise<string | undefined>;
 }
 
 declare global {
@@ -25,6 +26,7 @@ const electronAPI: IElectronAPI = {
   saveMods: (...args) => ipcRenderer.invoke('set-mods', ...args),
   browseForMod: (...args) => ipcRenderer.invoke('browse-mod', ...args),
   addMod: (...args) => ipcRenderer.invoke('add-mod', ...args),
+  browseForExe: () => ipcRenderer.invoke('browse-exe'),
 };
 
 contextBridge.exposeInMainWorld('electronAPI', electronAPI);

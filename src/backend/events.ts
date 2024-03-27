@@ -14,6 +14,15 @@ const browseForMod = tryCatch((fromZip: boolean) => {
   return filePath || false;
 });
 
+const browseForExe = tryCatch(() => {
+  const options: OpenDialogOptions = {
+    properties: ['openFile'],
+    filters: [{ name: 'Executable Files', extensions: ['exe'] }],
+  };
+  const filePath = dialog.showOpenDialogSync(options)?.[0];
+  return filePath || false;
+});
+
 const genUUID = (): string => {
   const uuid = randomUUID();
   const mods = loadMods();
@@ -27,7 +36,7 @@ const genUUID = (): string => {
 const installMod = tryCatch(async (source: string, mod: Mod, fromZip: boolean) => {
   // const installPath = `./mods/${mod.uuid}/`;
   const pathName = mod.name.replace(/\s/g, '-').toLowerCase();
-  console.log(fromZip, pathName)
+  console.log(fromZip, pathName);
   const installPath = `./mods/${pathName}/`;
   if (existsSync(installPath)) {
     return false;
@@ -74,6 +83,7 @@ app
     ipcMain.handle('load-mods', loadMods);
     ipcMain.handle('set-mods', (_, mods: Mod[]) => saveMods(mods));
     ipcMain.handle('browse-mod', (_, fromZip) => browseForMod(fromZip));
+    ipcMain.handle('browse-exe', browseForExe);
     ipcMain.handle('add-mod', (_, formData, fromZip) => {
       return handleAddMod(formData, fromZip);
     });

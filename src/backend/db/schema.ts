@@ -37,6 +37,8 @@ const debugMods: Mod[] = [
 
 export type DBSchema = {
   mods: Mod[];
+  eldenRingPath: string;
+  modEndinePath: string;
 };
 
 const schema: Schema<DBSchema> = {
@@ -55,6 +57,14 @@ const schema: Schema<DBSchema> = {
       required: ['uuid', 'enabled', 'name', 'installDate', 'isDll'],
     },
     default: debugMods,
+  },
+  eldenRingPath: {
+    type: 'string',
+    default: '',
+  },
+  modEndinePath: {
+    type: 'string',
+    default: '',
   },
 };
 

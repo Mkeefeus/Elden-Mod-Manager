@@ -1,6 +1,5 @@
 import { useContext, createContext, useEffect, useState, ReactNode, Context } from 'react';
 import { NewsComponentProps } from 'types';
-
 interface NewsCtxValue {
   news: NewsComponentProps[];
   setNews: (news: NewsComponentProps[]) => void;
