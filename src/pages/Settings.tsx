@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { Flex, FileInput, TextInput, Button, Notification, rem, Box } from '@mantine/core';
+import { useEffect, useState, ReactNode } from 'react';
+import { Flex, TextInput, Button, Notification, rem, Box } from '@mantine/core';
 import { IconX, IconCheck } from '@tabler/icons-react';
-import Footer from '@src/components/Footer';
 
 const Settings = () => {
   const xIcon = <IconX style={{ width: rem(20), height: rem(20) }} />;
   const checkIcon = <IconCheck style={{ width: rem(20), height: rem(20) }} />;
 
   type NotificationProps = {
-    icon: React.ReactNode;
+    icon: ReactNode;
     color: string;
     title: string;
     children: string;

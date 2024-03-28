@@ -1,8 +1,7 @@
-import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import { faCoffee } from '@fortawesome/free-solid-svg-icons';
-import { Button, Group, Flex, Text, useMantineTheme, Box, rem } from '@mantine/core';
+import { Button, Group, Flex, Text, useMantineTheme, Box } from '@mantine/core';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 
 const Footer = () => {
