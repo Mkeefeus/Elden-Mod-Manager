@@ -1,5 +1,5 @@
 import { useEffect, useState, ReactNode } from 'react';
-import { Flex, TextInput, Button, Notification, rem, Box } from '@mantine/core';
+import { Flex, TextInput, Button, Notification, rem, Stack, Group } from '@mantine/core';
 import { IconX, IconCheck } from '@tabler/icons-react';
 
 const Settings = () => {
@@ -71,51 +71,47 @@ const Settings = () => {
     }
   };
   return (
-    <>
-      <Box my="auto" mb="xl" mih="100%">
-        <Flex direction={'column'}>
-          <Flex direction={'row'} align={'flex-end'} justify={'space-between'}>
-            <TextInput
-              label="Path to Elden Ring Executable"
-              placeholder="Select Elden Ring Executable"
-              required
-              value={eldenRingPath}
-              w={700}
-            />
-            <Button
-              onClick={() => {
-                handleGetExePath('eldenRing').catch(console.error);
-              }}
-            >
-              Browse
-            </Button>
-          </Flex>
-          <Flex direction={'row'} align={'flex-end'} justify={'space-between'}>
-            <TextInput
-              label="Path to Mod Engine 2 Executable"
-              placeholder="Select Mod Engine 2 Executable"
-              required
-              value={modEnginePath}
-              w={700}
-            />
-            <Button onClick={() => handleGetExePath('modEngine').catch(console.error)}>Browse</Button>
-          </Flex>
-          {notificationProps && (
-            <Flex align={'flex-end'} justify={'flex-end'} mb={'auto'} mr={'auto'} pos={'absolute'}>
-              <Notification
-                icon={notificationProps?.icon}
-                color={notificationProps?.color}
-                title={notificationProps?.title}
-                withCloseButton={false}
-                withBorder
-              >
-                {notificationProps?.children}
-              </Notification>
-            </Flex>
-          )}
+    <Stack gap={'md'} style={{ height: '100%' }}>
+      <Group align={'flex-end'} justify={'space-between'}>
+        <TextInput
+          label="Path to Elden Ring Executable"
+          placeholder="Select Elden Ring Executable"
+          required
+          value={eldenRingPath}
+          w={700}
+        />
+        <Button
+          onClick={() => {
+            handleGetExePath('eldenRing').catch(console.error);
+          }}
+        >
+          Browse
+        </Button>
+      </Group>
+      <Group align={'flex-end'} justify={'space-between'}>
+        <TextInput
+          label="Path to Mod Engine 2 Executable"
+          placeholder="Select Mod Engine 2 Executable"
+          required
+          value={modEnginePath}
+          w={700}
+        />
+        <Button onClick={() => handleGetExePath('modEngine').catch(console.error)}>Browse</Button>
+      </Group>
+      {notificationProps && (
+        <Flex align={'flex-end'} justify={'flex-end'} mb={'auto'} mr={'auto'} pos={'absolute'}>
+          <Notification
+            icon={notificationProps?.icon}
+            color={notificationProps?.color}
+            title={notificationProps?.title}
+            withCloseButton={false}
+            withBorder
+          >
+            {notificationProps?.children}
+          </Notification>
         </Flex>
-      </Box>
-    </>
+      )}
+    </Stack>
   );
 };
 

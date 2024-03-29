@@ -1,6 +1,5 @@
 import { Button, Group, Stack, Title, Divider } from '@mantine/core';
 import NewsComponent from '@src/components/NewsComponent';
-import Footer from '@src/components/Footer';
 import { useNavigate } from 'react-router-dom';
 
 const quickActions: string[] = ['Play', 'Play Vanilla', 'Add a Mod (Zip)', 'Add a Mod (Folder)'];
@@ -41,7 +40,7 @@ const Home = () => {
       </Group>
       <Divider />
       <NewsComponent />
-      <Footer />
+      {/* <Footer /> */}
     </Stack>
   );
 };

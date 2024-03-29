@@ -3,6 +3,7 @@ import { useDisclosure } from '@mantine/hooks';
 import { Outlet, Link } from 'react-router-dom';
 import { pages } from './pages/pages';
 import NewsProvider from '@src/providers/NewsProvider';
+import Footer from './components/Footer';
 
 const App = () => {
   const [opened, { toggle }] = useDisclosure();
@@ -11,6 +12,7 @@ const App = () => {
   return (
     <AppShell
       header={{ height: { base: 60, md: 70, lg: 80 } }}
+      footer={{ height: { base: 60, md: 70, lg: 80 } }}
       navbar={{
         width: 250,
         breakpoint: 'sm',
@@ -43,6 +45,9 @@ const App = () => {
           <Outlet />
         </NewsProvider>
       </AppShell.Main>
+      <AppShell.Footer>
+        <Footer />
+      </AppShell.Footer>
     </AppShell>
   );
 };
