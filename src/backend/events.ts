@@ -5,6 +5,8 @@ import { AddModFormValues, Mod } from 'types';
 import { randomUUID } from 'crypto';
 import { cpSync, existsSync, unlinkSync, rmdirSync } from 'fs';
 import decompress from 'decompress';
+import CreateTomlFile from './toml';
+import { CreateModPathFromName } from '../util/utilities';
 
 const browseForMod = tryCatch((fromZip: boolean) => {
   const options: OpenDialogOptions = fromZip
@@ -35,7 +37,8 @@ const genUUID = (): string => {
 
 const installMod = tryCatch(async (source: string, mod: Mod, fromZip: boolean) => {
   // const installPath = `./mods/${mod.uuid}/`;
-  const pathName = mod.name.replace(/\s/g, '-').toLowerCase();
+  // const pathName = mod.name.replace(/\s/g, '-').toLowerCase();
+  const pathName = CreateModPathFromName(mod.name);
   console.log(fromZip, pathName);
   const installPath = `./mods/${pathName}/`;
   if (existsSync(installPath)) {
@@ -101,5 +104,10 @@ app
     ipcMain.handle('add-mod', (_, formData, fromZip) => {
       return handleAddMod(formData, fromZip);
     });
+
+    const mods = loadMods();
+    if (mods) {
+      CreateTomlFile(mods);
+    }
   })
   .catch(console.error);
