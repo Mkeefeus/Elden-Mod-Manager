@@ -172,14 +172,10 @@ app
         const modEngineFolder = modEnginePath?.split('\\').slice(0, -1).join('\\');
         const tomlString = GenerateTomlString(mods);
         // writeFileSync(`${modEngineFolder}\\config_eldenring.toml`, tomlString);
-        const args = ['-t', 'er', '-c', `${modEngineFolder}\\config_eldenring.toml`];
-        const me2path = 'C:\\Users\\mkeef\\Documents\\Github\\Elden-Mod-Manager\\ModEngine2\\ModEngine-2.1.0.0-win64';
-        const execString = '"' + me2path + '\\modengine2_launcher.exe" -t er -c "' + me2path + '\\config_eldenring.toml"';
-        console.log(execString);
+        const execString = 'launchmod_eldenring.bat'
+        console.log(execString, modEngineFolder);
         // exec(`"${modEnginePath}" -t er -c .\\config_eldenring.toml`);
-        execFile(execString, function (error, stdout, stderr) {
-          console.log(stdout);
-        });
+        execFile(execString, {cwd: modEngineFolder});
       } else {
         shell.openExternal('steam://rungameid/1245620').catch(console.error);
       }
