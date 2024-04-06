@@ -1,12 +1,14 @@
 import tryCatch, { handleError } from './tryCatchHandler';
 import { app, dialog, ipcMain, shell, OpenDialogOptions } from 'electron';
-import { loadMods, saveMods } from './db/api';
+import { getModEnginePath, loadMods, saveModEnginePath, saveMods } from './db/api';
 import { AddModFormValues, Mod } from 'types';
 import { randomUUID } from 'crypto';
-import { cpSync, existsSync, unlinkSync, rmdirSync } from 'fs';
+import { cpSync, existsSync, writeFileSync, readdirSync, readFileSync, rmSync } from 'fs';
 import decompress from 'decompress';
-import CreateTomlFile from './toml';
+import GenerateTomlString from './toml';
 import { CreateModPathFromName } from '../util/utilities';
+import { Octokit } from 'octokit';
+import { exec, execFile, spawn } from 'child_process';
 
 const browseForMod = tryCatch((fromZip: boolean) => {
   const options: OpenDialogOptions = fromZip
@@ -76,9 +78,9 @@ const handleAddMod = tryCatch(async (formData: AddModFormValues, fromZip: boolea
     try {
       if (existsSync(formData.path)) {
         if (fromZip) {
-          unlinkSync(formData.path);
+          rmSync(formData.path);
         } else {
-          rmdirSync(formData.path, { recursive: true });
+          rmSync(formData.path, { recursive: true });
         }
       }
     } catch (err) {
@@ -91,6 +93,59 @@ const handleAddMod = tryCatch(async (formData: AddModFormValues, fromZip: boolea
   return true;
 });
 
+const downloadModEngine = tryCatch(async (downloadURL: string, id: string) => {
+  const response = await fetch(downloadURL);
+  const buffer = await response.arrayBuffer();
+  writeFileSync('./ModEngine2.zip', Buffer.from(buffer));
+  await decompress('./ModEngine2.zip', './ModEngine2');
+  rmSync('./ModEngine2.zip');
+  const files = readdirSync('./ModEngine2', { recursive: true }) as string[];
+  const path = `.\\ModEngine2\\${files.find((file) => file.includes('modengine2_launcher.exe'))}`;
+  const folder = path.split('\\').slice(0, -1).join('\\');
+  writeFileSync(`${folder}\\version.txt`, id);
+});
+
+const checkForUpdates = tryCatch(async () => {
+  const octokit = new Octokit();
+  const release = await octokit.request('GET /repos/{owner}/{repo}/releases/latest', {
+    owner: 'soulsmods',
+    repo: 'ModEngine2',
+  });
+  const version = release.data.assets[0].id.toString();
+  const downloadURL = release.data.assets[0].browser_download_url;
+
+  const modEngineInstalled = existsSync('./ModEngine2');
+  if (!modEngineInstalled) {
+    console.log('missing modengine2 folder');
+    await downloadModEngine(downloadURL, version);
+  }
+  let files = readdirSync('./ModEngine2', { recursive: true }) as string[];
+  const foundLauncher = files.find((file) => file.includes('modengine2_launcher.exe'));
+  if (!foundLauncher) {
+    console.log('missing launcher');
+    rmSync(`./ModEngine2`, { recursive: true });
+    await downloadModEngine(downloadURL, version);
+    files = readdirSync('./ModEngine2', { recursive: true }) as string[];
+  }
+  let versionPath = files.find((file) => file.includes('version.txt'));
+  if (!versionPath) {
+    console.log('missing version');
+    rmSync(`./ModEngine2`, { recursive: true });
+    await downloadModEngine(downloadURL, version);
+    files = readdirSync('./ModEngine2', { recursive: true }) as string[];
+    versionPath = files.find((file) => file.includes('version.txt'));
+  }
+  const currentVersion = readFileSync(`./ModEngine2/${versionPath}`).toString();
+  if (currentVersion !== version) {
+    console.log('outdated');
+    rmSync(`./ModEngine2`, { recursive: true });
+    await downloadModEngine(downloadURL, version);
+  }
+  console.log('up to date');
+  const path = `.\\ModEngine2\\${files.find((file) => file.includes('modengine2_launcher.exe'))}`;
+  saveModEnginePath(path);
+});
+
 app
   .whenReady()
   .then(async () => {
@@ -99,15 +154,41 @@ app
     });
     ipcMain.handle('load-mods', loadMods);
     ipcMain.handle('set-mods', (_, mods: Mod[]) => saveMods(mods));
-    ipcMain.handle('browse-mod', (_, fromZip) => browseForMod(fromZip));
+    ipcMain.handle('browse-mod', (_, fromZip: boolean) => browseForMod(fromZip));
     ipcMain.handle('browse-exe', browseForExe);
-    ipcMain.handle('add-mod', (_, formData, fromZip) => {
+    ipcMain.handle('add-mod', (_, formData: AddModFormValues, fromZip: boolean) => {
       return handleAddMod(formData, fromZip);
     });
+    ipcMain.handle('launch-game', (_, modded: boolean) => {
+      if (modded) {
+        const mods = loadMods();
+        if (!mods) {
+          throw new Error('Failed to load mods');
+        }
+        const modEnginePath = getModEnginePath();
+        if (!modEnginePath) {
+          throw new Error('Failed to load mod engine path');
+        }
+        const modEngineFolder = modEnginePath?.split('\\').slice(0, -1).join('\\');
+        const tomlString = GenerateTomlString(mods);
+        // writeFileSync(`${modEngineFolder}\\config_eldenring.toml`, tomlString);
+        const args = ['-t', 'er', '-c', `${modEngineFolder}\\config_eldenring.toml`];
+        // const execString = `"${modEnginePath}" ${args.join(' ')}`;
+        // const execString = `.\\ModEngine2\\ModEngine-2.1.0.0-win64\\launchmod_eldenring.bat`;
+        // const me2path = "C:\\Users\\mkeef\\Documents\\Github\\Elden-Mod-Manager\\ModEngine2\\ModEngine-2.1.0.0-win64"
+        const me2path = "ModEngine2\\ModEngine-2.1.0.0-win64"
+        // const execString = `chcp 65001 && ${me2path}\\modengine2_launcher.exe -t er -c ${modEngineFolder}\\config_eldenring.toml`
+        const execString = process.env.ComSpec + ` /c ${me2path}\\launchmod_eldenring.bat`
+        console.log(execString);
+        // exec(`"${modEnginePath}" -t er -c .\\config_eldenring.toml`);
+        execFile(execString, function(error, stdout, stderr) {
+          console.log(stdout);
+      });
+      } else {
+        shell.openExternal('steam://rungameid/1245620').catch(console.error);
+      }
+    });
 
-    const mods = loadMods();
-    if (mods) {
-      CreateTomlFile(mods);
-    }
+    checkForUpdates();
   })
   .catch(console.error);

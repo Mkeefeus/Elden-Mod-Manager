@@ -93,3 +93,4 @@ out/
 dist/
 mods/
 *.toml
+ModEngine2/

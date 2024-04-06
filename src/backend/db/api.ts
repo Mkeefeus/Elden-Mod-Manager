@@ -20,4 +20,4 @@ export const saveModEnginePath = tryCatch((path: string) => {
   return true;
 });
 
-export const loadModEnginePath = tryCatch(() => store.get('modEnginePath'));
+export const getModEnginePath = tryCatch(() => store.get('modEnginePath'));

@@ -42,9 +42,4 @@ mods = ${JSON.stringify(fileMods).replace(/:/g, "=")}
 enabled = false`);
 };
 
-const CreateTomlFile = (mods: Mod[]) => {
-  const tomlString = GenerateTomlString(mods);
-  writeFileSync('./modconfig.toml', tomlString);
-};
-
-export default CreateTomlFile;
+export default GenerateTomlString;

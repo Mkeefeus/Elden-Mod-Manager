@@ -7,11 +7,13 @@ const quickActions: string[] = ['Play', 'Play Vanilla', 'Add a Mod (Zip)', 'Add 
 const Home = () => {
   const navigate = useNavigate();
 
-  const handleAddModClick = (index: number) => {
+  const handleQuckAction = (index: number) => {
     switch (index) {
       case 0:
+        window.electronAPI.launchGame(true);
         break;
       case 1:
+        window.electronAPI.launchGame(false);
         break;
       case 2:
         navigate('/mods', { state: { fromZip: true, opened: true } });
@@ -31,7 +33,7 @@ const Home = () => {
             variant="light"
             key={index}
             onClick={() => {
-              handleAddModClick(index);
+              handleQuckAction(index);
             }}
           >
             {action}
