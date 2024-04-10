@@ -114,7 +114,7 @@ const Mods = () => {
 
   return (
     <Stack gap="xl" justify={'center'}>
-      <ModTable mods={mods} sort={sort} saveMods={saveMods} changeSort={handleSortChange} />
+      <ModTable mods={mods} sort={sort} saveMods={saveMods} loadMods={loadMods} changeSort={handleSortChange} />
       <Group gap={'md'}>
         <AddModModal
           fromZip={fromZip}
@@ -140,7 +140,9 @@ const Mods = () => {
         >
           Add Mod From Folder
         </Button>
-        <Button variant="outline">Launch Game</Button>
+        <Button variant="outline" onClick={() => window.electronAPI.launchGame(true)}>
+          Launch Game
+        </Button>
       </Group>
     </Stack>
   );

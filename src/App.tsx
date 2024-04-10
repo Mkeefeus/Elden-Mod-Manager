@@ -31,13 +31,16 @@ const App = () => {
       </AppShell.Header>
       <AppShell.Navbar p="md">
         <Stack mih={50} gap="md" justify="flex-start" align="stretch">
-          {pages.map((page) => (
-            <Link to={page.route} key={page.route} style={{ color: 'inherit', textDecoration: 'none' }}>
-              <Button fullWidth variant="outline">
-                {page.displayName}
-              </Button>
-            </Link>
-          ))}
+          {pages.map(
+            (page) =>
+              !page.hidden && (
+                <Link to={page.route} key={page.route} style={{ color: 'inherit', textDecoration: 'none' }}>
+                  <Button fullWidth variant="outline">
+                    {page.displayName}
+                  </Button>
+                </Link>
+              )
+          )}
         </Stack>
       </AppShell.Navbar>
       <AppShell.Main>

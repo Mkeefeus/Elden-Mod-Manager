@@ -4,11 +4,13 @@ import { Button, Center, Menu, Table } from '@mantine/core';
 
 type ModTableMenuProps = {
   canMove: { up: boolean; down: boolean };
+  hasExe?: boolean;
   changePriority: (direction: 'up' | 'down') => void;
   handleDelete: () => void;
+  handleOpenExe: () => void;
 };
 
-const ModTableMenu = ({ canMove, changePriority, handleDelete }: ModTableMenuProps) => {
+const ModTableMenu = ({ canMove, hasExe, changePriority, handleDelete, handleOpenExe }: ModTableMenuProps) => {
   return (
     <Table.Td>
       <Menu shadow="md" width={200}>
@@ -26,6 +28,11 @@ const ModTableMenu = ({ canMove, changePriority, handleDelete }: ModTableMenuPro
           <Menu.Item disabled={!canMove.down} onClick={() => changePriority('down')}>
             Decrease Priority
           </Menu.Item>
+          {hasExe && (
+            <Menu.Item color="blue" onClick={handleOpenExe}>
+              Open Exe
+            </Menu.Item>
+          )}
           <Menu.Item color="red" onClick={handleDelete}>
             Delete Mod
           </Menu.Item>

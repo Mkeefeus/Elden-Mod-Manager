@@ -8,17 +8,18 @@ const columns = [
   { label: 'Load order', sortKey: 'loadOrder' },
   { label: 'Mod name', sortKey: 'name' },
   { label: 'Install date', sortKey: 'installDate' },
-  { label: 'Is DLL', sortKey: 'isDll' },
+  { label: 'Is DLL', sortKey: 'dllFile' },
 ];
 
 type ModTableProps = {
   mods: Mod[];
   sort: { column: string; order: 'asc' | 'desc' };
   saveMods: (mods: Mod[]) => Promise<void>;
+  loadMods: () => void;
   changeSort: (column: string) => void;
 };
 
-const ModTable = ({ mods, sort, saveMods, changeSort }: ModTableProps) => {
+const ModTable = ({ mods, sort, saveMods, loadMods, changeSort }: ModTableProps) => {
   const handleCheckboxChange = (index: number) => {
     const newMods = [...mods];
     const mod = newMods[index];
@@ -26,9 +27,16 @@ const ModTable = ({ mods, sort, saveMods, changeSort }: ModTableProps) => {
     saveMods(newMods).catch(console.error);
   };
 
-  const handleDelete = (mod: Mod) => {
-    const newMods = mods.filter((m) => m.uuid !== mod.uuid);
-    saveMods(newMods).catch(console.error);
+  const handleDelete = async (mod: Mod) => {
+    const deleted = await window.electronAPI.deleteMod(mod);
+    if (!deleted) {
+      console.error('Failed to delete mod');
+    }
+    loadMods();
+  };
+
+  const handleOpenExe = (mod: Mod) => {
+    window.electronAPI.launchModExe(mod);
   };
 
   const getSwapIndex = (mod: Mod, direction: 'up' | 'down') => {
@@ -80,14 +88,16 @@ const ModTable = ({ mods, sort, saveMods, changeSort }: ModTableProps) => {
             day: '2-digit',
           })}
         </Table.Td>
-        <Table.Td style={{ textAlign: 'center' }}>{mod.isDll ? '✓' : undefined}</Table.Td>
+        <Table.Td style={{ textAlign: 'center' }}>{mod.dllFile ? '✓' : undefined}</Table.Td>
         <ModTableMenu
           canMove={{
             up: (mod.enabled && mod.loadOrder && mod.loadOrder > 1) || false,
             down: (mod.enabled && mod.loadOrder && mod.loadOrder < mods.filter((mod) => mod.enabled).length) || false,
           }}
+          hasExe={mod.exe != undefined}
           handleDelete={() => handleDelete(mod)}
           changePriority={(direction: 'up' | 'down') => changePriority(mod, direction)}
+          handleOpenExe={() => handleOpenExe(mod)}
         />
       </Table.Tr>
     );

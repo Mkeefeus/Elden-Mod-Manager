@@ -23,9 +23,7 @@ interface ReadMoreStates {
 }
 
 function formatISODateToCustom(isoDateString: string): string {
-  console.log(isoDateString); // Debug: Inspect the input string (ISO date format)
   const date = new Date(isoDateString);
-  console.log(date); // Debug: Inspect the parsed Date object
 
   const month = (date.getMonth() + 1).toString().padStart(2, '0');
   const day = date.getDate().toString().padStart(2, '0');
@@ -39,8 +37,6 @@ function formatISODateToCustom(isoDateString: string): string {
   hours = hours % 12;
   hours = hours ? hours : 12; // the hour '0' should be '12'
   const strHours = hours.toString().padStart(2, '0');
-
-  console.log(`${strHours}:${minutes}:${seconds} ${ampm}`); // Debug: Inspect the time components
 
   return `${month}/${day}/${year} ${strHours}:${minutes}:${seconds} ${ampm}`;
 }

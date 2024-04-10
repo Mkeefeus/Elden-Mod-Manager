@@ -7,6 +7,7 @@ export type Page = {
   displayName: string;
   route: string;
   element: () => JSX.Element;
+  hidden?: boolean;
 };
 
 export const pages: Page[] = [
@@ -24,6 +25,7 @@ export const pages: Page[] = [
     displayName: 'Settings',
     route: '/settings',
     element: Settings,
+    hidden: true,
   },
   {
     displayName: 'About',

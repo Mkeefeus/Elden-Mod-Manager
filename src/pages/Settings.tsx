@@ -35,7 +35,7 @@ const Settings = () => {
   }, [eldenRingPath, modEnginePath]);
 
   const handleGetExePath = async (buttonClicked: string) => {
-    const path = await window.electronAPI.browseForExe();
+    const path = await window.electronAPI.browse('exe', 'Select Elden Ring Executable');
     if (!path) {
       return;
     }

@@ -6,7 +6,8 @@ export type Mod = {
   loadOrder?: number;
   name: string;
   installDate: number;
-  isDll: boolean;
+  dllFile?: string;
+  exe?: string;
 };
 
 export type AddModFormValues = {
@@ -14,6 +15,7 @@ export type AddModFormValues = {
   isDll: boolean;
   path: string;
   delete: boolean;
+  hasExe: boolean;
 };
 
 export type NewsComponentProps = {
@@ -25,3 +27,5 @@ export type NewsComponentProps = {
   postCategory: string[];
   postDate: string;
 };
+
+export type BrowseType = 'zip' | 'dll' | 'exe' | 'directory';

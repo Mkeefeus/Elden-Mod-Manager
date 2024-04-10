@@ -68,7 +68,6 @@ const NewsProvider = ({ children }: { children: ReactNode }) => {
           'https://public-api.wordpress.com/rest/v1.1/sites/eldenringmm.wordpress.com/posts/'
         );
         const data: NewsData = await response.json();
-        console.log(data);
         setNews(cleanNewsData(data));
       } catch (error) {
         console.error('Error fetching news data', error);

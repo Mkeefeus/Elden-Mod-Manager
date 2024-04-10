@@ -29,6 +29,7 @@ const AddModModal = ({ fromZip, loadMods, namesInUse, disclosure }: AddModModalP
       isDll: false,
       path: '',
       delete: false,
+      hasExe: false,
     },
 
     validate: {
@@ -43,7 +44,6 @@ const AddModModal = ({ fromZip, loadMods, namesInUse, disclosure }: AddModModalP
   const handleSubmit = async (values: AddModFormValues) => {
     values.modName = values.modName.trim();
     form.isValid;
-    console.log(values);
     setShowLoader(true);
     const success = await window.electronAPI.addMod(values, fromZip);
     await sleep(1000);
@@ -55,7 +55,7 @@ const AddModModal = ({ fromZip, loadMods, namesInUse, disclosure }: AddModModalP
   };
 
   const handleGetFilePath = async (fromZip: boolean) => {
-    const path = await window.electronAPI.browseForMod(fromZip);
+    const path = await window.electronAPI.browse(fromZip ? 'zip' : 'directory', 'Select mod folder');
     if (!path) {
       return;
     }
@@ -85,6 +85,7 @@ const AddModModal = ({ fromZip, loadMods, namesInUse, disclosure }: AddModModalP
           </Group>
           <Checkbox mt="md" label="Is DLL?" {...form.getInputProps('isDll', { type: 'checkbox' })} />
           <Checkbox mt="md" label="Delete after import?" {...form.getInputProps('delete', { type: 'checkbox' })} />
+          <Checkbox mt="md" label="Has exe?" {...form.getInputProps('hasExe', { type: 'checkbox' })} />
           <Group justify="flex-end" mt="md">
             <Button loading={showLoader} type="submit">
               Submit
