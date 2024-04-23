@@ -16,7 +16,7 @@ import {
 } from '@mantine/core';
 import classes from './NewsComponent.module.css';
 import { IconBookmark, IconHeart, IconShare } from '@tabler/icons-react';
-import { useNews } from '@src/providers/NewsProvider';
+import { useNews } from '@providers/NewsProvider';
 
 interface ReadMoreStates {
   [index: number]: boolean;

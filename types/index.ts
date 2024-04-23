@@ -28,4 +28,10 @@ export type NewsComponentProps = {
   postDate: string;
 };
 
+export type LogObject = {
+  level: string;
+  message: string;
+  label: string;
+};
+
 export type BrowseType = 'zip' | 'dll' | 'exe' | 'directory';

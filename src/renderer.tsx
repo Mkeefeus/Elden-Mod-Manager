@@ -34,6 +34,9 @@ import '@mantine/core/styles.css';
 import { MantineProvider } from '@mantine/core';
 import { pages } from './pages/pages';
 import { theme } from './themes';
+import '@mantine/notifications/styles.css';
+import { Notifications } from '@mantine/notifications';
+import { startRendererLogger } from './utils/rendererLogger';
 
 const rootElement = document.getElementById('root') as Element;
 
@@ -55,9 +58,12 @@ if (!rootElement) {
   throw new Error('Could not find root element');
 }
 
+startRendererLogger();
+
 createRoot(rootElement).render(
   <StrictMode>
     <MantineProvider defaultColorScheme="dark" theme={theme}>
+      <Notifications />
       <RouterProvider router={browserRouter} />
     </MantineProvider>
   </StrictMode>

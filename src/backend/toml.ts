@@ -1,5 +1,5 @@
 import { Mod } from 'types';
-import { CreateModPathFromName } from '../util/utilities';
+import { CreateModPathFromName } from '../utils/utilities';
 
 const GenerateTomlString = (mods: Mod[]) => {
   const cwd = process.cwd();

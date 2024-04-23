@@ -1,23 +1,57 @@
+import { errToString } from '../../utils/utilities';
+import { logger } from '../../utils/mainLogger';
 import store from './init';
-import tryCatch from '../tryCatchHandler';
 import { Mod } from 'types';
 
-export const loadMods = tryCatch(() => store.get('mods'));
-export const saveMods = tryCatch((mods: Mod[]) => {
-  store.set('mods', mods);
-  return true;
-});
+const { debug, error } = logger;
 
-export const saveEldenRingPath = tryCatch((path: string) => {
-  store.set('eldenRingPath', path);
-  return true;
-});
+export const loadMods = () => {
+  debug('Loading mods from DB');
+  try {
+    const mods = store.get('mods');
+    debug(`Mods loaded from DB`);
+    return mods;
+  } catch (err) {
+    const msg = `An error occured while loading mods: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg);
+  }
+};
+export const saveMods = (mods: Mod[]) => {
+  debug(`Saving mods to DB`);
+  try {
+    store.set('mods', mods);
+    debug('Mods saved to DB');
+    return true;
+  } catch (err) {
+    const msg = `An error occured while saving mods: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg);
+  }
+};
 
-export const loadEldenRingPath = tryCatch(() => store.get('eldenRingPath'));
+export const saveModEnginePath = (path: string) => {
+  debug(`Saving Mod Engine Path: ${path}`);
+  try {
+    store.set('modEnginePath', path);
+    debug('Mod Engine Path saved');
+    return true;
+  } catch (err) {
+    const msg = `An error occured while saving Mod Engine Path: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg);
+  }
+};
 
-export const saveModEnginePath = tryCatch((path: string) => {
-  store.set('modEnginePath', path);
-  return true;
-});
-
-export const getModEnginePath = tryCatch(() => store.get('modEnginePath'));
+export const getModEnginePath = () => {
+  debug('Getting Mod Engine Path');
+  try {
+    const path = store.get('modEnginePath');
+    debug(`Mod Engine Path: ${path}`);
+    return path;
+  } catch (err) {
+    const msg = `An error occured while getting Mod Engine Path: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg);
+  }
+};

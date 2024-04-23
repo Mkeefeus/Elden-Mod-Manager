@@ -1,7 +1,7 @@
 // See the Electron documentation for details on how to use preload scripts:
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 import { contextBridge, ipcRenderer } from 'electron';
-import { Mod, AddModFormValues, BrowseType } from 'types';
+import { Mod, AddModFormValues, BrowseType, LogObject } from 'types';
 
 interface IElectronAPI {
   openExternalLink: (href: string) => void;
@@ -12,6 +12,8 @@ interface IElectronAPI {
   deleteMod: (mod: Mod) => Promise<boolean>;
   launchGame: (modded: boolean) => void;
   launchModExe: (mod: Mod) => void;
+  notify: (callback: (log: LogObject) => void) => void;
+  log: (log: LogObject) => void;
 }
 
 declare global {
@@ -31,6 +33,8 @@ const electronAPI: IElectronAPI = {
   launchGame: (...args) => ipcRenderer.send('launch-game', ...args),
   deleteMod: (...args) => ipcRenderer.invoke('delete-mod', ...args),
   launchModExe: (...args) => ipcRenderer.send('launch-mod-exe', ...args),
+  notify: (callback) => ipcRenderer.on('notify', (_, error) => callback(error)),
+  log: (...args) => ipcRenderer.send('log', ...args),
 };
 
 contextBridge.exposeInMainWorld('electronAPI', electronAPI);
