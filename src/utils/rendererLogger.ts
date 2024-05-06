@@ -1,5 +1,5 @@
 import { notifications } from '@mantine/notifications';
-import { LogObject } from 'types';
+import { LogEntry } from 'winston';
 
 const getLogColor = (level: string) => {
   switch (level) {
@@ -14,15 +14,29 @@ const getLogColor = (level: string) => {
   }
 };
 
-const showNotification = (log: LogObject) => {
+const getLogLabel = (level: string) => {
+  switch (level) {
+    case 'error':
+      return 'Error';
+    case 'warning':
+      return 'Warning';
+    case 'info':
+      return 'Info';
+    default:
+      return undefined;
+  }
+};
+
+const showNotification = (log: LogEntry) => {
+  console.log(log);
   notifications.show({
     color: getLogColor(log.level),
-    title: log.label,
+    title: getLogLabel(log.level),
     message: log.message,
   });
 };
 
-export const sendLog = (log: LogObject) => {
+export const sendLog = (log: LogEntry) => {
   window.electronAPI.log(log);
 };
 

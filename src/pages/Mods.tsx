@@ -1,10 +1,12 @@
-import { Button, Group, Stack } from '@mantine/core';
+import { Button, Group, Modal, Stack } from '@mantine/core';
 import ModTable from '@components/ModTable';
 import AddModModal from '@components/AddModModal';
 import { useState, useEffect } from 'react';
 import { Mod } from 'types';
 import { useLocation } from 'react-router-dom';
 import { useDisclosure } from '@mantine/hooks';
+import ZipFileModal from '@src/components/ZipFileModal';
+import AddMod from '@src/components/AddMod';
 
 type SortObject = {
   column: string;
@@ -13,16 +15,19 @@ type SortObject = {
 
 const Mods = () => {
   const location = useLocation();
-  const [fromZip, setFromZip] = useState(false);
   const [mods, setMods] = useState<Mod[]>([]);
   const [sort, setSort] = useState<SortObject>({ column: 'installDate', order: 'desc' });
-  const [opened, { open, close }] = useDisclosure();
+  const [fromZip, setFromZip] = useState(false);
+  const [addModOpened, addModHandlers] = useDisclosure();
+  const [addZipOpened, addZipHandlers] = useDisclosure();
+  const [newModOpened, newModHandlers] = useDisclosure();
 
   useEffect(() => {
     if (location.state) {
       const { opened, fromZip } = location.state as { opened: boolean; fromZip: boolean };
-      if (opened) open();
-      setFromZip(fromZip);
+      if (!opened) return;
+      // setFromZip(fromZip);
+      fromZip ? addZipHandlers.open() : addModHandlers.open();
     }
   }, [location]);
 
@@ -117,15 +122,24 @@ const Mods = () => {
       <ModTable mods={mods} sort={sort} saveMods={saveMods} loadMods={loadMods} changeSort={handleSortChange} />
       <Group gap={'md'}>
         <AddModModal
-          fromZip={fromZip}
           loadMods={loadMods}
           namesInUse={mods.map((mod) => mod.name.toLowerCase())}
-          disclosure={{ opened, close }}
+          opened={addModOpened}
+          close={addModHandlers.close}
         />
+        <Modal opened={newModOpened} onClose={newModHandlers.close} title="Add Mod New" centered>
+          <AddMod
+            close={newModHandlers.close}
+            fromZip={fromZip}
+            namesInUse={mods.map((mod) => mod.name.toLowerCase())}
+          />
+        </Modal>
+        <ZipFileModal opened={addZipOpened} close={addZipHandlers.close} />
         <Button
           onClick={() => {
             setFromZip(true);
-            open();
+            addZipHandlers.open();
+            console.log('zip');
           }}
           variant="outline"
         >
@@ -134,11 +148,14 @@ const Mods = () => {
         <Button
           onClick={() => {
             setFromZip(false);
-            open();
+            addModHandlers.open();
           }}
           variant="outline"
         >
           Add Mod From Folder
+        </Button>
+        <Button variant="outline" onClick={newModHandlers.open}>
+          Add Mod New
         </Button>
         <Button variant="outline" onClick={() => window.electronAPI.launchGame(true)}>
           Launch Game

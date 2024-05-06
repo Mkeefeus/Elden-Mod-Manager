@@ -16,6 +16,7 @@ export type AddModFormValues = {
   path: string;
   delete: boolean;
   hasExe: boolean;
+  exePath: string;
 };
 
 export type NewsComponentProps = {
@@ -26,12 +27,6 @@ export type NewsComponentProps = {
   authorAvatar: string;
   postCategory: string[];
   postDate: string;
-};
-
-export type LogObject = {
-  level: string;
-  message: string;
-  label: string;
 };
 
 export type BrowseType = 'zip' | 'dll' | 'exe' | 'directory';

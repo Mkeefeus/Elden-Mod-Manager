@@ -1,6 +1,6 @@
 import { app, dialog, ipcMain, shell, OpenDialogOptions } from 'electron';
 import { getModEnginePath, loadMods, saveModEnginePath, saveMods } from './db/api';
-import { AddModFormValues, BrowseType, LogObject, Mod } from 'types';
+import { AddModFormValues, BrowseType, Mod } from 'types';
 import { randomUUID } from 'crypto';
 import { cpSync, existsSync, writeFileSync, readdirSync, readFileSync, rmSync } from 'fs';
 import decompress from 'decompress';
@@ -9,8 +9,9 @@ import { CreateModPathFromName, errToString } from '../utils/utilities';
 import { Octokit } from 'octokit';
 import { execFile } from 'child_process';
 import { handleLog, logger } from '../utils/mainLogger';
+import { LogEntry } from 'winston';
 
-const { debug, error, warn } = logger;
+const { debug, error, warning } = logger;
 
 const installDir = process.cwd();
 
@@ -76,9 +77,8 @@ function findFile(fileType: 'exe' | 'dll', source: string) {
     debug(`Multiple ${fileType} files found, prompting user to select one`);
     const filePath = browse(fileType, `Select mod ${fileType}`, source);
     if (!filePath) {
-      const msg = 'Failed to select file from user';
-      error(msg);
-      throw new Error(msg);
+      debug('User cancelled file selection');
+      return;
     }
     debug(`User selected ${fileType} file: ${filePath}`);
     const file = filePath.split('\\').pop();
@@ -99,7 +99,7 @@ function findFile(fileType: 'exe' | 'dll', source: string) {
   }
 }
 
-const handleAddMod = async (formData: AddModFormValues, fromZip: boolean) => {
+const handleAddMod = async (formData: AddModFormValues) => {
   const mods = loadMods();
   const uuid = genUUID();
   const newMod: Mod = {
@@ -108,37 +108,49 @@ const handleAddMod = async (formData: AddModFormValues, fromZip: boolean) => {
     name: formData.modName,
     installDate: Date.now(),
     dllFile: undefined,
-    exe: undefined,
+    exe: formData.exePath !== '' ? formData.exePath : undefined,
   };
   debug(`Adding new mod: ${JSON.stringify(newMod)}`);
 
-  let source = formData.path;
+  const source = formData.path;
   let tempPath;
 
-  if (fromZip) {
-    tempPath = `${installDir}\\temp\\${newMod.uuid}`;
-    try {
-      debug(`Extracting zip to temp directory: ${tempPath} from ${source}`);
-      await decompress(source, tempPath);
-    } catch (err) {
-      const msg = `An error occured while extracting zip: ${errToString(err)}`;
-      error(msg);
-      throw new Error(msg);
-    }
-    const browseTarget: BrowseType = newMod.dllFile ? 'dll' : 'directory';
-    const extractedPath = browse(browseTarget, undefined, tempPath);
-    if (!extractedPath) {
+  // if (fromZip) {
+  //   tempPath = `${installDir}\\temp\\${newMod.uuid}`;
+  //   try {
+  //     debug(`Extracting zip to temp directory: ${tempPath} from ${source}`);
+  //     await decompress(source, tempPath);
+  //   } catch (err) {
+  //     const msg = `An error occured while extracting zip: ${errToString(err)}`;
+  //     error(msg);
+  //     throw new Error(msg);
+  //   }
+  //   const browseTarget: BrowseType = newMod.dllFile ? 'dll' : 'directory';
+  //   const extractedPath = browse(browseTarget, undefined, tempPath);
+  //   if (!extractedPath) {
+  //     warning('Adding mod cancelled');
+  //     return;
+  //   }
+  //   source = extractedPath;
+  // }
+
+  // if (formData.hasExe) {
+  //   debug('Mod has exe');
+  //   const exe = findFile('exe', source);
+  //   if (!exe) {
+  //     warning('Adding mod cancelled');
+  //     return;
+  //   }
+  //   newMod.exe = exe;
+  // } else
+  if (formData.isDll) {
+    debug('Mod is dll');
+    const dll = findFile('dll', source);
+    if (!dll) {
+      warning('Adding mod cancelled');
       return;
     }
-    source = extractedPath;
-  }
-
-  if (formData.hasExe) {
-    debug('Mod has exe');
-    newMod.exe = findFile('exe', source);
-  } else if (formData.isDll) {
-    debug('Mod is dll');
-    newMod.dllFile = findFile('dll', source);
+    newMod.dllFile = dll;
   }
 
   const pathName = CreateModPathFromName(newMod.name);
@@ -147,7 +159,7 @@ const handleAddMod = async (formData: AddModFormValues, fromZip: boolean) => {
 
   if (existsSync(installPath)) {
     const msg = 'Mod path already exists';
-    warn(msg);
+    warning(msg);
     // throw new Error(msg);
     return;
   }
@@ -172,7 +184,7 @@ const handleAddMod = async (formData: AddModFormValues, fromZip: boolean) => {
       debug('Temp directory removed');
     } catch (err) {
       const msg = `An error occured while removing temp directory: ${errToString(err)}`;
-      warn(msg);
+      warning(msg);
       // throw new Error(msg);
     }
   }
@@ -181,11 +193,7 @@ const handleAddMod = async (formData: AddModFormValues, fromZip: boolean) => {
     debug(`Deleting mod source: ${formData.path}`);
     if (existsSync(formData.path)) {
       try {
-        if (fromZip) {
-          rmSync(formData.path);
-        } else {
-          rmSync(formData.path, { recursive: true });
-        }
+        rmSync(formData.path, { recursive: true });
         debug('Mod source deleted');
       } catch (err) {
         const msg = `An error occured while deleting mod source: ${errToString(err)}`;
@@ -302,19 +310,44 @@ const checkForUpdates = async () => {
 
 app
   .whenReady()
-  .then(async () => {
+  .then(() => {
+    debug('App starting');
     debug('Registering IPC events');
     ipcMain.on('open-external-link', (_, href: string) => {
       shell.openExternal(href).catch(console.error);
     });
     ipcMain.handle('load-mods', loadMods);
     ipcMain.handle('set-mods', (_, mods: Mod[]) => saveMods(mods));
-    ipcMain.handle('browse', (_, type: BrowseType, title?: string, startingDir?: string) =>
-      browse(type, title, startingDir)
-    );
-    ipcMain.handle('add-mod', (_, formData: AddModFormValues, fromZip: boolean) => {
-      return handleAddMod(formData, fromZip);
+    ipcMain.handle('browse', (_, type: BrowseType, title?: string, startingDir?: string) => {
+      startingDir = startingDir || `${installDir}`;
+      if (type === 'exe' || type === 'dll') {
+        return findFile(type, startingDir);
+      }
+      return browse(type, title, startingDir);
     });
+
+    ipcMain.handle('extract-zip', async (_, zipPath: string) => {
+      debug(`Extracting zip: ${zipPath}`);
+      let tempPath = `${installDir}\\temp\\${randomUUID()}`;
+      if (existsSync(tempPath)) {
+        tempPath = `${installDir}\\temp\\${randomUUID()}`;
+      }
+      try {
+        debug(`Extracting zip to temp directory: ${tempPath} from ${zipPath}`);
+        await decompress(zipPath, tempPath);
+      } catch (err) {
+        const msg = `An error occured while extracting zip: ${errToString(err)}`;
+        error(msg);
+        throw new Error(msg);
+      }
+      debug('Zip extracted successfully');
+      return tempPath;
+    });
+
+    ipcMain.handle('add-mod', (_, formData: AddModFormValues) => {
+      return handleAddMod(formData);
+    });
+
     ipcMain.handle('delete-mod', (_, mod: Mod) => {
       debug(`Deleting mod: ${mod.name}`);
       const mods = loadMods();
@@ -339,6 +372,7 @@ app
       saveMods(newMods);
       return true;
     });
+
     ipcMain.on('launch-game', (_, modded: boolean) => {
       if (modded) {
         debug('Starting modded launch sequence');
@@ -364,6 +398,7 @@ app
           throw new Error(msg);
         }
       } else {
+        // throw new Error('Launching game without mods is not yet supported');
         debug('Launching game without mods');
         try {
           shell.openExternal('steam://rungameid/1245620').catch(console.error);
@@ -386,7 +421,7 @@ app
       }
     });
 
-    ipcMain.on('log', (_, log: LogObject) => {
+    ipcMain.on('log', (_, log: LogEntry) => {
       handleLog(log);
     });
 

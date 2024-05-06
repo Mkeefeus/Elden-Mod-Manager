@@ -1,21 +1,17 @@
 import { TextInput, Checkbox, Button, Group, Stack, Modal } from '@mantine/core';
 import { isNotEmpty, useForm } from '@mantine/form';
+import { sleep } from '../utils/utilities';
 import { useState } from 'react';
 import { AddModFormValues } from 'types';
 
-type ModalDisclosure = {
-  opened: boolean;
-  close: () => void;
-};
-
 interface AddModModalProps {
-  fromZip: boolean;
   loadMods: () => void;
   namesInUse: string[];
-  disclosure: ModalDisclosure;
+  opened: boolean;
+  close: () => void;
 }
 
-const AddModModal = ({ fromZip, loadMods, namesInUse, disclosure }: AddModModalProps) => {
+const AddModModal = ({ loadMods, namesInUse, opened, close }: AddModModalProps) => {
   const [showLoader, setShowLoader] = useState(false);
   const nameNotInUse = (value: string) => {
     if (namesInUse.includes(value.toLowerCase())) {
@@ -30,6 +26,7 @@ const AddModModal = ({ fromZip, loadMods, namesInUse, disclosure }: AddModModalP
       path: '',
       delete: false,
       hasExe: false,
+      exePath: '',
     },
 
     validate: {
@@ -39,36 +36,44 @@ const AddModModal = ({ fromZip, loadMods, namesInUse, disclosure }: AddModModalP
     },
   });
 
-  const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+  const cleanupModal = () => {
+    setShowLoader(false);
+    form.reset();
+    close();
+  };
 
   const handleSubmit = async (values: AddModFormValues) => {
     values.modName = values.modName.trim();
     form.isValid;
     setShowLoader(true);
-    const success = await window.electronAPI.addMod(values, fromZip);
+    const success = await window.electronAPI.addMod(values);
+    if (!success) {
+      cleanupModal();
+      return;
+    }
     await sleep(1000);
-    if (!success) return;
-    setShowLoader(false);
-    form.reset();
     loadMods();
-    disclosure.close();
+    cleanupModal();
   };
 
-  const handleGetFilePath = async (fromZip: boolean) => {
-    const path = await window.electronAPI.browse(fromZip ? 'zip' : 'directory', 'Select mod folder');
+  const handleGetFilePath = async (field: 'path' | 'exePath', title: string, startingDir?: string) => {
+    const browseExe = field === 'exePath';
+    let path = await window.electronAPI.browse(browseExe ? 'exe' : 'directory', title, startingDir);
     if (!path) {
       return;
     }
-    form.setFieldValue('path', path);
+    if (browseExe) {
+      const exe = path.split('\\').pop();
+      if (!exe) {
+        return;
+      }
+      path = exe;
+    }
+    form.setFieldValue(field, path);
   };
 
   return (
-    <Modal
-      opened={disclosure.opened}
-      onClose={disclosure.close}
-      title={`Add Mod From ${fromZip ? 'Zip' : 'Folder'}`}
-      centered
-    >
+    <Modal opened={opened} onClose={cleanupModal} title={`Add Mod`} centered>
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <Stack gap="md">
           <TextInput withAsterisk label="Mod name" {...form.getInputProps('modName')} />
@@ -76,21 +81,46 @@ const AddModModal = ({ fromZip, loadMods, namesInUse, disclosure }: AddModModalP
             <TextInput withAsterisk label="Path" {...form.getInputProps('path')} style={{ flex: '4' }} />
             <Button
               onClick={() => {
-                handleGetFilePath(fromZip).catch(console.error);
+                handleGetFilePath('path', 'Select mod folder').catch(console.error);
               }}
               style={{ flex: '1' }}
             >
               Browse
             </Button>
           </Group>
-          <Checkbox mt="md" label="Is DLL?" {...form.getInputProps('isDll', { type: 'checkbox' })} />
-          <Checkbox mt="md" label="Delete after import?" {...form.getInputProps('delete', { type: 'checkbox' })} />
-          <Checkbox mt="md" label="Has exe?" {...form.getInputProps('hasExe', { type: 'checkbox' })} />
-          <Group justify="flex-end" mt="md">
-            <Button loading={showLoader} type="submit">
-              Submit
-            </Button>
-          </Group>
+          {form.values.path && (
+            <>
+              <Checkbox mt="md" label="Is DLL?" {...form.getInputProps('isDll', { type: 'checkbox' })} />
+              <Checkbox mt="md" label="Delete after import?" {...form.getInputProps('delete', { type: 'checkbox' })} />
+              <Checkbox mt="md" label="Has exe?" {...form.getInputProps('hasExe', { type: 'checkbox' })} />
+              {form.values.hasExe && (
+                <Group align="end">
+                  <TextInput
+                    disabled={!form.values.hasExe}
+                    withAsterisk
+                    label="Executable file"
+                    {...form.getInputProps('exePath')}
+                    style={{ flex: '4' }}
+                  />
+                  <Button
+                    disabled={!form.values.hasExe}
+                    onClick={() => {
+                      handleGetFilePath('exePath', 'Select mod executable', form.values.path).catch(console.error);
+                      console.log('click lmao');
+                    }}
+                    style={{ flex: '1' }}
+                  >
+                    Browse
+                  </Button>
+                </Group>
+              )}
+              <Group justify="flex-end" mt="md">
+                <Button loading={showLoader} type="submit">
+                  Submit
+                </Button>
+              </Group>
+            </>
+          )}
         </Stack>
       </form>
     </Modal>

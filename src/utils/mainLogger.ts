@@ -1,7 +1,6 @@
 import { createLogger, format, transports, LogEntry } from 'winston';
 import Transport, { TransportStreamOptions } from 'winston-transport';
 import { getMainWindow } from '../main';
-import { LogObject } from 'types';
 
 const { combine, timestamp, printf, align } = format;
 
@@ -26,7 +25,6 @@ export const logger = createLogger({
       format: 'YYYY-MM-DD hh:mm:ss.SSS A',
     }),
     align(),
-    // printf((info) => `[${info.timestamp}] ${info.label}: ${info.message}`)
     printf((info) => `[${info.timestamp}] ${info.level}: ${info.message}`)
   ),
   transports: [
@@ -39,12 +37,12 @@ export const logger = createLogger({
   level: 'debug',
   levels: {
     error: 0,
-    warn: 1,
+    warning: 1,
     info: 2,
     debug: 3,
   },
 });
 
-export const handleLog = (log: LogObject) => {
+export const handleLog = (log: LogEntry) => {
   logger.log(log);
 };

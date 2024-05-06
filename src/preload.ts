@@ -1,19 +1,21 @@
 // See the Electron documentation for details on how to use preload scripts:
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 import { contextBridge, ipcRenderer } from 'electron';
-import { Mod, AddModFormValues, BrowseType, LogObject } from 'types';
+import { Mod, AddModFormValues, BrowseType } from 'types';
+import { LogEntry } from 'winston';
 
 interface IElectronAPI {
   openExternalLink: (href: string) => void;
   loadMods: () => Promise<Mod[]>;
   saveMods: (mods: Mod[]) => Promise<boolean>;
   browse: (type: BrowseType, title?: string, startingDir?: string) => Promise<string | undefined>;
-  addMod: (formData: AddModFormValues, fromZip: boolean) => Promise<boolean>;
+  addMod: (formData: AddModFormValues) => Promise<boolean>;
   deleteMod: (mod: Mod) => Promise<boolean>;
   launchGame: (modded: boolean) => void;
   launchModExe: (mod: Mod) => void;
-  notify: (callback: (log: LogObject) => void) => void;
-  log: (log: LogObject) => void;
+  notify: (callback: (log: LogEntry) => void) => void;
+  log: (log: LogEntry) => void;
+  extractZip: (zipPath: string) => Promise<string>;
 }
 
 declare global {
@@ -35,6 +37,7 @@ const electronAPI: IElectronAPI = {
   launchModExe: (...args) => ipcRenderer.send('launch-mod-exe', ...args),
   notify: (callback) => ipcRenderer.on('notify', (_, error) => callback(error)),
   log: (...args) => ipcRenderer.send('log', ...args),
+  extractZip: (...args) => ipcRenderer.invoke('extract-zip', ...args),
 };
 
 contextBridge.exposeInMainWorld('electronAPI', electronAPI);
