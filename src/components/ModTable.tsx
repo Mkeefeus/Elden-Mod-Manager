@@ -1,7 +1,7 @@
-import ModTableHeader from '@components/ModTableHeader';
+import ModTableHeader from './ModTableHeader';
 import { Mod } from 'types';
 import { Table, Checkbox, Center, ScrollArea } from '@mantine/core';
-import ModTableMenu from '@components/ModTableMenu';
+import ModTableMenu from './ModTableMenu';
 
 const columns = [
   { label: 'Enabled', sortKey: 'enabled' },

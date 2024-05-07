@@ -12,14 +12,6 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "jsx": "react-jsx",
-    "strict": true,
-    "paths": {
-      "@src/*": ["src/*"],
-      "@components/*": ["src/components/*"],
-      "@pages/*": ["src/pages/*"],
-      "@backend/*": ["src/backend/*"],
-      "@providers/*": ["src/providers/*"],
-      "@utils/*": ["src/utils/*"]
-    }
+    "strict": true
   }
 }

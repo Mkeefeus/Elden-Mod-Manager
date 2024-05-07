@@ -3,7 +3,7 @@ import { isNotEmpty, useForm } from '@mantine/form';
 import { useState } from 'react';
 import AddModSettings from './AddModSettings';
 import { AddModFormValues } from 'types';
-import { sleep } from '@src/utils/utilities';
+import { sleep } from '../utils/utilities';
 
 interface AddModProps {
   close: () => void;

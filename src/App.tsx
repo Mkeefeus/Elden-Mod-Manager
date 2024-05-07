@@ -2,7 +2,7 @@ import { AppShell, Burger, Button, Stack, Group, Title, Avatar, useMantineTheme 
 import { useDisclosure } from '@mantine/hooks';
 import { Outlet, Link } from 'react-router-dom';
 import { pages } from './pages/pages';
-import NewsProvider from '@providers/NewsProvider';
+import NewsProvider from './providers/NewsProvider';
 import Footer from './components/Footer';
 
 const App = () => {

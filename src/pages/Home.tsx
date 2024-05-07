@@ -1,5 +1,5 @@
 import { Button, Group, Stack, Title, Divider } from '@mantine/core';
-import NewsComponent from '@components/NewsComponent';
+import NewsComponent from '../components/NewsComponent';
 import { useNavigate } from 'react-router-dom';
 
 const quickActions: string[] = ['Play', 'Play Vanilla', 'Add a Mod (Zip)', 'Add a Mod (Folder)', 'Test Error'];

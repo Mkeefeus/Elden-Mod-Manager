@@ -27,7 +27,6 @@ const AddModSettings = ({ form, showLoader }: AddModSettingsProps) => {
           <Button
             disabled={!form.values.hasExe}
             onClick={async () => {
-              // handleGetFilePath('exePath', 'Select mod executable', form.values.path).catch(console.error);
               const exe = await window.electronAPI.browse('exe', 'Select mod executable', form.values.path);
               if (!exe) return;
               form.setFieldValue('exePath', exe);
