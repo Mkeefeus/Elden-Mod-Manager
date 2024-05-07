@@ -132,6 +132,7 @@ const Mods = () => {
             close={newModHandlers.close}
             fromZip={fromZip}
             namesInUse={mods.map((mod) => mod.name.toLowerCase())}
+            loadMods={loadMods}
           />
         </Modal>
         <ZipFileModal opened={addZipOpened} close={addZipHandlers.close} />

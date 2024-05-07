@@ -3,16 +3,16 @@ import { isNotEmpty, useForm } from '@mantine/form';
 import { useState } from 'react';
 import AddModSettings from './AddModSettings';
 import { AddModFormValues } from 'types';
-import { loadMods } from '@src/backend/db/api';
 import { sleep } from '@src/utils/utilities';
 
 interface AddModProps {
   close: () => void;
   fromZip?: boolean;
   namesInUse: string[];
+  loadMods: () => void;
 }
 
-const AddMod = ({ close, fromZip, namesInUse }: AddModProps) => {
+const AddMod = ({ close, fromZip, namesInUse, loadMods }: AddModProps) => {
   const [showSubmitLoader, setShowSubmitLoader] = useState(false);
   const [showExtractLoader, setShowExtractLoader] = useState(false);
 
@@ -91,7 +91,7 @@ const AddMod = ({ close, fromZip, namesInUse }: AddModProps) => {
         >
           Browse
         </Button>
-        {/* {form.values.path !== '' && <AddModSettings form={form} showLoader={showSubmitLoader} />} */}
+        {form.values.path !== '' && <AddModSettings form={form} showLoader={showSubmitLoader} />}
       </Stack>
     </form>
   );
