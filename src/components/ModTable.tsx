@@ -27,14 +27,6 @@ const ModTable = ({ mods, sort, saveMods, loadMods, changeSort }: ModTableProps)
     saveMods(newMods).catch(console.error);
   };
 
-  const handleDelete = async (mod: Mod) => {
-    const deleted = await window.electronAPI.deleteMod(mod);
-    if (!deleted) {
-      console.error('Failed to delete mod');
-    }
-    loadMods();
-  };
-
   const handleOpenExe = (mod: Mod) => {
     window.electronAPI.launchModExe(mod);
   };
@@ -65,6 +57,16 @@ const ModTable = ({ mods, sort, saveMods, loadMods, changeSort }: ModTableProps)
     newMods[swapIndex].loadOrder = temp;
     saveMods(newMods).catch(console.error);
   };
+
+  const handleDelete = async (mod: Mod) => {
+    const deleted = await window.electronAPI.deleteMod(mod);
+    if (!deleted) {
+      console.error('Failed to delete mod');
+    }
+    loadMods();
+    
+  };
+
   const rows = mods.map((mod, index) => {
     return (
       <Table.Tr key={mod.uuid} bg={mod.enabled ? 'var(--mantine-color-blue-light)' : undefined}>

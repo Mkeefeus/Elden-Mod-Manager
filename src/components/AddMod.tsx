@@ -78,20 +78,21 @@ const AddMod = ({ close, fromZip, namesInUse, loadMods }: AddModProps) => {
           loading={showExtractLoader}
           onClick={async () => {
             // step 1, exctract zip to temp folder if required
-            let startingDir: string | undefined;
+            let tempPath: string | undefined;
             if (fromZip) {
-              startingDir = await extractZip();
+              tempPath = await extractZip();
+              if (!tempPath) return;
+              return form.setFieldValue('path', tempPath);
             }
             // step 2, select folder to copy
-            const pathToCopy = await window.electronAPI.browse('directory', 'Select mod folder', startingDir);
+            const pathToCopy = await window.electronAPI.browse('directory', 'Select mod folder');
             if (!pathToCopy) return;
             form.setFieldValue('path', pathToCopy);
-            // setPath(pathToCopy);
           }}
         >
           Browse
         </Button>
-        {form.values.path !== '' && <AddModSettings form={form} showLoader={showSubmitLoader} />}
+        {form.values.path !== '' && <AddModSettings form={form} showLoader={showSubmitLoader} fromZip={fromZip}/>}
       </Stack>
     </form>
   );

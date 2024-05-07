@@ -6,12 +6,36 @@ import { AddModFormValues } from 'types';
 interface AddModSettingsProps {
   form: UseFormReturnType<AddModFormValues>;
   showLoader: boolean;
+  fromZip?: boolean;
 }
 
-const AddModSettings = ({ form, showLoader }: AddModSettingsProps) => {
+const BROWSE_TEXT_STYLE = { flex: '4' };
+const BROWSE_BUTTON_STYLE = { flex: '1' };
+
+const AddModSettings = ({ form, showLoader, fromZip }: AddModSettingsProps) => {
   return (
     <>
-      <TextInput withAsterisk label={'Path'} {...form.getInputProps('path')} disabled />
+      <Group align='end'>
+        <TextInput
+          withAsterisk
+          label={'Path'}
+          {...form.getInputProps('path')}
+          disabled={!fromZip}
+          style={BROWSE_TEXT_STYLE}
+        />
+        {fromZip && (
+          <Button
+            style={BROWSE_BUTTON_STYLE}
+            onClick={async () => {
+              const path = await window.electronAPI.browse('directory', 'Select mod directory', form.values.path);
+              if (!path) return;
+              form.setFieldValue('path', path);
+            }}
+          >
+            Browse
+          </Button>
+        )}
+      </Group>
       <Checkbox mt="md" label="Is DLL?" {...form.getInputProps('isDll', { type: 'checkbox' })} />
       <Checkbox mt="md" label="Delete after import?" {...form.getInputProps('delete', { type: 'checkbox' })} />
       <Checkbox mt="md" label="Has exe?" {...form.getInputProps('hasExe', { type: 'checkbox' })} />
@@ -22,7 +46,7 @@ const AddModSettings = ({ form, showLoader }: AddModSettingsProps) => {
             withAsterisk
             label="Executable file"
             {...form.getInputProps('exePath')}
-            style={{ flex: '4' }}
+            style={BROWSE_TEXT_STYLE}
           />
           <Button
             disabled={!form.values.hasExe}
@@ -31,7 +55,7 @@ const AddModSettings = ({ form, showLoader }: AddModSettingsProps) => {
               if (!exe) return;
               form.setFieldValue('exePath', exe);
             }}
-            style={{ flex: '1' }}
+            style={BROWSE_BUTTON_STYLE}
           >
             Browse
           </Button>

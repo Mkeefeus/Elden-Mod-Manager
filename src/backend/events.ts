@@ -3,6 +3,7 @@ import { getModEnginePath, loadMods, saveModEnginePath, saveMods } from './db/ap
 import { AddModFormValues, BrowseType, Mod } from 'types';
 import { randomUUID } from 'crypto';
 import { cpSync, existsSync, writeFileSync, readdirSync, readFileSync, rmSync } from 'fs';
+import { extname } from 'path';
 import decompress from 'decompress';
 import GenerateTomlString from './toml';
 import { CreateModPathFromName, errToString } from '../utils/utilities';
@@ -99,6 +100,43 @@ function findFile(fileType: 'exe' | 'dll', source: string) {
   }
 }
 
+const MOD_SUBFOLDERS = ['chr', 'obj', 'parts', 'event', 'map', 'menu', 'msg', 'mtd', 'param', 'remo', 'script', 'sfx']
+
+const validatePath = (path: string, isDll: boolean) => {
+  debug(`Validating path: ${path}`);
+  debug(`Reading directory: ${path}`)
+  let files
+  try {
+    files = readdirSync(path);
+  } catch (err) {
+    const msg = `An error occured while reading directory: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg);
+  }
+  let hasDll = false;
+  let hasValidSubfolder = false;
+  if (isDll) {
+    debug('Mod is dll');
+    //make sure the folder has a .dll file
+    hasDll = files.some(file => extname(file) === '.dll');
+    if (!hasDll) {
+      const msg = 'No .dll file found in directory, sending warning';
+      debug(msg);
+      return false;
+    }
+  } else {
+    debug('Mod is not dll');
+    // make sure at least one of the MOD_SUBFOLDERS is present
+    hasValidSubfolder = files.some(file => MOD_SUBFOLDERS.includes(file));
+    if (!hasValidSubfolder) {
+      const msg = 'No valid subfolder found in directory, sending warning';
+      debug(msg);
+      return false;
+    }
+  }
+  return hasDll || hasValidSubfolder;
+}
+
 const handleAddMod = async (formData: AddModFormValues) => {
   const mods = loadMods();
   const uuid = genUUID();
@@ -115,34 +153,6 @@ const handleAddMod = async (formData: AddModFormValues) => {
   const source = formData.path;
   let tempPath;
 
-  // if (fromZip) {
-  //   tempPath = `${installDir}\\temp\\${newMod.uuid}`;
-  //   try {
-  //     debug(`Extracting zip to temp directory: ${tempPath} from ${source}`);
-  //     await decompress(source, tempPath);
-  //   } catch (err) {
-  //     const msg = `An error occured while extracting zip: ${errToString(err)}`;
-  //     error(msg);
-  //     throw new Error(msg);
-  //   }
-  //   const browseTarget: BrowseType = newMod.dllFile ? 'dll' : 'directory';
-  //   const extractedPath = browse(browseTarget, undefined, tempPath);
-  //   if (!extractedPath) {
-  //     warning('Adding mod cancelled');
-  //     return;
-  //   }
-  //   source = extractedPath;
-  // }
-
-  // if (formData.hasExe) {
-  //   debug('Mod has exe');
-  //   const exe = findFile('exe', source);
-  //   if (!exe) {
-  //     warning('Adding mod cancelled');
-  //     return;
-  //   }
-  //   newMod.exe = exe;
-  // } else
   if (formData.isDll) {
     debug('Mod is dll');
     const dll = findFile('dll', source);
@@ -153,6 +163,11 @@ const handleAddMod = async (formData: AddModFormValues) => {
     newMod.dllFile = dll;
   }
 
+  if (!validatePath(source, formData.isDll)) {
+    debug('Invalid path, cancelling mod addition');
+    return;
+  };
+
   const pathName = CreateModPathFromName(newMod.name);
   const installPath = `${installDir}\\mods\\${pathName}\\`;
   debug(`Installing mod to: ${installPath}`);
@@ -160,7 +175,6 @@ const handleAddMod = async (formData: AddModFormValues) => {
   if (existsSync(installPath)) {
     const msg = 'Mod path already exists';
     warning(msg);
-    // throw new Error(msg);
     return;
   }
 
@@ -185,7 +199,6 @@ const handleAddMod = async (formData: AddModFormValues) => {
     } catch (err) {
       const msg = `An error occured while removing temp directory: ${errToString(err)}`;
       warning(msg);
-      // throw new Error(msg);
     }
   }
 
@@ -308,6 +321,38 @@ const checkForUpdates = async () => {
   saveModEnginePath(path);
 };
 
+const handleDeleteMod = (mod: Mod) => {
+  debug(`Deleting mod: ${mod.name}`);
+  const mods = loadMods();
+  if (!mods) {
+    return false;
+  }
+  const newMods = mods.filter((m) => m.uuid !== mod.uuid);
+  const pathName = CreateModPathFromName(mod.name);
+  debug(`Removing mod from: ${pathName}`);
+  try {
+    const installPath = `./mods/${pathName}/`;
+    if (!existsSync(installPath)) {
+      throw new Error('Unable to remove mod: Mod not found');
+    }
+    rmSync(installPath, { recursive: true });
+  } catch (err) {
+    const msg = `An error occured while deleting mod: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg);
+  }
+  // loop through remaining mods and check for gaps in load order
+  const enabledMods = newMods.filter((m) => m.enabled);
+  const disabledMods = newMods.filter((m) => !m.enabled);
+  const sortedMods = enabledMods.sort((a, b) => (a.loadOrder || enabledMods.length) - (b.loadOrder || enabledMods.length));
+  sortedMods.forEach((mod, index) => {
+    mod.loadOrder = index + 1;
+  });
+  debug('Mod deleted successfully');
+  saveMods({...sortedMods, ...disabledMods});
+  return true;
+}
+
 app
   .whenReady()
   .then(() => {
@@ -349,28 +394,7 @@ app
     });
 
     ipcMain.handle('delete-mod', (_, mod: Mod) => {
-      debug(`Deleting mod: ${mod.name}`);
-      const mods = loadMods();
-      if (!mods) {
-        return false;
-      }
-      const newMods = mods.filter((m) => m.uuid !== mod.uuid);
-      const pathName = CreateModPathFromName(mod.name);
-      debug(`Removing mod from: ${pathName}`);
-      try {
-        const installPath = `./mods/${pathName}/`;
-        if (!existsSync(installPath)) {
-          throw new Error('Unable to remove mod: Mod not found');
-        }
-        rmSync(installPath, { recursive: true });
-      } catch (err) {
-        const msg = `An error occured while deleting mod: ${errToString(err)}`;
-        error(msg);
-        throw new Error(msg);
-      }
-      debug('Mod deleted successfully');
-      saveMods(newMods);
-      return true;
+      return handleDeleteMod(mod);
     });
 
     ipcMain.on('launch-game', (_, modded: boolean) => {

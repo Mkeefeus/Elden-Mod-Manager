@@ -2,7 +2,7 @@ import { Button, Group, Stack, Title, Divider } from '@mantine/core';
 import NewsComponent from '../components/NewsComponent';
 import { useNavigate } from 'react-router-dom';
 
-const quickActions: string[] = ['Play', 'Play Vanilla', 'Add a Mod (Zip)', 'Add a Mod (Folder)', 'Test Error'];
+const quickActions: string[] = ['Play', 'Play Vanilla', 'Add a Mod (Zip)', 'Add a Mod (Folder)'];
 
 const Home = () => {
   const navigate = useNavigate();
@@ -22,12 +22,6 @@ const Home = () => {
         case 3:
           navigate('/mods', { state: { fromZip: false, opened: true } });
           break;
-        case 4:
-          window.electronAPI.log({
-            level: 'error',
-            message: 'An error occured when the test error button was pressed',
-            label: 'Test error',
-          });
       }
     } catch (error) {
       window.electronAPI.log({
