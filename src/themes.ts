@@ -53,6 +53,6 @@ export const theme: MantineThemeOverride = createTheme({
         order: 1,
         style: { color: 'orange.4' },
       },
-    }
+    },
   },
 });

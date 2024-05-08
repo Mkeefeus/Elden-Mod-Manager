@@ -31,7 +31,7 @@ const clickableMessage = (message: string) => {
   return (
     <div
       onClick={() => {
-        navigator.clipboard.writeText( message);
+        navigator.clipboard.writeText(message);
         notifications.show({ message: 'Copied to clipboard', color: 'blue', autoClose: 1000 });
       }}
       style={{ cursor: 'pointer' }}

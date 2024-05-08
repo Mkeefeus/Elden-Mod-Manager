@@ -10,7 +10,6 @@ if (require('electron-squirrel-startup')) {
 
 let mainWindow: BrowserWindow | null;
 
-
 export const getMainWindow = () => mainWindow;
 const menu = Menu.buildFromTemplate(template);
 

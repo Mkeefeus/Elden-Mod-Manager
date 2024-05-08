@@ -64,7 +64,6 @@ const ModTable = ({ mods, sort, saveMods, loadMods, changeSort }: ModTableProps)
       console.error('Failed to delete mod');
     }
     loadMods();
-    
   };
 
   const rows = mods.map((mod, index) => {

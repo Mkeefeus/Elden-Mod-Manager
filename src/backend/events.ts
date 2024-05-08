@@ -127,7 +127,8 @@ const validateMod = (path: string, isDll: boolean) => {
     debug('Mod is not dll');
     hasValidSubfolder = files.some((file) => MOD_SUBFOLDERS.includes(file));
     if (!hasValidSubfolder) {
-      const msg = 'No valid subfolder was found in the directory, please select the folder that contains the mod files. It should have one of the following subfolders: chr, obj, parts, event, map, menu, msg, mtd, param, remo, script, or sfx.';
+      const msg =
+        'No valid subfolder was found in the directory, please select the folder that contains the mod files. It should have one of the following subfolders: chr, obj, parts, event, map, menu, msg, mtd, param, remo, script, or sfx.';
       warning(msg);
       return false;
     }
