@@ -16,7 +16,7 @@ const Footer = () => {
     },
   ];
   return (
-    <Group align="center" justify="space-between" px={'md'} style={{ height: '100%' }}>
+    <Group justify="space-between" px={'md'} style={{ height: '100%' }}>
       <Group gap={'lg'}>
         {links.map((link) => (
           <Button

@@ -11,7 +11,7 @@ type ModTableHeaderProps = {
 const ModTableHeader = ({ sortedBy, label, sortIcon, handleSort }: ModTableHeaderProps) => {
   const Icon = sortedBy ? (sortIcon === 'desc' ? IconChevronUp : IconChevronDown) : IconSelector;
   return (
-    <Table.Th style={{ textAlign: 'center' }}>
+    <Table.Th>
       <Button variant="transparent" color="gray" onClick={handleSort}>
         {label}
         <Space w="xs" />

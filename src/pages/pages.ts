@@ -1,6 +1,5 @@
 import Home from './Home';
 import Mods from './Mods';
-import Settings from './Settings';
 import About from './About';
 
 export type Page = {
@@ -20,12 +19,6 @@ export const pages: Page[] = [
     displayName: 'Mods',
     route: '/mods',
     element: Mods,
-  },
-  {
-    displayName: 'Settings',
-    route: '/settings',
-    element: Settings,
-    hidden: true,
   },
   {
     displayName: 'About',

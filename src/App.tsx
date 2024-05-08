@@ -1,14 +1,10 @@
-import { AppShell, Burger, Button, Stack, Group, Title, Avatar, useMantineTheme } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
+import { AppShell, Button, Stack, Group, Title } from '@mantine/core';
 import { Outlet, Link } from 'react-router-dom';
 import { pages } from './pages/pages';
 import NewsProvider from './providers/NewsProvider';
 import Footer from './components/Footer';
 
 const App = () => {
-  const [opened, { toggle }] = useDisclosure();
-  const theme = useMantineTheme();
-
   return (
     <AppShell
       header={{ height: { base: 60, md: 70, lg: 80 } }}
@@ -16,17 +12,11 @@ const App = () => {
       navbar={{
         width: 250,
         breakpoint: 'sm',
-        collapsed: { mobile: !opened },
       }}
-      padding="md"
-      c={theme.colors.orange[4]}
-      color={theme.colors.dark[8]}
     >
       <AppShell.Header>
         <Group h="100%" px="md">
-          <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
-          <Avatar src="/avatar2.png" size={60} radius="sm" mr={0} />
-          <Title order={1}>Elden Mod Manager</Title>
+          <Title>Elden Mod Manager</Title>
         </Group>
       </AppShell.Header>
       <AppShell.Navbar p="md">
@@ -34,7 +24,7 @@ const App = () => {
           {pages.map(
             (page) =>
               !page.hidden && (
-                <Link to={page.route} key={page.route} style={{ color: 'inherit', textDecoration: 'none' }}>
+                <Link to={page.route} key={page.route} style={{ textDecoration: 'none' }}>
                   <Button fullWidth variant="outline">
                     {page.displayName}
                   </Button>

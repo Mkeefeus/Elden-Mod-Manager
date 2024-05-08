@@ -68,7 +68,7 @@ const ModTable = ({ mods, sort, saveMods, loadMods, changeSort }: ModTableProps)
 
   const rows = mods.map((mod, index) => {
     return (
-      <Table.Tr key={mod.uuid} bg={mod.enabled ? 'var(--mantine-color-blue-light)' : undefined}>
+      <Table.Tr key={mod.uuid} bg={mod.enabled ? 'dark.8' : undefined}>
         <Table.Td>
           <Center>
             <Checkbox
@@ -89,7 +89,7 @@ const ModTable = ({ mods, sort, saveMods, loadMods, changeSort }: ModTableProps)
             day: '2-digit',
           })}
         </Table.Td>
-        <Table.Td style={{ textAlign: 'center' }}>{mod.dllFile ? '✓' : undefined}</Table.Td>
+        <Table.Td>{mod.dllFile ? '✓' : undefined}</Table.Td>
         <ModTableMenu
           canMove={{
             up: (mod.enabled && mod.loadOrder && mod.loadOrder > 1) || false,
@@ -105,7 +105,7 @@ const ModTable = ({ mods, sort, saveMods, loadMods, changeSort }: ModTableProps)
   });
   return (
     <ScrollArea>
-      <Table style={{ tableLayout: 'fixed', width: '100%', textAlign: 'center' }}>
+      <Table withRowBorders layout={'fixed'}>
         <Table.Thead>
           <Table.Tr>
             {columns.map(({ label, sortKey }) => (
@@ -117,7 +117,7 @@ const ModTable = ({ mods, sort, saveMods, loadMods, changeSort }: ModTableProps)
                 handleSort={() => changeSort(sortKey)}
               />
             ))}
-            <Table.Th style={{ textAlign: 'center' }}>More</Table.Th>
+            <Table.Th c="gray">More</Table.Th>
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>{rows}</Table.Tbody>
