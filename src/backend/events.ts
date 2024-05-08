@@ -100,12 +100,12 @@ function findFile(fileType: 'exe' | 'dll', source: string) {
   }
 }
 
-const MOD_SUBFOLDERS = ['chr', 'obj', 'parts', 'event', 'map', 'menu', 'msg', 'mtd', 'param', 'remo', 'script', 'sfx']
+const MOD_SUBFOLDERS = ['chr', 'obj', 'parts', 'event', 'map', 'menu', 'msg', 'mtd', 'param', 'remo', 'script', 'sfx'];
 
-const validatePath = (path: string, isDll: boolean) => {
+const validateMod = (path: string, isDll: boolean) => {
   debug(`Validating path: ${path}`);
-  debug(`Reading directory: ${path}`)
-  let files
+  debug(`Reading directory: ${path}`);
+  let files;
   try {
     files = readdirSync(path);
   } catch (err) {
@@ -117,25 +117,23 @@ const validatePath = (path: string, isDll: boolean) => {
   let hasValidSubfolder = false;
   if (isDll) {
     debug('Mod is dll');
-    //make sure the folder has a .dll file
-    hasDll = files.some(file => extname(file) === '.dll');
+    hasDll = files.some((file) => extname(file) === '.dll');
     if (!hasDll) {
-      const msg = 'No .dll file found in directory, sending warning';
-      debug(msg);
+      const msg = 'No DLL file was found in the directory, please select the folder that contains the mod DLL file.';
+      warning(msg);
       return false;
     }
   } else {
     debug('Mod is not dll');
-    // make sure at least one of the MOD_SUBFOLDERS is present
-    hasValidSubfolder = files.some(file => MOD_SUBFOLDERS.includes(file));
+    hasValidSubfolder = files.some((file) => MOD_SUBFOLDERS.includes(file));
     if (!hasValidSubfolder) {
-      const msg = 'No valid subfolder found in directory, sending warning';
-      debug(msg);
+      const msg = 'No valid subfolder was found in the directory, please select the folder that contains the mod files. It should have one of the following subfolders: chr, obj, parts, event, map, menu, msg, mtd, param, remo, script, or sfx.';
+      warning(msg);
       return false;
     }
   }
   return hasDll || hasValidSubfolder;
-}
+};
 
 const handleAddMod = async (formData: AddModFormValues) => {
   const mods = loadMods();
@@ -163,10 +161,10 @@ const handleAddMod = async (formData: AddModFormValues) => {
     newMod.dllFile = dll;
   }
 
-  if (!validatePath(source, formData.isDll)) {
+  if (!validateMod(source, formData.isDll)) {
     debug('Invalid path, cancelling mod addition');
     return;
-  };
+  }
 
   const pathName = CreateModPathFromName(newMod.name);
   const installPath = `${installDir}\\mods\\${pathName}\\`;
@@ -330,28 +328,95 @@ const handleDeleteMod = (mod: Mod) => {
   const newMods = mods.filter((m) => m.uuid !== mod.uuid);
   const pathName = CreateModPathFromName(mod.name);
   debug(`Removing mod from: ${pathName}`);
+  const installPath = `./mods/${pathName}/`;
+  let foundPath = true;
   try {
-    const installPath = `./mods/${pathName}/`;
     if (!existsSync(installPath)) {
-      throw new Error('Unable to remove mod: Mod not found');
+      foundPath = false;
+      warning('Mod path not found, removing from DB only', { hideDisplay: true });
     }
-    rmSync(installPath, { recursive: true });
   } catch (err) {
-    const msg = `An error occured while deleting mod: ${errToString(err)}`;
+    const msg = `An error occured while checking mod path: ${errToString(err)}`;
     error(msg);
     throw new Error(msg);
+  }
+  if (foundPath) {
+    try {
+      rmSync(installPath, { recursive: true });
+    } catch (err) {
+      const msg = `An error occured while deleting mod: ${errToString(err)}`;
+      error(msg);
+      throw new Error(msg);
+    }
   }
   // loop through remaining mods and check for gaps in load order
   const enabledMods = newMods.filter((m) => m.enabled);
   const disabledMods = newMods.filter((m) => !m.enabled);
-  const sortedMods = enabledMods.sort((a, b) => (a.loadOrder || enabledMods.length) - (b.loadOrder || enabledMods.length));
+  const sortedMods = enabledMods.sort(
+    (a, b) => (a.loadOrder || enabledMods.length) - (b.loadOrder || enabledMods.length)
+  );
   sortedMods.forEach((mod, index) => {
     mod.loadOrder = index + 1;
   });
   debug('Mod deleted successfully');
-  saveMods({...sortedMods, ...disabledMods});
+  saveMods([...sortedMods, ...disabledMods]);
   return true;
-}
+};
+
+const handleLaunchGame = (modded: boolean) => {
+  if (modded) {
+    debug('Starting modded launch sequence');
+    const mods = loadMods();
+    const modEnginePath = getModEnginePath();
+    const modEngineFolder = modEnginePath?.split('\\').slice(0, -1).join('\\');
+    const tomlString = GenerateTomlString(mods);
+    try {
+      debug('Writing toml file');
+      writeFileSync;
+      writeFileSync(`${modEngineFolder}\\config_eldenring.toml`, tomlString);
+    } catch (err) {
+      const msg = `An error occured while writing toml file: ${errToString(err)}`;
+      error(msg);
+      throw new Error(msg);
+    }
+    debug('Launching game with mods');
+    try {
+      execFile('launchmod_eldenring.bat', { cwd: modEngineFolder });
+    } catch (err) {
+      const msg = `An error occured while launching game with mods: ${errToString(err)}`;
+      error(msg);
+      throw new Error(msg);
+    }
+  } else {
+    // throw new Error('Launching game without mods is not yet supported');
+    debug('Launching game without mods');
+    try {
+      shell.openExternal('steam://rungameid/1245620').catch(console.error);
+    } catch (err) {
+      const msg = `An error occured while launching game without mods: ${errToString(err)}`;
+      error(msg);
+      throw new Error(msg);
+    }
+  }
+};
+
+const extractZip = async (zipPath: string) => {
+  debug(`Extracting zip: ${zipPath}`);
+  let tempPath = `${installDir}\\temp\\${randomUUID()}`;
+  if (existsSync(tempPath)) {
+    tempPath = `${installDir}\\temp\\${randomUUID()}`;
+  }
+  try {
+    debug(`Extracting zip to temp directory: ${tempPath} from ${zipPath}`);
+    await decompress(zipPath, tempPath);
+  } catch (err) {
+    const msg = `An error occured while extracting zip: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg);
+  }
+  debug('Zip extracted successfully');
+  return tempPath;
+};
 
 app
   .whenReady()
@@ -372,21 +437,7 @@ app
     });
 
     ipcMain.handle('extract-zip', async (_, zipPath: string) => {
-      debug(`Extracting zip: ${zipPath}`);
-      let tempPath = `${installDir}\\temp\\${randomUUID()}`;
-      if (existsSync(tempPath)) {
-        tempPath = `${installDir}\\temp\\${randomUUID()}`;
-      }
-      try {
-        debug(`Extracting zip to temp directory: ${tempPath} from ${zipPath}`);
-        await decompress(zipPath, tempPath);
-      } catch (err) {
-        const msg = `An error occured while extracting zip: ${errToString(err)}`;
-        error(msg);
-        throw new Error(msg);
-      }
-      debug('Zip extracted successfully');
-      return tempPath;
+      return extractZip(zipPath);
     });
 
     ipcMain.handle('add-mod', (_, formData: AddModFormValues) => {
@@ -398,40 +449,7 @@ app
     });
 
     ipcMain.on('launch-game', (_, modded: boolean) => {
-      if (modded) {
-        debug('Starting modded launch sequence');
-        const mods = loadMods();
-        const modEnginePath = getModEnginePath();
-        const modEngineFolder = modEnginePath?.split('\\').slice(0, -1).join('\\');
-        const tomlString = GenerateTomlString(mods);
-        try {
-          debug('Writing toml file');
-          writeFileSync;
-          writeFileSync(`${modEngineFolder}\\config_eldenring.toml`, tomlString);
-        } catch (err) {
-          const msg = `An error occured while writing toml file: ${errToString(err)}`;
-          error(msg);
-          throw new Error(msg);
-        }
-        debug('Launching game with mods');
-        try {
-          execFile('launchmod_eldenring.bat', { cwd: modEngineFolder });
-        } catch (err) {
-          const msg = `An error occured while launching game with mods: ${errToString(err)}`;
-          error(msg);
-          throw new Error(msg);
-        }
-      } else {
-        // throw new Error('Launching game without mods is not yet supported');
-        debug('Launching game without mods');
-        try {
-          shell.openExternal('steam://rungameid/1245620').catch(console.error);
-        } catch (err) {
-          const msg = `An error occured while launching game without mods: ${errToString(err)}`;
-          error(msg);
-          throw new Error(msg);
-        }
-      }
+      return handleLaunchGame(modded);
     });
 
     ipcMain.on('launch-mod-exe', (_, mod: Mod) => {

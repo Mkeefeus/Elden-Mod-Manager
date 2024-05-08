@@ -1,41 +1,18 @@
 import { TextInput, Checkbox, Group, Button } from '@mantine/core';
 import { UseFormReturnType } from '@mantine/form';
-import React from 'react';
 import { AddModFormValues } from 'types';
 
 interface AddModSettingsProps {
   form: UseFormReturnType<AddModFormValues>;
   showLoader: boolean;
-  fromZip?: boolean;
 }
 
 const BROWSE_TEXT_STYLE = { flex: '4' };
 const BROWSE_BUTTON_STYLE = { flex: '1' };
 
-const AddModSettings = ({ form, showLoader, fromZip }: AddModSettingsProps) => {
+const AddModSettings = ({ form, showLoader }: AddModSettingsProps) => {
   return (
     <>
-      <Group align='end'>
-        <TextInput
-          withAsterisk
-          label={'Path'}
-          {...form.getInputProps('path')}
-          disabled={!fromZip}
-          style={BROWSE_TEXT_STYLE}
-        />
-        {fromZip && (
-          <Button
-            style={BROWSE_BUTTON_STYLE}
-            onClick={async () => {
-              const path = await window.electronAPI.browse('directory', 'Select mod directory', form.values.path);
-              if (!path) return;
-              form.setFieldValue('path', path);
-            }}
-          >
-            Browse
-          </Button>
-        )}
-      </Group>
       <Checkbox mt="md" label="Is DLL?" {...form.getInputProps('isDll', { type: 'checkbox' })} />
       <Checkbox mt="md" label="Delete after import?" {...form.getInputProps('delete', { type: 'checkbox' })} />
       <Checkbox mt="md" label="Has exe?" {...form.getInputProps('hasExe', { type: 'checkbox' })} />

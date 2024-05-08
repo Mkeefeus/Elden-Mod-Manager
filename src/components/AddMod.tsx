@@ -1,4 +1,4 @@
-import { TextInput, Button, Stack } from '@mantine/core';
+import { TextInput, Button, Stack, Group } from '@mantine/core';
 import { isNotEmpty, useForm } from '@mantine/form';
 import { useState } from 'react';
 import AddModSettings from './AddModSettings';
@@ -15,13 +15,6 @@ interface AddModProps {
 const AddMod = ({ close, fromZip, namesInUse, loadMods }: AddModProps) => {
   const [showSubmitLoader, setShowSubmitLoader] = useState(false);
   const [showExtractLoader, setShowExtractLoader] = useState(false);
-
-  const cleanupModal = () => {
-    setShowSubmitLoader(false);
-    setShowExtractLoader(false);
-    form.reset();
-    close();
-  };
 
   const nameNotInUse = (value: string) => {
     if (namesInUse.includes(value.toLowerCase())) {
@@ -52,12 +45,14 @@ const AddMod = ({ close, fromZip, namesInUse, loadMods }: AddModProps) => {
     setShowSubmitLoader(true);
     const success = await window.electronAPI.addMod(values);
     if (!success) {
-      cleanupModal();
+      setShowSubmitLoader(false);
       return;
     }
     await sleep(1000);
     loadMods();
-    cleanupModal();
+    setShowSubmitLoader(false);
+    form.reset();
+    close();
   };
 
   const extractZip = async () => {
@@ -74,25 +69,29 @@ const AddMod = ({ close, fromZip, namesInUse, loadMods }: AddModProps) => {
     <form onSubmit={form.onSubmit(handleSubmit)}>
       <Stack gap="md">
         <TextInput withAsterisk label="Mod name" {...form.getInputProps('modName')} />
-        <Button
-          loading={showExtractLoader}
-          onClick={async () => {
-            // step 1, exctract zip to temp folder if required
-            let tempPath: string | undefined;
-            if (fromZip) {
-              tempPath = await extractZip();
-              if (!tempPath) return;
-              return form.setFieldValue('path', tempPath);
-            }
-            // step 2, select folder to copy
-            const pathToCopy = await window.electronAPI.browse('directory', 'Select mod folder');
-            if (!pathToCopy) return;
-            form.setFieldValue('path', pathToCopy);
-          }}
-        >
-          Browse
-        </Button>
-        {form.values.path !== '' && <AddModSettings form={form} showLoader={showSubmitLoader} fromZip={fromZip}/>}
+        <Group align="end">
+          <TextInput withAsterisk label={'Path'} {...form.getInputProps('path')} style={{ flex: '4' }} />
+          <Button
+            loading={showExtractLoader}
+            style={{ flex: '1' }}
+            onClick={async () => {
+              // step 1, exctract zip to temp folder if required
+              let tempPath: string | undefined;
+              if (fromZip) {
+                tempPath = await extractZip();
+                if (!tempPath) return;
+                return form.setFieldValue('path', tempPath);
+              }
+              // step 2, select folder to copy
+              const pathToCopy = await window.electronAPI.browse('directory', 'Select mod folder', form.values.path);
+              if (!pathToCopy) return;
+              form.setFieldValue('path', pathToCopy);
+            }}
+          >
+            Browse
+          </Button>
+        </Group>
+        {form.values.path !== '' && <AddModSettings form={form} showLoader={showSubmitLoader} />}
       </Stack>
     </form>
   );

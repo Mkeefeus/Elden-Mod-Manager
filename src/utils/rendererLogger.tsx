@@ -23,16 +23,31 @@ const getLogLabel = (level: string) => {
     case 'info':
       return 'Info';
     default:
-      return undefined;
+      return 'undefined';
   }
+};
+
+const clickableMessage = (message: string) => {
+  return (
+    <div
+      onClick={() => {
+        navigator.clipboard.writeText( message);
+        notifications.show({ message: 'Copied to clipboard', color: 'blue', autoClose: 1000 });
+      }}
+      style={{ cursor: 'pointer' }}
+    >
+      {message}
+    </div>
+  );
 };
 
 const showNotification = (log: LogEntry) => {
   console.log(log);
+  const label = getLogLabel(log.level);
   notifications.show({
     color: getLogColor(log.level),
-    title: getLogLabel(log.level),
-    message: log.message,
+    title: label + ' (Click to copy)',
+    message: clickableMessage(log.message),
   });
 };
 

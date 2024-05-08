@@ -3,7 +3,6 @@ import { Schema } from 'electron-store';
 
 export type DBSchema = {
   mods: Mod[];
-  eldenRingPath: string;
   modEnginePath: string;
 };
 
@@ -23,10 +22,6 @@ const schema: Schema<DBSchema> = {
       required: ['uuid', 'enabled', 'name', 'installDate'],
     },
     default: [],
-  },
-  eldenRingPath: {
-    type: 'string',
-    default: '',
   },
   modEnginePath: {
     type: 'string',

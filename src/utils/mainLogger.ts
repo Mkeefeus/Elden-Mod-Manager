@@ -14,6 +14,7 @@ class GuiTransport extends Transport {
       callback();
       return;
     }
+    // if (info.hideDisplay) return callback();
     window.webContents.send('notify', info);
     callback();
   }
