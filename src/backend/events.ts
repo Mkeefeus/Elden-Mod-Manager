@@ -251,7 +251,7 @@ const downloadModEngine = async (downloadURL: string, id: string) => {
   try {
     debug('Saving Mod Engine version');
     const files = readdirSync('./ModEngine2', { recursive: true }) as string[];
-    const path = `\\ModEngine2\\${files.find((file) => file.includes('modengine2_launcher.exe'))}`;
+    const path = `${installDir}\\ModEngine2\\${files.find((file) => file.includes('modengine2_launcher.exe'))}`;
     const folder = path.split('\\').slice(0, -1).join('\\');
     writeFileSync(`${folder}\\version.txt`, id);
   } catch (err) {

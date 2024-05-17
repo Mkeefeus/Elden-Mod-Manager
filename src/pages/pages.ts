@@ -6,7 +6,6 @@ export type Page = {
   displayName: string;
   route: string;
   element: () => JSX.Element;
-  hidden?: boolean;
 };
 
 export const pages: Page[] = [
