@@ -1,5 +1,6 @@
 import { createLogger, format, transports, LogEntry } from 'winston';
 import Transport, { TransportStreamOptions } from 'winston-transport';
+import 'winston-daily-rotate-file';
 import { getMainWindow } from '../main';
 
 const { combine, timestamp, printf, align } = format;
@@ -30,7 +31,13 @@ export const logger = createLogger({
   ),
   transports: [
     new transports.Console(),
-    new transports.File({ filename: 'EMM.log' }),
+    new transports.DailyRotateFile({ 
+      datePattern: 'YYYY-MM-DD',
+      filename: 'EMM-%DATE%.log',
+      dirname: 'logs',
+      maxSize: '20m',
+      maxFiles: '14d',
+    }),
     new GuiTransport({
       level: 'info',
     }),
