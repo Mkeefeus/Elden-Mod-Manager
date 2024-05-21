@@ -106,6 +106,10 @@ const handleCollectLogs = () => {
   console.log('Collecting logs');
 };
 
+const handleChangeModDir = () => {
+  console.log('Changing mod directory');
+};
+
 export const template: MenuItemConstructorOptions[] = [
   {
     label: 'File',
@@ -184,9 +188,16 @@ export const template: MenuItemConstructorOptions[] = [
       },
       {
         label: 'Collect Logs',
-        click: () => {
-          handleCollectLogs();
-        },
+        click: handleCollectLogs,
+      },
+    ],
+  },
+  {
+    label: 'Settings',
+    submenu: [
+      {
+        label: 'Change mod directory',
+        click: handleChangeModDir,
       },
     ],
   },

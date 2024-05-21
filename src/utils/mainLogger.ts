@@ -10,14 +10,12 @@ class GuiTransport extends Transport {
     super(opts);
   }
   log(info: LogEntry, callback: () => void) {
+    callback();
     const window = getMainWindow();
-    if (!window) {
-      callback();
+    if (!window || info.hideDisplay) {
       return;
     }
-    // if (info.hideDisplay) return callback();
     window.webContents.send('notify', info);
-    callback();
   }
 }
 
@@ -31,7 +29,7 @@ export const logger = createLogger({
   ),
   transports: [
     new transports.Console(),
-    new transports.DailyRotateFile({ 
+    new transports.DailyRotateFile({
       datePattern: 'YYYY-MM-DD',
       filename: 'EMM-%DATE%.log',
       dirname: 'logs',
