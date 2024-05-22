@@ -55,3 +55,16 @@ export const getModEnginePath = () => {
     throw new Error(msg);
   }
 };
+
+export const getDBJSON = () => {
+  debug('Getting DB JSON');
+  try {
+    const json = store.store;
+    debug('DB JSON retrieved');
+    return JSON.stringify(json, null, 2);
+  } catch (err) {
+    const msg = `An error occured while getting DB JSON: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg);
+  }
+};

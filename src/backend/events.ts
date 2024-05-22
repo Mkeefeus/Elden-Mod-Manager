@@ -62,7 +62,7 @@ const genUUID = (): string => {
   return uuid;
 };
 
-function findFile(fileType: 'exe' | 'dll', source: string) {
+const findFile = (fileType: 'exe' | 'dll', source: string) => {
   debug(`Searching for ${fileType} file in ${source}`);
   let foundFiles: (string | Buffer)[];
   try {
@@ -98,7 +98,7 @@ function findFile(fileType: 'exe' | 'dll', source: string) {
     error(msg);
     throw new Error(msg);
   }
-}
+};
 
 const MOD_SUBFOLDERS = ['chr', 'obj', 'parts', 'event', 'map', 'menu', 'msg', 'mtd', 'param', 'remo', 'script', 'sfx'];
 
@@ -128,7 +128,7 @@ const validateMod = (path: string, isDll: boolean) => {
     hasValidSubfolder = files.some((file) => MOD_SUBFOLDERS.includes(file));
     if (!hasValidSubfolder) {
       const msg =
-        'No valid subfolder was found in the directory, please select the folder that contains the mod files. It should have one of the following subfolders: chr, obj, parts, event, map, menu, msg, mtd, param, remo, script, or sfx.';
+        'No valid subfolder was found in the directory, please select the folder that contains the mod files. It should have one or more of the following subfolders: chr, obj, parts, event, map, menu, msg, mtd, param, remo, script, or sfx.';
       warning(msg);
       return false;
     }
@@ -401,7 +401,7 @@ const handleLaunchGame = (modded: boolean) => {
   }
 };
 
-const extractZip = async (zipPath: string) => {
+const extractModZip = async (zipPath: string) => {
   debug(`Extracting zip: ${zipPath}`);
   let tempPath = `${installDir}\\temp\\${randomUUID()}`;
   if (existsSync(tempPath)) {
@@ -416,7 +416,53 @@ const extractZip = async (zipPath: string) => {
     throw new Error(msg);
   }
   debug('Zip extracted successfully');
+  const files = readdirSync(tempPath, { recursive: true });
+  let validPath = '';
+  let subfolder = '';
+  let index = 0;
+  while (!validPath && !subfolder) {
+    if (index >= files.length) {
+      break;
+    }
+    const file = files[index] as string;
+    // if file contains any of the subfolders
+    const pathChunks = file.split('\\');
+    for (const chunk of pathChunks) {
+      if (MOD_SUBFOLDERS.includes(chunk) || chunk.includes('.dll')) {
+        subfolder = chunk;
+        validPath = pathChunks.slice(0, -1).join('\\');
+        break;
+      }
+    }
+    index++;
+  }
+  if (!validPath) {
+    const msg = 'Zip file does not appear to be a valid Elden Ring mod. Are you sure you selected the correct file?';
+    warning(msg);
+    return;
+  }
+  tempPath = `${tempPath}\\${validPath}`;
+  console.log(tempPath);
+
   return tempPath;
+};
+
+const clearTemp = () => {
+  debug('Clearing temp directory');
+  const tempDir = `${installDir}\\temp`;
+  //check if temp directory exists
+  if (!existsSync(tempDir)) {
+    debug('Temp directory not found');
+    return;
+  }
+  try {
+    rmSync(tempDir, { recursive: true });
+    debug('Temp directory cleared');
+  } catch (err) {
+    const msg = `An error occured while clearing temp directory: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg);
+  }
 };
 
 app
@@ -438,7 +484,7 @@ app
     });
 
     ipcMain.handle('extract-zip', async (_, zipPath: string) => {
-      return extractZip(zipPath);
+      return extractModZip(zipPath);
     });
 
     ipcMain.handle('add-mod', (_, formData: AddModFormValues) => {
@@ -468,7 +514,12 @@ app
       handleLog(log);
     });
 
+    ipcMain.on('clear-temp', () => {
+      clearTemp();
+    });
+
     checkForUpdates();
+    clearTemp();
     debug('App started');
   })
   .catch((err) => {

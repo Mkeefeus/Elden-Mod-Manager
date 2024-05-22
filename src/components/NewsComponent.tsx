@@ -22,7 +22,7 @@ interface ReadMoreStates {
   [index: number]: boolean;
 }
 
-function formatISODateToCustom(isoDateString: string): string {
+const formatISODateToCustom = (isoDateString: string): string => {
   const date = new Date(isoDateString);
 
   const month = (date.getMonth() + 1).toString().padStart(2, '0');
@@ -39,7 +39,7 @@ function formatISODateToCustom(isoDateString: string): string {
   const strHours = hours.toString().padStart(2, '0');
 
   return `${month}/${day}/${year} ${strHours}:${minutes}:${seconds} ${ampm}`;
-}
+};
 
 const NewsComponent = () => {
   const theme = useMantineTheme();

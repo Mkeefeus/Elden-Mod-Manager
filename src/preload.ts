@@ -16,6 +16,7 @@ interface IElectronAPI {
   notify: (callback: (log: LogEntry) => void) => void;
   log: (log: LogEntry) => void;
   extractZip: (zipPath: string) => Promise<string>;
+  clearTemp: () => void;
 }
 
 declare global {
@@ -38,6 +39,7 @@ const electronAPI: IElectronAPI = {
   notify: (callback) => ipcRenderer.on('notify', (_, error) => callback(error)),
   log: (...args) => ipcRenderer.send('log', ...args),
   extractZip: (...args) => ipcRenderer.invoke('extract-zip', ...args),
+  clearTemp: () => ipcRenderer.send('clear-temp'),
 };
 
 contextBridge.exposeInMainWorld('electronAPI', electronAPI);

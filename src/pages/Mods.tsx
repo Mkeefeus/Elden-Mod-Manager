@@ -113,11 +113,18 @@ const Mods = () => {
     }
   };
 
+  const handleModalClose = () => {
+    if (fromZip) {
+      window.electronAPI.clearTemp();
+    }
+    addModHandlers.close();
+  };
+
   return (
     <Stack gap="xl" justify={'center'}>
       <ModTable mods={mods} sort={sort} saveMods={saveMods} loadMods={loadMods} changeSort={handleSortChange} />
       <Group gap={'md'}>
-        <Modal opened={addModOpened} onClose={addModHandlers.close} title="Add Mod New" centered>
+        <Modal opened={addModOpened} onClose={handleModalClose} title="Add Mod New" centered>
           <AddMod
             close={addModHandlers.close}
             fromZip={fromZip}
