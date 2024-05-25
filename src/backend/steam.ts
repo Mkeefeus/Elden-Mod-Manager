@@ -1,8 +1,11 @@
 import { execSync } from 'child_process';
 import { readFileSync } from 'fs';
 import { errToString } from '../utils/utilities';
-import { debug, error } from 'winston';
+// import { debug, error } from 'winston';
+import { logger } from '../utils/mainLogger';
 import * as VDF from 'vdf-parser';
+
+const { debug, error } = logger;
 
 interface LibraryFolders {
   libraryfolders: {
@@ -67,7 +70,8 @@ const getLibrayPath = (appID: string, steamDir: string) => {
   }
 };
 
-export const getSteamGameInstallDir = (appId: string): string | null => {
+export const getEldenRingInstallDir = (): string | null => {
+  const appId = '1245620';
   const steamDir = getSteamInstallDir();
   if (!steamDir) {
     return null;

@@ -1,4 +1,6 @@
 import { useContext, createContext, useEffect, useState, ReactNode, Context } from 'react';
+import { sendLog } from 'src/utils/rendererLogger';
+import { errToString } from 'src/utils/utilities';
 import { NewsComponentProps } from 'types';
 interface NewsCtxValue {
   news: NewsComponentProps[];
@@ -70,7 +72,11 @@ const NewsProvider = ({ children }: { children: ReactNode }) => {
         const data: NewsData = await response.json();
         setNews(cleanNewsData(data));
       } catch (error) {
-        console.error('Error fetching news data', error);
+        const msg = `An error occured while fetching news: ${errToString(error)}`;
+        sendLog({
+          level: 'error',
+          message: msg,
+        });
       }
     };
     fetchData();

@@ -10,7 +10,7 @@ interface IElectronAPI {
   saveMods: (mods: Mod[]) => Promise<boolean>;
   browse: (type: BrowseType, title?: string, startingDir?: string) => Promise<string | undefined>;
   addMod: (formData: AddModFormValues) => Promise<boolean>;
-  deleteMod: (mod: Mod) => Promise<boolean>;
+  deleteMod: (mod: Mod) => void;
   launchGame: (modded: boolean) => void;
   launchModExe: (mod: Mod) => void;
   notify: (callback: (log: LogEntry) => void) => void;
@@ -34,7 +34,7 @@ const electronAPI: IElectronAPI = {
   addMod: (...args) => ipcRenderer.invoke('add-mod', ...args),
   browse: (...args) => ipcRenderer.invoke('browse', ...args),
   launchGame: (...args) => ipcRenderer.send('launch-game', ...args),
-  deleteMod: (...args) => ipcRenderer.invoke('delete-mod', ...args),
+  deleteMod: (...args) => ipcRenderer.send('delete-mod', ...args),
   launchModExe: (...args) => ipcRenderer.send('launch-mod-exe', ...args),
   notify: (callback) => ipcRenderer.on('notify', (_, error) => callback(error)),
   log: (...args) => ipcRenderer.send('log', ...args),

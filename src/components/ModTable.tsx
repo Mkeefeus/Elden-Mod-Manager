@@ -24,7 +24,7 @@ const ModTable = ({ mods, sort, saveMods, loadMods, changeSort }: ModTableProps)
     const newMods = [...mods];
     const mod = newMods[index];
     mod.enabled = !mod.enabled;
-    saveMods(newMods).catch(console.error);
+    saveMods(newMods);
   };
 
   const handleOpenExe = (mod: Mod) => {
@@ -33,7 +33,6 @@ const ModTable = ({ mods, sort, saveMods, loadMods, changeSort }: ModTableProps)
 
   const getSwapIndex = (mod: Mod, direction: 'up' | 'down') => {
     if (!mod.loadOrder) {
-      console.error('swap mod has no load order YOU FOOL 🤬');
       return;
     }
     const swapLoadOrder = direction === 'up' ? mod.loadOrder - 1 : mod.loadOrder + 1;
@@ -55,14 +54,11 @@ const ModTable = ({ mods, sort, saveMods, loadMods, changeSort }: ModTableProps)
     const temp = newMods[index].loadOrder;
     newMods[index].loadOrder = newMods[swapIndex].loadOrder;
     newMods[swapIndex].loadOrder = temp;
-    saveMods(newMods).catch(console.error);
+    saveMods(newMods);
   };
 
   const handleDelete = async (mod: Mod) => {
-    const deleted = await window.electronAPI.deleteMod(mod);
-    if (!deleted) {
-      console.error('Failed to delete mod');
-    }
+    await window.electronAPI.deleteMod(mod);
     loadMods();
   };
 

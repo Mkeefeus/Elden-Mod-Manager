@@ -56,7 +56,7 @@ const AddMod = ({ close, fromZip, namesInUse, loadMods }: AddModProps) => {
   };
 
   const extractZip = async () => {
-    const zipPath = await window.electronAPI.browse('zip', 'Select zip file').catch(console.error);
+    const zipPath = await window.electronAPI.browse('zip', 'Select zip file');
     if (!zipPath) return;
     setShowExtractLoader(true);
     const extracted = await window.electronAPI.extractZip(zipPath);

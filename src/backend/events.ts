@@ -14,7 +14,7 @@ import { LogEntry } from 'winston';
 
 const { debug, error, warning } = logger;
 
-const installDir = process.cwd();
+const INSTALL_DIR = process.cwd();
 
 const getBrowseFilters = (type: BrowseType) => {
   switch (type) {
@@ -168,7 +168,7 @@ const handleAddMod = async (formData: AddModFormValues) => {
   }
 
   const pathName = CreateModPathFromName(newMod.name);
-  const installPath = `${installDir}\\mods\\${pathName}\\`;
+  const installPath = `${INSTALL_DIR}\\mods\\${pathName}\\`;
   debug(`Installing mod to: ${installPath}`);
 
   if (existsSync(installPath)) {
@@ -251,7 +251,7 @@ const downloadModEngine = async (downloadURL: string, id: string) => {
   try {
     debug('Saving Mod Engine version');
     const files = readdirSync('./ModEngine2', { recursive: true }) as string[];
-    const path = `${installDir}\\ModEngine2\\${files.find((file) => file.includes('modengine2_launcher.exe'))}`;
+    const path = `${INSTALL_DIR}\\ModEngine2\\${files.find((file) => file.includes('modengine2_launcher.exe'))}`;
     const folder = path.split('\\').slice(0, -1).join('\\');
     writeFileSync(`${folder}\\version.txt`, id);
   } catch (err) {
@@ -316,7 +316,7 @@ const checkForUpdates = async () => {
     throw new Error(msg);
   }
   debug('Mod Engine up to date');
-  const path = `${installDir}\\ModEngine2\\${files.find((file) => file.includes('modengine2_launcher.exe'))}`;
+  const path = `${INSTALL_DIR}\\ModEngine2\\${files.find((file) => file.includes('modengine2_launcher.exe'))}`;
   saveModEnginePath(path);
 };
 
@@ -324,7 +324,9 @@ const handleDeleteMod = (mod: Mod) => {
   debug(`Deleting mod: ${mod.name}`);
   const mods = loadMods();
   if (!mods) {
-    return false;
+    const msg = 'No mods found';
+    warning(msg);
+    return;
   }
   const newMods = mods.filter((m) => m.uuid !== mod.uuid);
   const pathName = CreateModPathFromName(mod.name);
@@ -361,7 +363,6 @@ const handleDeleteMod = (mod: Mod) => {
   });
   debug('Mod deleted successfully');
   saveMods([...sortedMods, ...disabledMods]);
-  return true;
 };
 
 const handleLaunchGame = (modded: boolean) => {
@@ -392,7 +393,7 @@ const handleLaunchGame = (modded: boolean) => {
     // throw new Error('Launching game without mods is not yet supported');
     debug('Launching game without mods');
     try {
-      shell.openExternal('steam://rungameid/1245620').catch(console.error);
+      shell.openExternal('steam://rungameid/1245620');
     } catch (err) {
       const msg = `An error occured while launching game without mods: ${errToString(err)}`;
       error(msg);
@@ -403,9 +404,9 @@ const handleLaunchGame = (modded: boolean) => {
 
 const extractModZip = async (zipPath: string) => {
   debug(`Extracting zip: ${zipPath}`);
-  let tempPath = `${installDir}\\temp\\${randomUUID()}`;
+  let tempPath = `${INSTALL_DIR}\\temp\\${randomUUID()}`;
   if (existsSync(tempPath)) {
-    tempPath = `${installDir}\\temp\\${randomUUID()}`;
+    tempPath = `${INSTALL_DIR}\\temp\\${randomUUID()}`;
   }
   try {
     debug(`Extracting zip to temp directory: ${tempPath} from ${zipPath}`);
@@ -442,14 +443,13 @@ const extractModZip = async (zipPath: string) => {
     return;
   }
   tempPath = `${tempPath}\\${validPath}`;
-  console.log(tempPath);
 
   return tempPath;
 };
 
 const clearTemp = () => {
   debug('Clearing temp directory');
-  const tempDir = `${installDir}\\temp`;
+  const tempDir = `${INSTALL_DIR}\\temp`;
   //check if temp directory exists
   if (!existsSync(tempDir)) {
     debug('Temp directory not found');
@@ -471,12 +471,12 @@ app
     debug('App starting');
     debug('Registering IPC events');
     ipcMain.on('open-external-link', (_, href: string) => {
-      shell.openExternal(href).catch(console.error);
+      shell.openExternal(href);
     });
     ipcMain.handle('load-mods', loadMods);
     ipcMain.handle('set-mods', (_, mods: Mod[]) => saveMods(mods));
     ipcMain.handle('browse', (_, type: BrowseType, title?: string, startingDir?: string) => {
-      startingDir = startingDir || `${installDir}`;
+      startingDir = startingDir || `${INSTALL_DIR}`;
       if (type === 'exe' || type === 'dll') {
         return findFile(type, startingDir);
       }
@@ -491,8 +491,8 @@ app
       return handleAddMod(formData);
     });
 
-    ipcMain.handle('delete-mod', (_, mod: Mod) => {
-      return handleDeleteMod(mod);
+    ipcMain.on('delete-mod', (_, mod: Mod) => {
+      handleDeleteMod(mod);
     });
 
     ipcMain.on('launch-game', (_, modded: boolean) => {
@@ -502,7 +502,7 @@ app
     ipcMain.on('launch-mod-exe', (_, mod: Mod) => {
       debug(`Launching mod executable: ${mod.exe}`);
       try {
-        shell.openPath(`${installDir}\\mods\\${CreateModPathFromName(mod.name)}\\${mod.exe}`);
+        shell.openPath(`${INSTALL_DIR}\\mods\\${CreateModPathFromName(mod.name)}\\${mod.exe}`);
       } catch (err) {
         const msg = `An error occured while launching mod executable: ${errToString(err)}`;
         error(msg);
