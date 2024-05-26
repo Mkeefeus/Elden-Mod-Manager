@@ -1,6 +1,7 @@
 import Home from './Home';
 import Mods from './Mods';
 import About from './About';
+import Settings from './Settings';
 
 export type Page = {
   displayName: string;
@@ -18,6 +19,11 @@ export const pages: Page[] = [
     displayName: 'Mods',
     route: '/mods',
     element: Mods,
+  },
+  {
+    displayName: 'Settings',
+    route: '/settings',
+    element: Settings,
   },
   {
     displayName: 'About',

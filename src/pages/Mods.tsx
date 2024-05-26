@@ -5,8 +5,8 @@ import { Mod } from 'types';
 import { useLocation } from 'react-router-dom';
 import { useDisclosure } from '@mantine/hooks';
 import AddMod from '../components/AddMod';
-import { sendLog } from 'src/utils/rendererLogger';
-import { errToString } from 'src/utils/utilities';
+import { sendLog } from '../utils/rendererLogger';
+import { errToString } from '../utils/utilities';
 
 type SortObject = {
   column: string;
@@ -74,12 +74,12 @@ const Mods = () => {
         level: 'error',
         message: message,
         error,
-      })
+      });
     }
   };
 
   useEffect(() => {
-    loadMods()
+    loadMods();
   }, []);
 
   useEffect(() => {

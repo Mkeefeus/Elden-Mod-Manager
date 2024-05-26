@@ -1,10 +1,27 @@
 import { Button, Group, Stack, Title, Divider } from '@mantine/core';
 import NewsComponent from '../components/NewsComponent';
 import { useNavigate } from 'react-router-dom';
+import { useNotificationModal } from '../providers/NotificationModalProvider';
+import { useEffect } from 'react';
 
 const quickActions: string[] = ['Play', 'Play Vanilla', 'Add a Mod (Zip)', 'Add a Mod (Folder)'];
 
 const Home = () => {
+  const { showModal } = useNotificationModal();
+
+  const TestModalContent = () => {
+    return <div>Test Modal Content</div>;
+  };
+
+  useEffect(() => {
+    setTimeout(() => {
+      showModal({
+        title: 'Test Modal',
+        content: <TestModalContent />,
+      });
+    }, 3000);
+  }, []);
+
   const navigate = useNavigate();
 
   const handleQuckAction = (index: number) => {

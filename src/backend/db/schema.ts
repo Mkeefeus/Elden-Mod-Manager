@@ -4,7 +4,11 @@ import { Schema } from 'electron-store';
 export type DBSchema = {
   mods: Mod[];
   modEnginePath: string;
+  eldenRingPath: string;
+  modFolderPath: string;
 };
+
+const INSTALL_DIR = process.cwd();
 
 const schema: Schema<DBSchema> = {
   mods: {
@@ -26,6 +30,14 @@ const schema: Schema<DBSchema> = {
   modEnginePath: {
     type: 'string',
     default: '',
+  },
+  eldenRingPath: {
+    type: 'string',
+    default: '',
+  },
+  modFolderPath: {
+    type: 'string',
+    default: `${INSTALL_DIR}/mods`,
   },
 };
 

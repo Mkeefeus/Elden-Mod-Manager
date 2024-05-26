@@ -3,6 +3,8 @@ import { Outlet, Link } from 'react-router-dom';
 import { pages } from './pages/pages';
 import NewsProvider from './providers/NewsProvider';
 import Footer from './components/Footer';
+import NotificationModalProvider from './providers/NotificationModalProvider';
+import NotificationModal from './components/NotificationModal';
 
 const App = () => {
   return (
@@ -31,9 +33,12 @@ const App = () => {
         </Stack>
       </AppShell.Navbar>
       <AppShell.Main>
-        <NewsProvider>
-          <Outlet />
-        </NewsProvider>
+        <NotificationModalProvider>
+          <NewsProvider>
+            <NotificationModal />
+            <Outlet />
+          </NewsProvider>
+        </NotificationModalProvider>
       </AppShell.Main>
       <AppShell.Footer>
         <Footer />

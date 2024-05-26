@@ -1,6 +1,6 @@
 import { useContext, createContext, useEffect, useState, ReactNode, Context } from 'react';
-import { sendLog } from 'src/utils/rendererLogger';
-import { errToString } from 'src/utils/utilities';
+import { sendLog } from '../utils/rendererLogger';
+import { errToString } from '../utils/utilities';
 import { NewsComponentProps } from 'types';
 interface NewsCtxValue {
   news: NewsComponentProps[];

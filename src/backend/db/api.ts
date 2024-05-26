@@ -56,14 +56,53 @@ export const getModEnginePath = () => {
   }
 };
 
-export const getDBJSON = () => {
-  debug('Getting DB JSON');
+export const getEldenRingPath = () => {
+  debug('Getting Elden Ring Path');
   try {
-    const json = store.store;
-    debug('DB JSON retrieved');
-    return JSON.stringify(json, null, 2);
+    const path = store.get('eldenRingPath');
+    debug(`Elden Ring Path: ${path}`);
+    return path;
   } catch (err) {
-    const msg = `An error occured while getting DB JSON: ${errToString(err)}`;
+    const msg = `An error occured while getting Elden Ring Path: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg);
+  }
+};
+
+export const saveEldenRingPath = (path: string) => {
+  debug(`Saving Elden Ring Path: ${path}`);
+  try {
+    store.set('eldenRingPath', path);
+    debug('Elden Ring Path saved');
+    return true;
+  } catch (err) {
+    const msg = `An error occured while saving Elden Ring Path: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg);
+  }
+};
+
+export const getModFolderPath = () => {
+  debug('Getting Mod Folder Path');
+  try {
+    const path = store.get('modFolderPath');
+    debug(`Mod Folder Path: ${path}`);
+    return path;
+  } catch (err) {
+    const msg = `An error occured while getting Mod Folder Path: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg);
+  }
+};
+
+export const saveModFolderPath = (path: string) => {
+  debug(`Saving Mod Folder Path: ${path}`);
+  try {
+    store.set('modFolderPath', path);
+    debug('Mod Folder Path saved');
+    return true;
+  } catch (err) {
+    const msg = `An error occured while saving Mod Folder Path: ${errToString(err)}`;
     error(msg);
     throw new Error(msg);
   }
