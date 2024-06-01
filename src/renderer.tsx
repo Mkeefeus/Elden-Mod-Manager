@@ -62,7 +62,6 @@ startRendererLogger();
 
 createRoot(rootElement).render(
   <StrictMode>
-    {/* <MantineProvider defaultColorScheme="dark" theme={theme}> */}
     <MantineProvider defaultColorScheme="dark" theme={theme}>
       <Notifications />
       <RouterProvider router={browserRouter} />

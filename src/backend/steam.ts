@@ -1,9 +1,9 @@
 import { execSync } from 'child_process';
 import { readFileSync } from 'fs';
 import { errToString } from '../utils/utilities';
-// import { debug, error } from 'winston';
 import { logger } from '../utils/mainLogger';
 import * as VDF from 'vdf-parser';
+import { shell } from 'electron';
 
 const { debug, error } = logger;
 
@@ -76,7 +76,6 @@ export const getEldenRingInstallDir = (): string | null => {
   if (!steamDir) {
     return null;
   }
-  // find libary containing appID in steamapps/libraryfolders.vdf
   const libraryFoldersPath = getLibrayPath(appId, steamDir);
 
   debug(`Searching for appmanifest_${appId}.acf file in ${libraryFoldersPath}/steamapps/`);
@@ -99,4 +98,15 @@ export const getEldenRingInstallDir = (): string | null => {
     throw new Error(msg);
   }
   return null;
+};
+
+export const launchEldenRing = () => {
+  debug('Launching game without mods');
+  try {
+    shell.openExternal('steam://rungameid/1245620');
+  } catch (err) {
+    const msg = `An error occured while launching game without mods: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg);
+  }
 };
