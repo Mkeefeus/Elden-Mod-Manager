@@ -1,4 +1,4 @@
-import { app, ipcMain, shell, } from 'electron';
+import { app, ipcMain, shell } from 'electron';
 import { loadMods, saveMods } from './db/api';
 import { AddModFormValues, BrowseType, Mod } from 'types';
 import { existsSync, rmSync } from 'fs';
@@ -9,6 +9,7 @@ import { checkForME2Updates, launchEldenRingModded } from './me2';
 import { launchEldenRing } from './steam';
 import { browse, extractModZip, findFile } from './fileSystem';
 import { handleAddMod, handleDeleteMod } from './mods';
+import startModsListener from './toml';
 
 const { debug, error } = logger;
 
@@ -87,6 +88,7 @@ app
 
     checkForME2Updates();
     clearTemp();
+    startModsListener();
     debug('App started');
   })
   .catch((err) => {

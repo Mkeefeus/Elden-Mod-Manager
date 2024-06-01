@@ -3,29 +3,17 @@ import { existsSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'fs
 import { logger } from '../utils/mainLogger';
 import { getModEnginePath, loadMods, saveModEnginePath } from './db/api';
 import { errToString } from '../utils/utilities';
-import GenerateTomlString from './toml';
 import { Octokit } from 'octokit';
 import decompress from 'decompress';
+import { writeTomlFile } from './toml';
 
 const { debug, error } = logger;
 
 const INSTALL_DIR = process.cwd();
 
 export const launchEldenRingModded = () => {
-  debug('Starting modded launch sequence');
-  const mods = loadMods();
   const modEnginePath = getModEnginePath();
   const modEngineFolder = modEnginePath?.split('\\').slice(0, -1).join('\\');
-  const tomlString = GenerateTomlString(mods);
-  try {
-    debug('Writing toml file');
-    writeFileSync;
-    writeFileSync(`${modEngineFolder}\\config_eldenring.toml`, tomlString);
-  } catch (err) {
-    const msg = `An error occured while writing toml file: ${errToString(err)}`;
-    error(msg);
-    throw new Error(msg);
-  }
   debug('Launching game with mods');
   try {
     execFile('launchmod_eldenring.bat', { cwd: modEngineFolder });
@@ -63,14 +51,44 @@ const downloadModEngine2 = async (downloadURL: string, id: string) => {
     error(msg);
     throw new Error(msg);
   }
+  let me2Folder: string;
   try {
     debug('Saving Mod Engine version');
     const files = readdirSync('./ModEngine2', { recursive: true }) as string[];
     const path = `${INSTALL_DIR}\\ModEngine2\\${files.find((file) => file.includes('modengine2_launcher.exe'))}`;
-    const folder = path.split('\\').slice(0, -1).join('\\');
-    writeFileSync(`${folder}\\version.txt`, id);
+    me2Folder = path.split('\\').slice(0, -1).join('\\');
+    writeFileSync(`${me2Folder}\\version.txt`, id);
   } catch (err) {
     const msg = `An error occured while saving Mod Engine version: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg);
+  }
+  try {
+    debug('Cleaning Mod Engine folder');
+    const files = [
+      'config_eldenring.toml',
+      'version.txt',
+      'modengine2_launcher.exe',
+      'launchmod_eldenring.bat',
+      'modengine2',
+    ];
+    const folderContents = readdirSync(me2Folder) as string[];
+    folderContents.forEach((file) => {
+      if (!files.includes(file)) {
+        rmSync(`${me2Folder}/${file}`, { recursive: true });
+      }
+    });
+  } catch (err) {
+    const msg = `An error occured while cleaning Mod Engine folder: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg);
+  }
+  try {
+    debug('Updating Mod Engine toml file');
+    const mods = loadMods();
+    writeTomlFile(mods);
+  } catch (err) {
+    const msg = `An error occured while updating Mod Engine toml file during ME2 installation: ${errToString(err)}`;
     error(msg);
     throw new Error(msg);
   }
