@@ -22,10 +22,10 @@ class GuiTransport extends Transport {
 export const logger = createLogger({
   format: combine(
     timestamp({
-      format: 'YYYY-MM-DD hh:mm:ss.SSS A',
+      format: 'YYYY-MM-DD HH:mm:ss.SSS',
     }),
     align(),
-    printf((info) => `[${info.timestamp}] ${info.level}: ${info.message}`)
+    printf((info) => `[${info.timestamp}] [${info.level}] ${info.message.trim()}`)
   ),
   transports: [
     new transports.Console(),
