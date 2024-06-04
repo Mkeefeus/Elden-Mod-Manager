@@ -16,7 +16,7 @@ interface ModalCtxValue {
 
 const ModalContext = createContext<ModalCtxValue | null>(null);
 
-const NotificationModalProvider = ({ children }: { children: ReactNode }) => {
+const ModalProvider = ({ children }: { children: ReactNode }) => {
   const [isOpen, { open, close }] = useDisclosure();
   const titleState = useState<string | undefined>();
   const modalContentState = useState<ReactNode | null>(null);
@@ -48,6 +48,6 @@ const NotificationModalProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export default NotificationModalProvider;
+export default ModalProvider;
 
-export const useNotificationModal = () => useContext<ModalCtxValue>(ModalContext as Context<ModalCtxValue>);
+export const useModal = () => useContext<ModalCtxValue>(ModalContext as Context<ModalCtxValue>);

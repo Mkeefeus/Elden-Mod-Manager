@@ -1,12 +1,12 @@
-import { Button, Group, Modal, Stack } from '@mantine/core';
+import { Button, Group, Stack } from '@mantine/core';
 import ModTable from '../components/ModTable';
 import { useState, useEffect } from 'react';
 import { Mod } from 'types';
 import { useLocation } from 'react-router-dom';
-import { useDisclosure } from '@mantine/hooks';
 import AddMod from '../components/AddMod';
 import { sendLog } from '../utils/rendererLogger';
 import { errToString } from '../utils/utilities';
+import { useModal } from '../providers/ModalProvider';
 
 type SortObject = {
   column: string;
@@ -17,15 +17,34 @@ const Mods = () => {
   const location = useLocation();
   const [mods, setMods] = useState<Mod[]>([]);
   const [sort, setSort] = useState<SortObject>({ column: 'installDate', order: 'desc' });
-  const [fromZip, setFromZip] = useState(false);
-  const [addModOpened, addModHandlers] = useDisclosure();
+  const { showModal, hideModal } = useModal();
+
+  const handleModalClose = (fromZip: boolean) => {
+    if (fromZip) {
+      window.electronAPI.clearTemp();
+    }
+    hideModal();
+  };
+
+  const showAddModModal = (fromZip: boolean) => {
+    showModal({
+      title: 'Add Mod',
+      content: (
+        <AddMod
+          close={() => handleModalClose(fromZip)}
+          fromZip={fromZip}
+          namesInUse={mods.map((mod) => mod.name.toLowerCase())}
+          loadMods={loadMods}
+        />
+      ),
+    });
+  };
 
   useEffect(() => {
     if (location.state) {
       const { opened, fromZip } = location.state as { opened: boolean; fromZip: boolean };
       if (!opened) return;
-      setFromZip(fromZip);
-      addModHandlers.open();
+      showAddModModal(fromZip);
     }
   }, [location]);
 
@@ -120,29 +139,13 @@ const Mods = () => {
     }
   };
 
-  const handleModalClose = () => {
-    if (fromZip) {
-      window.electronAPI.clearTemp();
-    }
-    addModHandlers.close();
-  };
-
   return (
     <Stack gap="xl" justify={'center'}>
       <ModTable mods={mods} sort={sort} saveMods={saveMods} loadMods={loadMods} changeSort={handleSortChange} />
       <Group gap={'md'}>
-        <Modal opened={addModOpened} onClose={handleModalClose} title="Add Mod New" centered>
-          <AddMod
-            close={addModHandlers.close}
-            fromZip={fromZip}
-            namesInUse={mods.map((mod) => mod.name.toLowerCase())}
-            loadMods={loadMods}
-          />
-        </Modal>
         <Button
           onClick={() => {
-            setFromZip(false);
-            addModHandlers.open();
+            showAddModModal(false);
           }}
           variant="outline"
         >
@@ -150,8 +153,7 @@ const Mods = () => {
         </Button>
         <Button
           onClick={() => {
-            setFromZip(true);
-            addModHandlers.open();
+            showAddModModal(true);
           }}
           variant="outline"
         >
