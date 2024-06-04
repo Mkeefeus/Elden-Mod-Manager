@@ -107,3 +107,29 @@ export const saveModFolderPath = (path: string) => {
     throw new Error(msg);
   }
 };
+
+export const isFirstRun = () => {
+  debug('Checking if first run');
+  try {
+    const firstRun = store.get('firstRun');
+    debug(`First Run: ${firstRun}`);
+    return firstRun;
+  } catch (err) {
+    const msg = `An error occured while checking if first run: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg);
+  }
+};
+
+export const clearFirstRun = () => {
+  debug('Clearing first run flag');
+  try {
+    store.set('firstRun', false);
+    debug('First run cleared');
+    return true;
+  } catch (err) {
+    const msg = `An error occured while clearing first run: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg);
+  }
+};

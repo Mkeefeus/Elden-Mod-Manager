@@ -1,15 +1,15 @@
 import { app, ipcMain, shell } from 'electron';
-import { loadMods, saveMods } from './db/api';
+import { isFirstRun, loadMods, saveMods } from './db/api';
 import { AddModFormValues, BrowseType, Mod } from 'types';
 import { existsSync, rmSync } from 'fs';
 import { CreateModPathFromName, errToString } from '../utils/utilities';
 import { handleLog, logger } from '../utils/mainLogger';
 import { LogEntry } from 'winston';
-import { checkForME2Updates, launchEldenRingModded } from './me2';
+import { checkForME2Updates, launchEldenRingModded, promptME2Install } from './me2';
 import { launchEldenRing } from './steam';
 import { browse, extractModZip, findFile } from './fileSystem';
 import { handleAddMod, handleDeleteMod } from './mods';
-import startModsListener from './toml';
+import './toml';
 
 const { debug, error } = logger;
 
@@ -86,9 +86,12 @@ app
       clearTemp();
     });
 
+    // Startup tasks
+    if (isFirstRun()) {
+      promptME2Install();
+    }
     checkForME2Updates();
     clearTemp();
-    startModsListener();
     debug('App started');
   })
   .catch((err) => {

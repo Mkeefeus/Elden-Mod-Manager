@@ -52,15 +52,11 @@ export const writeTomlFile = (mods: Mod[]) => {
   }
 };
 
-const startModsListener = () => {
-  const unsubscribe = store.onDidChange('mods', (mods) => {
-    if (!mods) return;
-    writeTomlFile(mods);
-  });
+const unsubscribe = store.onDidChange('mods', (mods) => {
+  if (!mods) return;
+  writeTomlFile(mods);
+});
 
-  app.on('before-quit', () => {
-    unsubscribe();
-  });
-};
-
-export default startModsListener;
+app.on('before-quit', () => {
+  unsubscribe();
+});

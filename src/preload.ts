@@ -5,6 +5,7 @@ import { Mod, AddModFormValues, BrowseType } from 'types';
 import { LogEntry } from 'winston';
 
 interface IElectronAPI {
+  // Main to renderer
   openExternalLink: (href: string) => void;
   loadMods: () => Promise<Mod[]>;
   saveMods: (mods: Mod[]) => Promise<boolean>;
@@ -13,10 +14,12 @@ interface IElectronAPI {
   deleteMod: (mod: Mod) => void;
   launchGame: (modded: boolean) => void;
   launchModExe: (mod: Mod) => void;
-  notify: (callback: (log: LogEntry) => void) => void;
   log: (log: LogEntry) => void;
   extractZip: (zipPath: string) => Promise<string>;
   clearTemp: () => void;
+  // Main to renderer
+  notify: (callback: (log: LogEntry) => void) => void;
+  promptME2Install: (callback: () => void) => void;
 }
 
 declare global {
@@ -26,6 +29,7 @@ declare global {
 }
 
 const electronAPI: IElectronAPI = {
+  // Main to renderer
   openExternalLink: (href) => {
     ipcRenderer.send('open-external-link', href);
   },
@@ -36,10 +40,12 @@ const electronAPI: IElectronAPI = {
   launchGame: (...args) => ipcRenderer.send('launch-game', ...args),
   deleteMod: (...args) => ipcRenderer.send('delete-mod', ...args),
   launchModExe: (...args) => ipcRenderer.send('launch-mod-exe', ...args),
-  notify: (callback) => ipcRenderer.on('notify', (_, error) => callback(error)),
   log: (...args) => ipcRenderer.send('log', ...args),
   extractZip: (...args) => ipcRenderer.invoke('extract-zip', ...args),
   clearTemp: () => ipcRenderer.send('clear-temp'),
+  // Main to renderer
+  notify: (callback) => ipcRenderer.on('notify', (_event, value) => callback(value)),
+  promptME2Install: (callback) => ipcRenderer.on('prompt-me2-install', callback),
 };
 
 contextBridge.exposeInMainWorld('electronAPI', electronAPI);

@@ -6,6 +6,7 @@ export type DBSchema = {
   modEnginePath: string;
   eldenRingPath: string;
   modFolderPath: string;
+  firstRun: boolean;
 };
 
 const INSTALL_DIR = process.cwd();
@@ -37,7 +38,11 @@ const schema: Schema<DBSchema> = {
   },
   modFolderPath: {
     type: 'string',
-    default: `${INSTALL_DIR}/mods`,
+    default: `${INSTALL_DIR}\\mods`,
+  },
+  firstRun: {
+    type: 'boolean',
+    default: true,
   },
 };
 

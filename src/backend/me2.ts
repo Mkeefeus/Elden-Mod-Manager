@@ -6,6 +6,7 @@ import { errToString } from '../utils/utilities';
 import { Octokit } from 'octokit';
 import decompress from 'decompress';
 import { writeTomlFile } from './toml';
+import { getMainWindow } from '../main';
 
 const { debug, error } = logger;
 
@@ -151,4 +152,21 @@ export const checkForME2Updates = async () => {
   debug('Mod Engine up to date');
   const path = `${INSTALL_DIR}\\ModEngine2\\${files.find((file) => file.includes('modengine2_launcher.exe'))}`;
   saveModEnginePath(path);
+};
+
+export const promptME2Install = async () => {
+  debug('Prompting user to install Mod Engine');
+  try {
+    const window = getMainWindow();
+    if (!window) {
+      throw new Error('Main window not found');
+    }
+    window.once('ready-to-show', () => {
+      window.webContents.send('prompt-me2-install');
+    });
+  } catch (err) {
+    const msg = `An error occured while prompting user to install Mod Engine: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg);
+  }
 };

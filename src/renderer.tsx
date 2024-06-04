@@ -36,7 +36,7 @@ import { pages } from './pages/pages';
 import { theme } from './themes';
 import '@mantine/notifications/styles.css';
 import { Notifications } from '@mantine/notifications';
-import { startRendererLogger } from './utils/rendererLogger';
+import './rendererEvents';
 
 const rootElement = document.getElementById('root') as Element;
 
@@ -57,8 +57,6 @@ const browserRouter = createHashRouter([
 if (!rootElement) {
   throw new Error('Could not find root element');
 }
-
-startRendererLogger();
 
 createRoot(rootElement).render(
   <StrictMode>

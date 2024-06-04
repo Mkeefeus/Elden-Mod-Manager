@@ -1,6 +1,6 @@
 import { app, BrowserWindow, Menu } from 'electron';
 import path from 'path';
-import './backend/events';
+import './backend/mainEvents';
 import './backend/db/api';
 import { template } from './menu';
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
