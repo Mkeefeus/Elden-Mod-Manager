@@ -1,4 +1,4 @@
-import { Button, Stack, Text, Group, HoverCard } from '@mantine/core';
+import { Button, Stack, Text, Group, HoverCard, Code } from '@mantine/core';
 import { sendLog } from '../utils/rendererLogger';
 import { useState } from 'react';
 
@@ -44,11 +44,13 @@ const InstallME2Modal = ({ hideModal }: InstallME2ModalProps) => {
 
   return (
     <Stack>
-      <Text>
-        ModEngine2 is required to use the mod manager. If you already have ModEngine2, select "browse" and navigate to
-        your ModEngine2 installation (modengine2_launcher.exe). Alternitvely, you can install ME2 to the default
-        location by selecting "Default", or select "Custom" and browse to the location you would like to install
-        ModEngine2 to.
+      <Text fz="lg">🚨ModEngine2 is required to use the mod manager.🚨</Text>
+      <Text fz="sm">
+        If you already have ModEngine2, select "browse" and navigate to your ModEngine2 installation and select{' '}
+        <Code>modengine2_launcher.exe</Code>. <br />
+        <br />
+        Alternitvely, you can install ME2 to the default location by selecting "Default", or select "Custom" and browse
+        to the location you would like to install ModEngine2 to.
       </Text>
       {loading ? (
         <Button loading>Installing...</Button>

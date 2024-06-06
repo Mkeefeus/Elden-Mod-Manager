@@ -5,7 +5,7 @@ const Modal = () => {
   const { isOpen, title, modalContent, hideModal } = useModal();
 
   return (
-    <MantineModal opened={isOpen} title={title} onClose={() => hideModal()} centered>
+    <MantineModal size="lg" opened={isOpen} title={title} onClose={() => hideModal()} centered>
       {isOpen && modalContent}
     </MantineModal>
   );

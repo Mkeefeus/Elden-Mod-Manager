@@ -23,19 +23,14 @@
 }
 
 .newsContainer {
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  background-color: rgba(0, 0, 0, 0.089);
   border-radius: 5px;
-  border: 1px solid var(--mantine-color-orange-4);
-  box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.253);
+  border: 1px solid var(--mantine-color-dark-4);
 }
 
 .newsContainer:hover {
   background-color: rgba(0, 0, 0, 0.092);
   box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.353);
-  border: 1px solid var(--mantine-color-orange-6);
+  border: 1px solid var(--mantine-color-dark-5);
 }
 
 .newsContainer:not(:first-child) {
