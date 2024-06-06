@@ -1,5 +1,6 @@
 import { Mod } from 'types';
 import { Schema } from 'electron-store';
+import { app } from 'electron';
 
 export type DBSchema = {
   mods: Mod[];
@@ -7,9 +8,8 @@ export type DBSchema = {
   eldenRingPath: string;
   modFolderPath: string;
   firstRun: boolean;
+  promptedModsFolder: boolean;
 };
-
-const INSTALL_DIR = process.cwd();
 
 const schema: Schema<DBSchema> = {
   mods: {
@@ -30,7 +30,7 @@ const schema: Schema<DBSchema> = {
   },
   modEnginePath: {
     type: 'string',
-    default: '',
+    default: app.getPath('userData') + '\\ModEngine\\',
   },
   eldenRingPath: {
     type: 'string',
@@ -38,11 +38,15 @@ const schema: Schema<DBSchema> = {
   },
   modFolderPath: {
     type: 'string',
-    default: `${INSTALL_DIR}\\mods`,
+    default: app.getPath('userData') + '\\mods\\',
   },
   firstRun: {
     type: 'boolean',
     default: true,
+  },
+  promptedModsFolder: {
+    type: 'boolean',
+    default: false,
   },
 };
 

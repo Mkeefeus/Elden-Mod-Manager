@@ -3,18 +3,17 @@ import { CreateModPathFromName, errToString } from '../utils/utilities';
 import store from './db/init';
 import { logger } from '../utils/mainLogger';
 import { writeFileSync } from 'fs';
-import { getModEnginePath } from './db/api';
+import { getModEnginePath, getModFolderPath } from './db/api';
 import { app } from 'electron';
 
 const { debug, error } = logger;
 
 const GenerateTomlString = (mods: Mod[]) => {
-  const cwd = process.cwd();
   let dllString = '';
   let fileString = '';
   mods.forEach((mod) => {
     if (!mod.enabled) return;
-    const path = `${cwd}\\mods\\${CreateModPathFromName(mod.name)}${mod.dllFile ? '\\' + mod.dllFile : ''}`;
+    const path = `${getModFolderPath()}\\${CreateModPathFromName(mod.name)}${mod.dllFile ? '\\' + mod.dllFile : ''}`;
 
     // keep double backslashes for toml
     const escapedPath = path.replace(/\\/g, '\\\\');
@@ -41,9 +40,8 @@ export const writeTomlFile = (mods: Mod[]) => {
   try {
     const tomlString = GenerateTomlString(mods);
     const modEnginePath = getModEnginePath();
-    const modEngineFolder = modEnginePath?.split('\\').slice(0, -1).join('\\');
     debug('Writing toml file');
-    writeFileSync(`${modEngineFolder}\\config_eldenring.toml`, tomlString);
+    writeFileSync(`${modEnginePath}\\config_eldenring.toml`, tomlString);
     debug('Toml file written');
   } catch (err) {
     const msg = `An error occured while writing toml file: ${errToString(err)}`;

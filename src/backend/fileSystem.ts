@@ -1,4 +1,4 @@
-import { OpenDialogOptions, dialog } from 'electron';
+import { OpenDialogOptions, app, dialog } from 'electron';
 import { existsSync, readdirSync } from 'fs';
 import { logger } from '../utils/mainLogger';
 import { errToString } from '../utils/utilities';
@@ -6,8 +6,6 @@ import { BrowseType } from 'types';
 import { randomUUID } from 'crypto';
 import decompress from 'decompress';
 import MOD_SUBFOLDERS from './modSubfolders';
-
-const INSTALL_DIR = process.cwd();
 
 const { debug, error, warning } = logger;
 
@@ -25,6 +23,7 @@ const getBrowseFilters = (type: BrowseType) => {
 };
 
 export const browse = (type: BrowseType, title?: string, startingDir?: string) => {
+  startingDir = startingDir || app.getPath('downloads');
   debug(`Browsing for ${type} ${startingDir ? `starting at: ${startingDir}` : ''}`);
   const options: OpenDialogOptions = {
     defaultPath: startingDir,
@@ -42,49 +41,11 @@ export const browse = (type: BrowseType, title?: string, startingDir?: string) =
   }
 };
 
-export const findFile = (fileType: 'exe' | 'dll', source: string) => {
-  debug(`Searching for ${fileType} file in ${source}`);
-  let foundFiles: (string | Buffer)[];
-  try {
-    foundFiles = readdirSync(source, { recursive: true }).filter((file) => {
-      return file.includes(`.${fileType}`) && typeof file === 'string';
-    });
-  } catch (err) {
-    const msg = `An error occured while searching for ${fileType} file: ${errToString(err)}`;
-    error(msg);
-    throw new Error(msg);
-  }
-  if (foundFiles.length > 1) {
-    debug(`Multiple ${fileType} files found, prompting user to select one`);
-    const filePath = browse(fileType, `Select mod ${fileType}`, source);
-    if (!filePath) {
-      debug('User cancelled file selection');
-      return;
-    }
-    debug(`User selected ${fileType} file: ${filePath}`);
-    const file = filePath.split('\\').pop();
-    if (!file) {
-      const msg = 'Failed to Determine filename';
-      error(msg);
-      throw new Error(msg);
-    }
-    debug(`Returning selected ${fileType} file: ${file}`);
-    return file;
-  } else if (foundFiles.length === 1 && typeof foundFiles[0] === 'string') {
-    debug(`Single ${fileType} file found: ${foundFiles[0]}`);
-    return foundFiles[0];
-  } else {
-    const msg = 'Failed to locate file';
-    error(msg);
-    throw new Error(msg);
-  }
-};
-
 export const extractModZip = async (zipPath: string) => {
   debug(`Extracting zip: ${zipPath}`);
-  let tempPath = `${INSTALL_DIR}\\temp\\${randomUUID()}`;
+  let tempPath = `${app.getPath('temp')}\\${randomUUID()}`;
   if (existsSync(tempPath)) {
-    tempPath = `${INSTALL_DIR}\\temp\\${randomUUID()}`;
+    tempPath = `${app.getPath('temp')}\\${randomUUID()}`;
   }
   try {
     debug(`Extracting zip to temp directory: ${tempPath} from ${zipPath}`);

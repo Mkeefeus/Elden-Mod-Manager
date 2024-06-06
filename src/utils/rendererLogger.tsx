@@ -41,7 +41,7 @@ const clickableMessage = (message: string) => {
   );
 };
 
-export const showNotification = (log: LogEntry) => {
+const showNotification = (log: LogEntry) => {
   const label = getLogLabel(log.level);
   notifications.show({
     color: getLogColor(log.level),
@@ -54,6 +54,4 @@ export const sendLog = (log: LogEntry) => {
   window.electronAPI.log(log);
 };
 
-// export const startRendererLogger = () => {
-//   window.electronAPI.notify(showNotification);
-// };
+window.electronAPI.notify(showNotification);

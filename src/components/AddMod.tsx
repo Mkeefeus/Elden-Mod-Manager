@@ -30,6 +30,7 @@ const AddMod = ({ close, fromZip, namesInUse, loadMods }: AddModProps) => {
       delete: false,
       hasExe: false,
       exePath: '',
+      dllPath: '',
     },
 
     validate: {
@@ -86,7 +87,7 @@ const AddMod = ({ close, fromZip, namesInUse, loadMods }: AddModProps) => {
                 const pathToCopy = await window.electronAPI.browse(
                   'directory',
                   'Select mod folder',
-                  form.getValues()['path']
+                  form.isDirty('path') ? form.getValues()['path'] : undefined
                 );
                 if (!pathToCopy) return;
                 form.setFieldValue('path', pathToCopy);

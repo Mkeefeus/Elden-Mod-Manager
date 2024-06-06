@@ -1,23 +1,32 @@
 import { app, ipcMain, shell } from 'electron';
-import { isFirstRun, loadMods, saveMods } from './db/api';
+import {
+  clearFirstRun,
+  getModEnginePath,
+  getModFolderPath,
+  getPromptedModsFolder,
+  isFirstRun,
+  loadMods,
+  saveMods,
+  setModEnginePath,
+  clearPromptedModsFolder,
+  setModFolderPath,
+} from './db/api';
 import { AddModFormValues, BrowseType, Mod } from 'types';
 import { existsSync, rmSync } from 'fs';
 import { CreateModPathFromName, errToString } from '../utils/utilities';
 import { handleLog, logger } from '../utils/mainLogger';
 import { LogEntry } from 'winston';
-import { checkForME2Updates, launchEldenRingModded, promptME2Install } from './me2';
+import { downloadModEngine2, launchEldenRingModded, promptME2Install } from './me2';
 import { launchEldenRing } from './steam';
-import { browse, extractModZip, findFile } from './fileSystem';
+import { browse, extractModZip } from './fileSystem';
 import { handleAddMod, handleDeleteMod } from './mods';
 import './toml';
 
 const { debug, error } = logger;
 
-const INSTALL_DIR = process.cwd();
-
 const clearTemp = () => {
   debug('Clearing temp directory');
-  const tempDir = `${INSTALL_DIR}\\temp`;
+  const tempDir = app.getPath('temp');
   //check if temp directory exists
   if (!existsSync(tempDir)) {
     debug('Temp directory not found');
@@ -44,10 +53,6 @@ app
     ipcMain.handle('load-mods', loadMods);
     ipcMain.handle('set-mods', (_, mods: Mod[]) => saveMods(mods));
     ipcMain.handle('browse', (_, type: BrowseType, title?: string, startingDir?: string) => {
-      startingDir = startingDir || `${INSTALL_DIR}`;
-      if (type === 'exe' || type === 'dll') {
-        return findFile(type, startingDir);
-      }
       return browse(type, title, startingDir);
     });
 
@@ -70,7 +75,7 @@ app
     ipcMain.on('launch-mod-exe', (_, mod: Mod) => {
       debug(`Launching mod executable: ${mod.exe}`);
       try {
-        shell.openPath(`${INSTALL_DIR}\\mods\\${CreateModPathFromName(mod.name)}\\${mod.exe}`);
+        shell.openPath(`${getModFolderPath()}\\${CreateModPathFromName(mod.name)}\\${mod.exe}`);
       } catch (err) {
         const msg = `An error occured while launching mod executable: ${errToString(err)}`;
         error(msg);
@@ -86,12 +91,40 @@ app
       clearTemp();
     });
 
+    ipcMain.on('set-me2-path', (_, path: string) => {
+      setModEnginePath(path);
+    });
+
+    ipcMain.handle('get-me2-path', () => {
+      return getModEnginePath();
+    });
+
+    ipcMain.handle('get-mods-path', () => {
+      return getModFolderPath();
+    });
+
+    ipcMain.handle('install-me2', () => {
+      return downloadModEngine2();
+    });
+
+    ipcMain.handle('check-mods-folder-prompt', () => {
+      return getPromptedModsFolder();
+    });
+
+    ipcMain.on('clear-prompted-mods-folder', () => {
+      clearPromptedModsFolder();
+    });
+
+    ipcMain.on('save-mods-folder', (_, path: string) => {
+      setModFolderPath(path);
+    });
+
     // Startup tasks
     if (isFirstRun()) {
       promptME2Install();
+      // clearFirstRun();
     }
-    checkForME2Updates();
-    clearTemp();
+    // clearTemp();
     debug('App started');
   })
   .catch((err) => {

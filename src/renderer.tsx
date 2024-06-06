@@ -36,7 +36,6 @@ import { pages } from './pages/pages';
 import { theme } from './themes';
 import '@mantine/notifications/styles.css';
 import { Notifications } from '@mantine/notifications';
-import './rendererEvents';
 
 const rootElement = document.getElementById('root') as Element;
 

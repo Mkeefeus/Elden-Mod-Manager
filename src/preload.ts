@@ -5,7 +5,7 @@ import { Mod, AddModFormValues, BrowseType } from 'types';
 import { LogEntry } from 'winston';
 
 interface IElectronAPI {
-  // Main to renderer
+  // Renderer to main
   openExternalLink: (href: string) => void;
   loadMods: () => Promise<Mod[]>;
   saveMods: (mods: Mod[]) => Promise<boolean>;
@@ -17,6 +17,13 @@ interface IElectronAPI {
   log: (log: LogEntry) => void;
   extractZip: (zipPath: string) => Promise<string>;
   clearTemp: () => void;
+  setME2Path: (path: string) => void;
+  getME2Path: () => Promise<string>;
+  getModsPath: () => Promise<string>;
+  installME2: () => Promise<void>;
+  checkModsFolderPrompt: () => Promise<boolean>;
+  saveModsFolder: (path: string) => void;
+  clearPromptedModsFolder: () => void;
   // Main to renderer
   notify: (callback: (log: LogEntry) => void) => void;
   promptME2Install: (callback: () => void) => void;
@@ -29,7 +36,7 @@ declare global {
 }
 
 const electronAPI: IElectronAPI = {
-  // Main to renderer
+  // Renderer to main
   openExternalLink: (href) => {
     ipcRenderer.send('open-external-link', href);
   },
@@ -43,6 +50,13 @@ const electronAPI: IElectronAPI = {
   log: (...args) => ipcRenderer.send('log', ...args),
   extractZip: (...args) => ipcRenderer.invoke('extract-zip', ...args),
   clearTemp: () => ipcRenderer.send('clear-temp'),
+  setME2Path: (path) => ipcRenderer.send('set-me2-path', path),
+  getME2Path: () => ipcRenderer.invoke('get-me2-path'),
+  getModsPath: () => ipcRenderer.invoke('get-mods-path'),
+  installME2: () => ipcRenderer.invoke('install-me2'),
+  checkModsFolderPrompt: () => ipcRenderer.invoke('check-mods-folder-prompt'),
+  saveModsFolder: (path) => ipcRenderer.send('save-mods-folder', path),
+  clearPromptedModsFolder: () => ipcRenderer.send('clear-prompted-mods-folder'),
   // Main to renderer
   notify: (callback) => ipcRenderer.on('notify', (_event, value) => callback(value)),
   promptME2Install: (callback) => ipcRenderer.on('prompt-me2-install', callback),

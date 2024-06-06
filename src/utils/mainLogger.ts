@@ -2,6 +2,7 @@ import { createLogger, format, transports, LogEntry } from 'winston';
 import Transport, { TransportStreamOptions } from 'winston-transport';
 import 'winston-daily-rotate-file';
 import { getMainWindow } from '../main';
+import { app } from 'electron';
 
 const { combine, timestamp, printf, align } = format;
 
@@ -32,7 +33,7 @@ export const logger = createLogger({
     new transports.DailyRotateFile({
       datePattern: 'YYYY-MM-DD',
       filename: 'EMM-%DATE%.log',
-      dirname: 'logs',
+      dirname: app.getPath('logs'),
       maxSize: '20m',
       maxFiles: '14d',
     }),

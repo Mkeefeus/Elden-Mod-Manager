@@ -1,23 +1,21 @@
 import { execFile } from 'child_process';
-import { existsSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'fs';
+import { existsSync, readdirSync, renameSync, rmSync, writeFileSync } from 'fs';
 import { logger } from '../utils/mainLogger';
-import { getModEnginePath, loadMods, saveModEnginePath } from './db/api';
+import { getModEnginePath, loadMods } from './db/api';
 import { errToString } from '../utils/utilities';
 import { Octokit } from 'octokit';
 import decompress from 'decompress';
 import { writeTomlFile } from './toml';
 import { getMainWindow } from '../main';
+import { app } from 'electron';
 
 const { debug, error } = logger;
 
-const INSTALL_DIR = process.cwd();
-
 export const launchEldenRingModded = () => {
   const modEnginePath = getModEnginePath();
-  const modEngineFolder = modEnginePath?.split('\\').slice(0, -1).join('\\');
   debug('Launching game with mods');
   try {
-    execFile('launchmod_eldenring.bat', { cwd: modEngineFolder });
+    execFile('launchmod_eldenring.bat', { cwd: modEnginePath });
   } catch (err) {
     const msg = `An error occured while launching game with mods: ${errToString(err)}`;
     error(msg);
@@ -25,20 +23,48 @@ export const launchEldenRingModded = () => {
   }
 };
 
-const downloadModEngine2 = async (downloadURL: string, id: string) => {
+export const downloadModEngine2 = async () => {
+  debug('Checking for Mod Engine updates');
+  let downloadURL: string;
+  let version: string;
+  const tempDir = app.getPath('temp');
+  try {
+    const octokit = new Octokit();
+    const release = await octokit.request('GET /repos/{owner}/{repo}/releases/latest', {
+      owner: 'soulsmods',
+      repo: 'ModEngine2',
+    });
+    version = release.data.assets[0].id.toString();
+    debug(`Latest Mod Engine version: ${version}`);
+    downloadURL = release.data.assets[0].browser_download_url;
+  } catch (err) {
+    const msg = `An error occured while getting ModEngine2 download url: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg);
+  }
+  let modEnginePath: string;
   try {
     debug(`Downloading Mod Engine release from: ${downloadURL}`);
+    modEnginePath = getModEnginePath();
+    if (!modEnginePath) {
+      throw new Error('Mod Engine path not found');
+    }
+    debug(`ModEngine2 Path: ${modEnginePath}`);
+    if (existsSync(modEnginePath)) {
+      debug('Mod Engine folder found, removing');
+      rmSync(modEnginePath, { recursive: true });
+    }
     const response = await fetch(downloadURL);
     const buffer = await response.arrayBuffer();
-    writeFileSync('./ModEngine2.zip', Buffer.from(buffer));
+    writeFileSync(`${tempDir}\\ModEngine2.zip`, Buffer.from(buffer));
   } catch (err) {
     const msg = `An error occured while downloading Mod Engine release: ${errToString(err)}`;
     error(msg);
     throw new Error(msg);
   }
   try {
-    debug('Decompressing Mod Engine release');
-    await decompress('./ModEngine2.zip', './ModEngine2');
+    debug(`Decompressing Mod Engine release to ${modEnginePath}`);
+    await decompress(`${tempDir}\\ModEngine2.zip`, modEnginePath);
   } catch (err) {
     const msg = `An error occured while decompressing Mod Engine release: ${errToString(err)}`;
     error(msg);
@@ -46,39 +72,25 @@ const downloadModEngine2 = async (downloadURL: string, id: string) => {
   }
   try {
     debug('Removing Mod Engine zip');
-    rmSync('./ModEngine2.zip');
+    rmSync(`${tempDir}\\ModEngine2.zip`);
   } catch (err) {
     const msg = `An error occured while removing Mod Engine zip: ${errToString(err)}`;
     error(msg);
     throw new Error(msg);
   }
-  let me2Folder: string;
-  try {
-    debug('Saving Mod Engine version');
-    const files = readdirSync('./ModEngine2', { recursive: true }) as string[];
-    const path = `${INSTALL_DIR}\\ModEngine2\\${files.find((file) => file.includes('modengine2_launcher.exe'))}`;
-    me2Folder = path.split('\\').slice(0, -1).join('\\');
-    writeFileSync(`${me2Folder}\\version.txt`, id);
-  } catch (err) {
-    const msg = `An error occured while saving Mod Engine version: ${errToString(err)}`;
-    error(msg);
-    throw new Error(msg);
-  }
   try {
     debug('Cleaning Mod Engine folder');
-    const files = [
-      'config_eldenring.toml',
-      'version.txt',
-      'modengine2_launcher.exe',
-      'launchmod_eldenring.bat',
-      'modengine2',
-    ];
-    const folderContents = readdirSync(me2Folder) as string[];
-    folderContents.forEach((file) => {
-      if (!files.includes(file)) {
-        rmSync(`${me2Folder}/${file}`, { recursive: true });
+    const files = ['config_eldenring.toml', 'modengine2_launcher.exe', 'launchmod_eldenring.bat', 'modengine2'];
+    const folderContents = readdirSync(modEnginePath) as string[];
+    const subfolder = folderContents.find((file) => file.toLowerCase().includes('modengine'));
+    const subfolderContents = readdirSync(`${modEnginePath}/${subfolder}`) as string[];
+    subfolderContents.forEach((file) => {
+      if (files.includes(file)) {
+        const newPath = `${modEnginePath}/${file}`;
+        renameSync(`${modEnginePath}/${subfolder}/${file}`, newPath);
       }
     });
+    rmSync(`${modEnginePath}/${subfolder}`, { recursive: true });
   } catch (err) {
     const msg = `An error occured while cleaning Mod Engine folder: ${errToString(err)}`;
     error(msg);
@@ -96,65 +108,13 @@ const downloadModEngine2 = async (downloadURL: string, id: string) => {
   debug('Mod Engine installed successfully');
 };
 
-export const checkForME2Updates = async () => {
-  debug('Checking for Mod Engine updates');
-  let downloadURL: string;
-  let version: string;
-  try {
-    const octokit = new Octokit();
-    const release = await octokit.request('GET /repos/{owner}/{repo}/releases/latest', {
-      owner: 'soulsmods',
-      repo: 'ModEngine2',
-    });
-    version = release.data.assets[0].id.toString();
-    debug(`Latest Mod Engine version: ${version}`);
-    downloadURL = release.data.assets[0].browser_download_url;
-  } catch (err) {
-    const msg = `An error occured while checking for Mod Engine updates: ${errToString(err)}`;
-    error(msg);
-    throw new Error(msg);
-  }
-
-  let files: (string | Buffer)[];
-  try {
-    const modEngineInstalled = existsSync('./ModEngine2');
-    if (!modEngineInstalled) {
-      debug('Mod Engine folder not found, attempting to aquire');
-      await downloadModEngine2(downloadURL, version);
-    }
-    files = readdirSync('./ModEngine2', { recursive: true }) as string[];
-    const foundLauncher = files.find((file) => file.includes('modengine2_launcher.exe'));
-    if (!foundLauncher) {
-      debug('Mod Engine executable not found, attempting to aquire');
-      rmSync(`./ModEngine2`, { recursive: true });
-      await downloadModEngine2(downloadURL, version);
-      files = readdirSync('./ModEngine2', { recursive: true }) as string[];
-    }
-    let versionPath = files.find((file) => file.includes('version.txt'));
-    if (!versionPath) {
-      debug('Mod Engine version file not found, attempting to download latest version');
-      rmSync(`./ModEngine2`, { recursive: true });
-      await downloadModEngine2(downloadURL, version);
-      files = readdirSync('./ModEngine2', { recursive: true }) as string[];
-      versionPath = files.find((file) => file.includes('version.txt'));
-    }
-    const currentVersion = readFileSync(`./ModEngine2/${versionPath}`).toString();
-    if (currentVersion !== version) {
-      debug('Mod Engine out of date, attempting to update');
-      rmSync(`./ModEngine2`, { recursive: true });
-      await downloadModEngine2(downloadURL, version);
-    }
-  } catch (err) {
-    const msg = `An error occured while updating Mod Engine: ${errToString(err)}`;
-    error(msg);
-    throw new Error(msg);
-  }
-  debug('Mod Engine up to date');
-  const path = `${INSTALL_DIR}\\ModEngine2\\${files.find((file) => file.includes('modengine2_launcher.exe'))}`;
-  saveModEnginePath(path);
-};
-
 export const promptME2Install = async () => {
+  debug('Checking if Mod Engine is installed');
+  // const modEnginePath = getModEnginePath();
+  // if (existsSync(modEnginePath)) {
+  //   debug('Mod Engine found, removing');
+  //   rmSync(modEnginePath, { recursive: true });
+  // }
   debug('Prompting user to install Mod Engine');
   try {
     const window = getMainWindow();

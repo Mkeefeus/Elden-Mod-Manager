@@ -17,6 +17,7 @@ export type AddModFormValues = {
   delete: boolean;
   hasExe: boolean;
   exePath: string;
+  dllPath: string;
 };
 
 export type NewsComponentProps = {

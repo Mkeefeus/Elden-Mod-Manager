@@ -56,6 +56,19 @@ export const getModEnginePath = () => {
   }
 };
 
+export const setModEnginePath = (path: string) => {
+  debug(`Setting Mod Engine Path: ${path}`);
+  try {
+    store.set('modEnginePath', path);
+    debug('Mod Engine Path set');
+    return true;
+  } catch (err) {
+    const msg = `An error occured while setting Mod Engine Path: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg);
+  }
+};
+
 export const getEldenRingPath = () => {
   debug('Getting Elden Ring Path');
   try {
@@ -95,7 +108,7 @@ export const getModFolderPath = () => {
   }
 };
 
-export const saveModFolderPath = (path: string) => {
+export const setModFolderPath = (path: string) => {
   debug(`Saving Mod Folder Path: ${path}`);
   try {
     store.set('modFolderPath', path);
@@ -129,6 +142,32 @@ export const clearFirstRun = () => {
     return true;
   } catch (err) {
     const msg = `An error occured while clearing first run: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg);
+  }
+};
+
+export const getPromptedModsFolder = () => {
+  debug('Checking if prompted for mods folder');
+  try {
+    const prompted = store.get('promptedModsFolder');
+    debug(`Prompted for mods folder: ${prompted}`);
+    return prompted;
+  } catch (err) {
+    const msg = `An error occured while checking if prompted for mods folder: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg);
+  }
+};
+
+export const clearPromptedModsFolder = () => {
+  debug('Setting prompted for mods folder');
+  try {
+    store.set('promptedModsFolder', true);
+    debug('Prompted for mods folder set');
+    return true;
+  } catch (err) {
+    const msg = `An error occured while setting prompted for mods folder: ${errToString(err)}`;
     error(msg);
     throw new Error(msg);
   }

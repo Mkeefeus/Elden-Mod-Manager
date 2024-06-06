@@ -4,7 +4,7 @@ import archiver from 'archiver';
 import { createWriteStream, readdirSync, unlinkSync } from 'fs';
 import { logger } from './utils/mainLogger';
 import { errToString } from './utils/utilities';
-import { getModEnginePath } from './backend/db/api';
+import { getModEnginePath, getModFolderPath } from './backend/db/api';
 
 const { debug, warning, error } = logger;
 
@@ -12,8 +12,9 @@ const INSTALL_DIR = process.cwd();
 
 const handleCollectLogs = () => {
   // if ./logs.zip exists, delete it
-  const logsZipPath = `${INSTALL_DIR}\\logs.zip`;
-  if (readdirSync(INSTALL_DIR).includes('logs.zip')) {
+  const desktop = app.getPath('desktop');
+  const logsZipPath = `${desktop}\\emm-logs.zip`;
+  if (readdirSync(desktop).includes('emm-logs.zip')) {
     debug('Deleting old logs.zip');
     try {
       unlinkSync(logsZipPath);
@@ -24,7 +25,7 @@ const handleCollectLogs = () => {
     }
   }
 
-  const logFolder = `${INSTALL_DIR}\\logs`;
+  const logFolder = app.getPath('logs');
   debug('Collecting logs');
   // require modules
 
@@ -109,10 +110,6 @@ const handleCollectLogs = () => {
   debug('Logs collected');
 };
 
-const handleChangeModDir = () => {
-  console.log('Changing mod directory');
-};
-
 export const template: MenuItemConstructorOptions[] = [
   {
     label: 'File',
@@ -151,7 +148,7 @@ export const template: MenuItemConstructorOptions[] = [
       {
         label: 'Mods Folder',
         click: () => {
-          shell.openPath(`${INSTALL_DIR}\\mods`);
+          shell.openPath(getModFolderPath());
         },
       },
       {
@@ -163,7 +160,7 @@ export const template: MenuItemConstructorOptions[] = [
       {
         label: 'ModEngine2 Folder',
         click: () => {
-          shell.openPath(`${INSTALL_DIR}\\ModEngine2`);
+          shell.openPath(getModEnginePath());
         },
       },
       {
@@ -192,15 +189,6 @@ export const template: MenuItemConstructorOptions[] = [
       {
         label: 'Collect Logs',
         click: handleCollectLogs,
-      },
-    ],
-  },
-  {
-    label: 'Settings',
-    submenu: [
-      {
-        label: 'Change mod directory',
-        click: handleChangeModDir,
       },
     ],
   },

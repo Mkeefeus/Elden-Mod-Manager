@@ -7,6 +7,7 @@ import AddMod from '../components/AddMod';
 import { sendLog } from '../utils/rendererLogger';
 import { errToString } from '../utils/utilities';
 import { useModal } from '../providers/ModalProvider';
+import PromptModsFolderModal from '../components/PromptModsFolderModal';
 
 type SortObject = {
   column: string;
@@ -39,6 +40,19 @@ const Mods = () => {
       ),
     });
   };
+
+  const checkModsFolderPrompt = async () => {
+    const prompted = await window.electronAPI.checkModsFolderPrompt();
+    if (prompted) return;
+    showModal({
+      title: 'Select Mods Folder',
+      content: <PromptModsFolderModal hideModal={hideModal} />,
+    });
+  };
+
+  useEffect(() => {
+    checkModsFolderPrompt();
+  }, []);
 
   useEffect(() => {
     if (location.state) {

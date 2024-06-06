@@ -12,6 +12,7 @@ let mainWindow: BrowserWindow | null;
 
 export const getMainWindow = () => mainWindow;
 const menu = Menu.buildFromTemplate(template);
+// app.setPath('temp', path.join(app.getPath('temp'), 'elden-mod-manager'));
 
 Menu.setApplicationMenu(menu);
 

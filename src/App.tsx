@@ -5,8 +5,11 @@ import NewsProvider from './providers/NewsProvider';
 import Footer from './components/Footer';
 import ModalProvider from './providers/ModalProvider';
 import Modal from './components/Modal';
+import './utils/rendererLogger';
 
 const App = () => {
+  // Main to Renderer events
+
   return (
     <AppShell
       header={{ height: { base: 60, md: 70, lg: 80 } }}

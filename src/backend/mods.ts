@@ -4,13 +4,11 @@ import { extname } from 'path';
 import { errToString, CreateModPathFromName } from '../utils/utilities';
 import { AddModFormValues, Mod } from 'types';
 import { logger } from '../utils/mainLogger';
-import { loadMods, saveMods } from './db/api';
-import { findFile } from './fileSystem';
+import { getModFolderPath, loadMods, saveMods } from './db/api';
 import MOD_SUBFOLDERS from './modSubfolders';
+import { getMainWindow } from '../main';
 
 const { debug, error, warning } = logger;
-
-const INSTALL_DIR = process.cwd();
 
 const genUUID = (): string => {
   debug('Generating UUID');
@@ -69,23 +67,12 @@ export const handleAddMod = async (formData: AddModFormValues) => {
     enabled: false,
     name: formData.modName,
     installDate: Date.now(),
-    dllFile: undefined,
+    dllFile: formData.dllPath !== '' ? formData.dllPath : undefined,
     exe: formData.exePath !== '' ? formData.exePath : undefined,
   };
   debug(`Adding new mod: ${JSON.stringify(newMod)}`);
 
   const source = formData.path;
-  let tempPath;
-
-  if (formData.isDll) {
-    debug('Mod is dll');
-    const dll = findFile('dll', source);
-    if (!dll) {
-      warning('Adding mod cancelled');
-      return;
-    }
-    newMod.dllFile = dll;
-  }
 
   if (!validateMod(source, formData.isDll)) {
     debug('Invalid path, cancelling mod addition');
@@ -93,7 +80,7 @@ export const handleAddMod = async (formData: AddModFormValues) => {
   }
 
   const pathName = CreateModPathFromName(newMod.name);
-  const installPath = `${INSTALL_DIR}\\mods\\${pathName}\\`;
+  const installPath = `${getModFolderPath()}${pathName}\\`;
   debug(`Installing mod to: ${installPath}`);
 
   if (existsSync(installPath)) {
@@ -113,17 +100,6 @@ export const handleAddMod = async (formData: AddModFormValues) => {
     const msg = `An error occured while copying mod: ${errToString(err)}`;
     error(msg);
     throw new Error(msg);
-  }
-
-  if (tempPath) {
-    debug(`Removing temp directory: ${tempPath}`);
-    try {
-      rmSync(tempPath, { recursive: true });
-      debug('Temp directory removed');
-    } catch (err) {
-      const msg = `An error occured while removing temp directory: ${errToString(err)}`;
-      warning(msg);
-    }
   }
 
   if (formData.delete) {
@@ -157,7 +133,8 @@ export const handleDeleteMod = (mod: Mod) => {
   const newMods = mods.filter((m) => m.uuid !== mod.uuid);
   const pathName = CreateModPathFromName(mod.name);
   debug(`Removing mod from: ${pathName}`);
-  const installPath = `./mods/${pathName}/`;
+  const installPath = `${getModFolderPath()}${pathName}\\`;
+  debug(`Checking if mod path exists: ${installPath}`);
   let foundPath = true;
   try {
     if (!existsSync(installPath)) {
@@ -189,4 +166,25 @@ export const handleDeleteMod = (mod: Mod) => {
   });
   debug('Mod deleted successfully');
   saveMods([...sortedMods, ...disabledMods]);
+};
+
+export const promptModsFolder = () => {
+  const modsFolder = getModFolderPath();
+  if (existsSync(modsFolder)) {
+    throw new Error('Mods folder found, skipping prompt');
+  }
+  debug('Prompting user to select mods folder');
+  try {
+    const window = getMainWindow();
+    if (!window) {
+      throw new Error('Main window not found');
+    }
+    window.once('ready-to-show', () => {
+      window.webContents.send('prompt-mods-folder');
+    });
+  } catch (err) {
+    const msg = `An error occured while prompting user to select mods folder: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg);
+  }
 };
