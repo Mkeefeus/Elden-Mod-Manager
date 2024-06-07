@@ -9,7 +9,7 @@ const PromptModsFolderModal = ({ hideModal }: PromptModsFolderModalProps) => {
   const [loading, setLoading] = useState(false);
 
   const clearPromptFlag = () => {
-    // window.electronAPI.clearPromptedModsFolder();
+    window.electronAPI.clearPromptedModsFolder();
     hideModal();
   };
 

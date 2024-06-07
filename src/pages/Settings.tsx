@@ -22,7 +22,12 @@ const Settings = () => {
   return (
     <Stack gap={'md'} style={{ height: '100%' }}>
       <Group align={'flex-end'} justify={'space-between'}>
-        <TextInput label="Mods Folder Path" placeholder="Select Mod Folder" style={TEXT_INPUT_STYLE} value={modsPath} />
+        <TextInput
+          label="Mods Folder Path"
+          placeholder="Select Mod Folder"
+          style={TEXT_INPUT_STYLE}
+          defaultValue={modsPath}
+        />
         <Button style={BUTTON_STYLE}>Browse</Button>
       </Group>
       <Group align={'flex-end'} justify={'space-between'}>
@@ -30,7 +35,7 @@ const Settings = () => {
           label="Mod Engine 2 Path"
           placeholder="Select Mod Engine 2 Executable"
           style={TEXT_INPUT_STYLE}
-          value={me2Path}
+          defaultValue={me2Path}
         />
         <Button style={BUTTON_STYLE}>Browse</Button>
       </Group>

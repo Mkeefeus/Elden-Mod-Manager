@@ -122,7 +122,7 @@ app
     // Startup tasks
     if (isFirstRun()) {
       promptME2Install();
-      // clearFirstRun();
+      clearFirstRun();
     }
     // clearTemp();
     debug('App started');
