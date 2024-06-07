@@ -2,24 +2,24 @@ import { app, ipcMain, shell } from 'electron';
 import {
   clearFirstRun,
   getModEnginePath,
-  getModFolderPath,
+  getModsFolder,
   getPromptedModsFolder,
   isFirstRun,
   loadMods,
   saveMods,
   setModEnginePath,
   clearPromptedModsFolder,
-  setModFolderPath,
+  setModsFolder,
 } from './db/api';
 import { AddModFormValues, BrowseType, Mod } from 'types';
 import { existsSync, rmSync } from 'fs';
 import { CreateModPathFromName, errToString } from '../utils/utilities';
 import { handleLog, logger } from '../utils/mainLogger';
 import { LogEntry } from 'winston';
-import { downloadModEngine2, launchEldenRingModded, promptME2Install } from './me2';
+import { downloadModEngine2, launchEldenRingModded, promptME2Install, updateME2Path } from './me2';
 import { launchEldenRing } from './steam';
 import { browse, extractModZip } from './fileSystem';
-import { handleAddMod, handleDeleteMod } from './mods';
+import { handleAddMod, handleDeleteMod, updateModsFolder } from './mods';
 import './toml';
 
 const { debug, error } = logger;
@@ -75,7 +75,7 @@ app
     ipcMain.on('launch-mod-exe', (_, mod: Mod) => {
       debug(`Launching mod executable: ${mod.exe}`);
       try {
-        shell.openPath(`${getModFolderPath()}\\${CreateModPathFromName(mod.name)}\\${mod.exe}`);
+        shell.openPath(`${getModsFolder()}\\${CreateModPathFromName(mod.name)}\\${mod.exe}`);
       } catch (err) {
         const msg = `An error occured while launching mod executable: ${errToString(err)}`;
         error(msg);
@@ -100,7 +100,7 @@ app
     });
 
     ipcMain.handle('get-mods-path', () => {
-      return getModFolderPath();
+      return getModsFolder();
     });
 
     ipcMain.handle('install-me2', () => {
@@ -116,7 +116,15 @@ app
     });
 
     ipcMain.on('save-mods-folder', (_, path: string) => {
-      setModFolderPath(path);
+      setModsFolder(path);
+    });
+
+    ipcMain.on('update-me2-path', (_, path: string) => {
+      updateME2Path(path);
+    });
+
+    ipcMain.on('update-mods-folder', (_, path: string) => {
+      updateModsFolder(path);
     });
 
     // Startup tasks

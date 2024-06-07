@@ -1,10 +1,10 @@
 import { randomUUID } from 'crypto';
-import { readdirSync, existsSync, cpSync, rmSync } from 'fs';
+import { readdirSync, existsSync, cpSync, rmSync, renameSync } from 'fs';
 import { extname } from 'path';
 import { errToString, CreateModPathFromName } from '../utils/utilities';
 import { AddModFormValues, Mod } from 'types';
 import { logger } from '../utils/mainLogger';
-import { getModFolderPath, loadMods, saveMods } from './db/api';
+import { getModsFolder, loadMods, saveMods, setModsFolder } from './db/api';
 import MOD_SUBFOLDERS from './modSubfolders';
 import { getMainWindow } from '../main';
 
@@ -80,7 +80,7 @@ export const handleAddMod = async (formData: AddModFormValues) => {
   }
 
   const pathName = CreateModPathFromName(newMod.name);
-  const installPath = `${getModFolderPath()}${pathName}\\`;
+  const installPath = `${getModsFolder()}${pathName}\\`;
   debug(`Installing mod to: ${installPath}`);
 
   if (existsSync(installPath)) {
@@ -133,7 +133,7 @@ export const handleDeleteMod = (mod: Mod) => {
   const newMods = mods.filter((m) => m.uuid !== mod.uuid);
   const pathName = CreateModPathFromName(mod.name);
   debug(`Removing mod from: ${pathName}`);
-  const installPath = `${getModFolderPath()}${pathName}\\`;
+  const installPath = `${getModsFolder()}${pathName}\\`;
   debug(`Checking if mod path exists: ${installPath}`);
   let foundPath = true;
   try {
@@ -169,7 +169,7 @@ export const handleDeleteMod = (mod: Mod) => {
 };
 
 export const promptModsFolder = () => {
-  const modsFolder = getModFolderPath();
+  const modsFolder = getModsFolder();
   if (existsSync(modsFolder)) {
     throw new Error('Mods folder found, skipping prompt');
   }
@@ -184,6 +184,39 @@ export const promptModsFolder = () => {
     });
   } catch (err) {
     const msg = `An error occured while prompting user to select mods folder: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg);
+  }
+};
+
+export const updateModsFolder = (newPath: string) => {
+  debug(`Updating mods folder to: ${newPath}`);
+  try {
+    const currentPath = getModsFolder();
+    if (currentPath === newPath) {
+      debug('mods folder unchanged');
+      return;
+    }
+    if (readdirSync(newPath).length > 0) {
+      warning('Destination path is not empty, please select an empty folder');
+      return;
+    }
+    if (!existsSync(currentPath)) {
+      throw new Error('Current mods folder not found');
+    }
+    const contents = readdirSync(currentPath);
+    debug(`Moving mods contents to: ${newPath}`);
+    contents.forEach((file) => {
+      debug(`Moving: ${file}`);
+      renameSync(`${currentPath}/${file}`, `${newPath}/${file}`);
+    });
+    debug('Removing old mods folder');
+    rmSync(currentPath, { recursive: true });
+    debug('Updating mods folder in database');
+    setModsFolder(newPath);
+    debug(`mods folder updated to: ${newPath}`);
+  } catch (err) {
+    const msg = `An error occured while updating mods folder: ${errToString(err)}`;
     error(msg);
     throw new Error(msg);
   }

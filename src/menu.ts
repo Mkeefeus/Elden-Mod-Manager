@@ -4,7 +4,7 @@ import archiver from 'archiver';
 import { createWriteStream, readdirSync, unlinkSync } from 'fs';
 import { logger } from './utils/mainLogger';
 import { errToString } from './utils/utilities';
-import { getModEnginePath, getModFolderPath } from './backend/db/api';
+import { getModEnginePath, getModsFolder } from './backend/db/api';
 
 const { debug, warning, error } = logger;
 
@@ -148,7 +148,7 @@ export const template: MenuItemConstructorOptions[] = [
       {
         label: 'Mods Folder',
         click: () => {
-          shell.openPath(getModFolderPath());
+          shell.openPath(getModsFolder());
         },
       },
       {

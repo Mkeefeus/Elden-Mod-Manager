@@ -95,7 +95,7 @@ export const setEldenRingFolder = (path: string) => {
   }
 };
 
-export const getModFolderPath = () => {
+export const getModsFolder = () => {
   debug('Getting Mod Folder Path');
   try {
     const path = store.get('modFolderPath');
@@ -108,7 +108,7 @@ export const getModFolderPath = () => {
   }
 };
 
-export const setModFolderPath = (path: string) => {
+export const setModsFolder = (path: string) => {
   debug(`Saving Mod Folder Path: ${path}`);
   try {
     store.set('modFolderPath', path);

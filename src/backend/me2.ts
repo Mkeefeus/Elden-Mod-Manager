@@ -1,7 +1,7 @@
 import { execFile } from 'child_process';
 import { existsSync, readdirSync, renameSync, rmSync, writeFileSync } from 'fs';
 import { logger } from '../utils/mainLogger';
-import { getModEnginePath, loadMods } from './db/api';
+import { getModEnginePath, loadMods, setModEnginePath } from './db/api';
 import { errToString } from '../utils/utilities';
 import { Octokit } from 'octokit';
 import decompress from 'decompress';
@@ -9,7 +9,7 @@ import { writeTomlFile } from './toml';
 import { getMainWindow } from '../main';
 import { app } from 'electron';
 
-const { debug, error } = logger;
+const { debug, warning, error } = logger;
 
 export const launchEldenRingModded = () => {
   const modEnginePath = getModEnginePath();
@@ -126,6 +126,39 @@ export const promptME2Install = async () => {
     });
   } catch (err) {
     const msg = `An error occured while prompting user to install Mod Engine: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg);
+  }
+};
+
+export const updateME2Path = (newPath: string) => {
+  debug(`Updating ME2 path to: ${newPath}`);
+  try {
+    const currentPath = getModEnginePath();
+    if (currentPath === newPath) {
+      debug('ME2 path unchanged');
+      return;
+    }
+    if (readdirSync(newPath).length > 0) {
+      warning('Destination path is not empty, please select an empty folder');
+      return;
+    }
+    if (!existsSync(currentPath)) {
+      throw new Error('Current ME2 path not found');
+    }
+    const contents = readdirSync(currentPath);
+    debug(`Moving ME2 contents to: ${newPath}`);
+    contents.forEach((file) => {
+      debug(`Moving: ${file}`);
+      renameSync(`${currentPath}/${file}`, `${newPath}/${file}`);
+    });
+    debug('Removing old ME2 path');
+    rmSync(currentPath, { recursive: true });
+    debug('Updating ME2 path in database');
+    setModEnginePath(newPath);
+    debug(`ME2 path updated to: ${newPath}`);
+  } catch (err) {
+    const msg = `An error occured while updating ME2 path: ${errToString(err)}`;
     error(msg);
     throw new Error(msg);
   }

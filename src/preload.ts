@@ -24,6 +24,8 @@ interface IElectronAPI {
   checkModsFolderPrompt: () => Promise<boolean>;
   saveModsFolder: (path: string) => void;
   clearPromptedModsFolder: () => void;
+  updateModsFolder: (path: string) => void;
+  updateME2Path: (path: string) => void;
   // Main to renderer
   notify: (callback: (log: LogEntry) => void) => void;
   promptME2Install: (callback: () => void) => void;
@@ -57,6 +59,8 @@ const electronAPI: IElectronAPI = {
   checkModsFolderPrompt: () => ipcRenderer.invoke('check-mods-folder-prompt'),
   saveModsFolder: (path) => ipcRenderer.send('save-mods-folder', path),
   clearPromptedModsFolder: () => ipcRenderer.send('clear-prompted-mods-folder'),
+  updateModsFolder: (path) => ipcRenderer.send('update-mods-folder', path),
+  updateME2Path: (path) => ipcRenderer.send('update-me2-path', path),
   // Main to renderer
   notify: (callback) => ipcRenderer.on('notify', (_event, value) => callback(value)),
   promptME2Install: (callback) => ipcRenderer.on('prompt-me2-install', callback),

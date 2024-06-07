@@ -3,7 +3,7 @@ import { CreateModPathFromName, errToString } from '../utils/utilities';
 import store from './db/init';
 import { logger } from '../utils/mainLogger';
 import { writeFileSync } from 'fs';
-import { getModEnginePath, getModFolderPath } from './db/api';
+import { getModEnginePath, getModsFolder } from './db/api';
 import { app } from 'electron';
 
 const { debug, error } = logger;
@@ -13,7 +13,7 @@ const GenerateTomlString = (mods: Mod[]) => {
   let fileString = '';
   mods.forEach((mod) => {
     if (!mod.enabled) return;
-    const path = `${getModFolderPath()}\\${CreateModPathFromName(mod.name)}${mod.dllFile ? '\\' + mod.dllFile : ''}`;
+    const path = `${getModsFolder()}\\${CreateModPathFromName(mod.name)}${mod.dllFile ? '\\' + mod.dllFile : ''}`;
 
     // keep double backslashes for toml
     const escapedPath = path.replace(/\\/g, '\\\\');
