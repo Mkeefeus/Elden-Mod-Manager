@@ -5,7 +5,7 @@ import { app } from 'electron';
 export type DBSchema = {
   mods: Mod[];
   modEnginePath: string;
-  eldenRingPath: string;
+  eldenRingFolder: string;
   modFolderPath: string;
   firstRun: boolean;
   promptedModsFolder: boolean;
@@ -32,7 +32,7 @@ const schema: Schema<DBSchema> = {
     type: 'string',
     default: app.getPath('userData') + '\\ModEngine\\',
   },
-  eldenRingPath: {
+  eldenRingFolder: {
     type: 'string',
     default: '',
   },

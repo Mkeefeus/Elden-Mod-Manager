@@ -69,10 +69,10 @@ export const setModEnginePath = (path: string) => {
   }
 };
 
-export const getEldenRingPath = () => {
+export const getEldenRingFolder = () => {
   debug('Getting Elden Ring Path');
   try {
-    const path = store.get('eldenRingPath');
+    const path = store.get('eldenRingFolder');
     debug(`Elden Ring Path: ${path}`);
     return path;
   } catch (err) {
@@ -82,10 +82,10 @@ export const getEldenRingPath = () => {
   }
 };
 
-export const saveEldenRingPath = (path: string) => {
+export const setEldenRingFolder = (path: string) => {
   debug(`Saving Elden Ring Path: ${path}`);
   try {
-    store.set('eldenRingPath', path);
+    store.set('eldenRingFolder', path);
     debug('Elden Ring Path saved');
     return true;
   } catch (err) {

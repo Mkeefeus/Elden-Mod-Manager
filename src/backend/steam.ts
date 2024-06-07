@@ -1,9 +1,10 @@
 import { execSync } from 'child_process';
-import { readFileSync } from 'fs';
+import { existsSync, readFileSync } from 'fs';
 import { errToString } from '../utils/utilities';
 import { logger } from '../utils/mainLogger';
 import * as VDF from 'vdf-parser';
 import { shell } from 'electron';
+import { getEldenRingFolder, setEldenRingFolder } from './db/api';
 
 const { debug, error } = logger;
 
@@ -50,7 +51,7 @@ const getSteamInstallDir = () => {
 
 const getLibrayPath = (appID: string, steamDir: string) => {
   debug('Getting library path');
-  const libraryFoldersPath = `${steamDir}/steamapps/libraryfolders.vdf`;
+  const libraryFoldersPath = `${steamDir}\\steamapps\\libraryfolders.vdf`;
   try {
     debug(`Reading libraryfolders.vdf file: ${libraryFoldersPath}`);
     const vdfContent = readFileSync(libraryFoldersPath, 'utf8');
@@ -71,6 +72,11 @@ const getLibrayPath = (appID: string, steamDir: string) => {
 };
 
 export const getEldenRingInstallDir = (): string | null => {
+  const cachedEldenRingFolder = getEldenRingFolder();
+  if (existsSync(`${cachedEldenRingFolder}\\eldenring.exe`)) {
+    debug(`Game install directory loaded from cache: ${cachedEldenRingFolder}`);
+    return cachedEldenRingFolder;
+  }
   const appId = '1245620';
   const steamDir = getSteamInstallDir();
   if (!steamDir) {
@@ -78,8 +84,8 @@ export const getEldenRingInstallDir = (): string | null => {
   }
   const libraryFoldersPath = getLibrayPath(appId, steamDir);
 
-  debug(`Searching for appmanifest_${appId}.acf file in ${libraryFoldersPath}/steamapps/`);
-  const appManifestPath = `${libraryFoldersPath}/steamapps/appmanifest_${appId}.acf`;
+  debug(`Searching for appmanifest_${appId}.acf file in ${libraryFoldersPath}\\steamapps\\`);
+  const appManifestPath = `${libraryFoldersPath}\\steamapps\\appmanifest_${appId}.acf`;
 
   try {
     const appManifestData = readFileSync(appManifestPath, 'utf8');
@@ -88,8 +94,10 @@ export const getEldenRingInstallDir = (): string | null => {
     for (const line of lines) {
       const match = line.match(/^\s*"installdir"\s*"(.+)"$/);
       if (match && match[1]) {
-        debug(`Game install directory: ${steamDir}\\steamapps\\common\\${match[1]}\\Game`);
-        return `${steamDir}\\steamapps\\common\\${match[1]}\\Game`;
+        const folder = `${steamDir}\\steamapps\\common\\${match[1]}\\Game`;
+        debug(`Game install directory: ${folder}`);
+        setEldenRingFolder(folder)
+        return folder;
       }
     }
   } catch (err) {
