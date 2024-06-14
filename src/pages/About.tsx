@@ -35,7 +35,7 @@ const About = () => {
   };
 
   return (
-    <Stack flex={'1 0 0'} ref={pageSize.ref}>
+    <Stack flex={1} ref={pageSize.ref}>
       <Title ta="center">Licenses</Title>
       <ScrollArea type="always" mah={pageSize.height * 0.8}>
         <Accordion variant="separated">

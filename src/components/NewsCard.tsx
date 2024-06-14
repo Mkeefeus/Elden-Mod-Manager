@@ -1,16 +1,4 @@
-import {
-  Badge,
-  Group,
-  Avatar,
-  Divider,
-  Text,
-  useMantineTheme,
-  Paper,
-  Spoiler,
-  Stack,
-  Image,
-  Title,
-} from '@mantine/core';
+import { Badge, Group, Avatar, Divider, Text, Paper, Spoiler, Stack, Title } from '@mantine/core';
 import { NewsComponentProps } from 'types';
 
 interface NewsCardProps {
@@ -36,12 +24,11 @@ const formatISODateToCustom = (isoDateString: string): string => {
 };
 
 const NewsCard = ({ article }: NewsCardProps) => {
-  const theme = useMantineTheme();
   return (
-    <Paper bg={theme.colors.dark[8]} shadow="xl" withBorder p="md">
+    <Paper p={'md'} shadow="xl">
       <Group>
         <Stack align="center" gap={'md'} flex={1}>
-          <Image src={article.imageLink} alt="Mantine logo" maw={130} mah={130} id="featuredImage" />
+          <img src={article.imageLink} alt="Mantine logo" width={130} height={130} id="featuredImage" />
           <Badge id="badgeTag" radius="xs" variant="gradient">
             {article.postCategory}
           </Badge>

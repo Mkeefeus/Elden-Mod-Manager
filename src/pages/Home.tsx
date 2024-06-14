@@ -1,4 +1,15 @@
-import { Button, Group, Stack, Title, Divider, useMantineTheme, Container, ScrollArea, Text } from '@mantine/core';
+import {
+  Button,
+  Group,
+  Stack,
+  Title,
+  Divider,
+  useMantineTheme,
+  Container,
+  ScrollArea,
+  Text,
+  Paper,
+} from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
 import { useNews } from '../providers/NewsProvider';
 import NewsCard from '../components/NewsCard';
@@ -39,7 +50,7 @@ const Home = () => {
   };
 
   return (
-    <Stack gap={'sm'} flex={'1 0 0'} ref={pageSize.ref}>
+    <Stack gap={'sm'} flex={1} ref={pageSize.ref}>
       <Stack ref={contentSize.ref}>
         <Title order={2}>Quick Actions</Title>
         <Group gap={'lg'} justify="space-between" grow>
@@ -67,13 +78,15 @@ const Home = () => {
           </Container>
         )}
       </Stack>
-      <ScrollArea.Autosize mah={(pageSize.height - contentSize.height) * 0.9}>
-        <Stack gap={'xs'}>
-          {news.map((article, index) => {
-            return <NewsCard key={index} article={article} />;
-          })}
-        </Stack>
-      </ScrollArea.Autosize>
+      <Paper withBorder p="xs" bg={theme.colors.dark[8]} shadow="s">
+        <ScrollArea.Autosize mah={(pageSize.height - contentSize.height) * 0.9}>
+          <Stack gap={'s'}>
+            {news.map((article, index) => {
+              return <NewsCard key={index} article={article} />;
+            })}
+          </Stack>
+        </ScrollArea.Autosize>
+      </Paper>
     </Stack>
   );
 };

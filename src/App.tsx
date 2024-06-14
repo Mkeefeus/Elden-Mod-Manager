@@ -34,7 +34,7 @@ const App = () => {
           ))}
         </Stack>
       </AppShell.Navbar>
-      <AppShell.Main display={'flex'}>
+      <AppShell.Main display={'flex'} style={{ flexDirection: 'column' }}>
         <ModalProvider>
           <NewsProvider>
             <Modal />

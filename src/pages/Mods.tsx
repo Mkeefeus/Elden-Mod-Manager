@@ -156,7 +156,7 @@ const Mods = () => {
   };
 
   return (
-    <Stack gap="xl" justify={'center'} flex={'1 0 0'} ref={pageSize.ref}>
+    <Stack gap="xl" flex={1} ref={pageSize.ref}>
       <ScrollArea.Autosize mah={pageSize.height * 0.8}>
         <ModTable mods={mods} sort={sort} saveMods={saveMods} loadMods={loadMods} changeSort={handleSortChange} />
       </ScrollArea.Autosize>
