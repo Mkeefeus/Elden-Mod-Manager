@@ -9,7 +9,6 @@ import './utils/rendererLogger';
 
 const App = () => {
   // Main to Renderer events
-
   return (
     <AppShell
       header={{ height: { base: 60, md: 70, lg: 80 } }}
@@ -35,7 +34,7 @@ const App = () => {
           ))}
         </Stack>
       </AppShell.Navbar>
-      <AppShell.Main>
+      <AppShell.Main display={'flex'}>
         <ModalProvider>
           <NewsProvider>
             <Modal />

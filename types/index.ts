@@ -31,3 +31,10 @@ export type NewsComponentProps = {
 };
 
 export type BrowseType = 'zip' | 'dll' | 'exe' | 'directory';
+
+export type Dependency = {
+  licenses: string;
+  repository: string;
+  licenseUrl: string;
+  parents: string[];
+};

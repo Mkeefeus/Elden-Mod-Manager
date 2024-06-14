@@ -1,4 +1,4 @@
-import { Button, Group, Stack } from '@mantine/core';
+import { Button, Group, ScrollArea, Stack } from '@mantine/core';
 import ModTable from '../components/ModTable';
 import { useState, useEffect } from 'react';
 import { Mod } from 'types';
@@ -8,6 +8,7 @@ import { sendLog } from '../utils/rendererLogger';
 import { errToString } from '../utils/utilities';
 import { useModal } from '../providers/ModalProvider';
 import PromptModsFolderModal from '../components/PromptModsFolderModal';
+import { useElementSize } from '@mantine/hooks';
 
 type SortObject = {
   column: string;
@@ -19,6 +20,7 @@ const Mods = () => {
   const [mods, setMods] = useState<Mod[]>([]);
   const [sort, setSort] = useState<SortObject>({ column: 'installDate', order: 'desc' });
   const { showModal, hideModal } = useModal();
+  const pageSize = useElementSize();
 
   const handleModalClose = (fromZip: boolean) => {
     if (fromZip) {
@@ -154,8 +156,10 @@ const Mods = () => {
   };
 
   return (
-    <Stack gap="xl" justify={'center'}>
-      <ModTable mods={mods} sort={sort} saveMods={saveMods} loadMods={loadMods} changeSort={handleSortChange} />
+    <Stack gap="xl" justify={'center'} flex={'1 0 0'} ref={pageSize.ref}>
+      <ScrollArea.Autosize mah={pageSize.height * 0.8}>
+        <ModTable mods={mods} sort={sort} saveMods={saveMods} loadMods={loadMods} changeSort={handleSortChange} />
+      </ScrollArea.Autosize>
       <Group gap={'md'}>
         <Button
           onClick={() => {

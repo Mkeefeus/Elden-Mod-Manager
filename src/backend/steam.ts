@@ -96,7 +96,7 @@ export const getEldenRingInstallDir = (): string | null => {
       if (match && match[1]) {
         const folder = `${steamDir}\\steamapps\\common\\${match[1]}\\Game`;
         debug(`Game install directory: ${folder}`);
-        setEldenRingFolder(folder)
+        setEldenRingFolder(folder);
         return folder;
       }
     }

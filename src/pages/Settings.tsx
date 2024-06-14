@@ -48,12 +48,12 @@ const Settings = () => {
     if (!path) {
       sendLog({ level: 'warning', message: 'No path selected' });
     }
-    console.log('path', path)
+    console.log('path', path);
     field === 'me2' ? setMe2Path(path) : setModsPath(path);
   };
 
   return (
-    <Stack gap={'md'} style={{ height: '100%' }}>
+    <Stack gap={'md'} flex={'1 0 0'}>
       <Group align={'flex-end'} justify={'space-between'}>
         <TextInput
           label="Mods Folder Path"
