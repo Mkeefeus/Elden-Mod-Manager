@@ -2,6 +2,8 @@ import ModTableHeader from './ModTableHeader';
 import { Mod } from 'types';
 import { Table, Checkbox, Center } from '@mantine/core';
 import ModTableMenu from './ModTableMenu';
+import { useModal } from '../providers/ModalProvider';
+import ConfirmDeleteModal from './ConfirmDeleteModal';
 
 const columns = [
   { label: 'Enabled', sortKey: 'enabled' },
@@ -20,6 +22,7 @@ type ModTableProps = {
 };
 
 const ModTable = ({ mods, sort, saveMods, loadMods, changeSort }: ModTableProps) => {
+  const { showModal } = useModal();
   const handleCheckboxChange = (index: number) => {
     const newMods = [...mods];
     const mod = newMods[index];
@@ -57,11 +60,6 @@ const ModTable = ({ mods, sort, saveMods, loadMods, changeSort }: ModTableProps)
     saveMods(newMods);
   };
 
-  const handleDelete = async (mod: Mod) => {
-    await window.electronAPI.deleteMod(mod);
-    loadMods();
-  };
-
   const rows = mods.map((mod, index) => {
     return (
       <Table.Tr key={mod.uuid} bg={mod.enabled ? 'dark.8' : undefined}>
@@ -92,7 +90,12 @@ const ModTable = ({ mods, sort, saveMods, loadMods, changeSort }: ModTableProps)
             down: (mod.enabled && mod.loadOrder && mod.loadOrder < mods.filter((mod) => mod.enabled).length) || false,
           }}
           hasExe={mod.exe != undefined}
-          handleDelete={() => handleDelete(mod)}
+          handleDelete={() =>
+            showModal({
+              title: 'Delete mod',
+              content: <ConfirmDeleteModal mod={mod} loadMods={loadMods} />,
+            })
+          }
           changePriority={(direction: 'up' | 'down') => changePriority(mod, direction)}
           handleOpenExe={() => handleOpenExe(mod)}
         />

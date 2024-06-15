@@ -64,8 +64,8 @@ app
       return handleAddMod(formData);
     });
 
-    ipcMain.on('delete-mod', (_, mod: Mod) => {
-      handleDeleteMod(mod);
+    ipcMain.handle('delete-mod', (_, mod: Mod) => {
+      return handleDeleteMod(mod);
     });
 
     ipcMain.on('launch-game', (_, modded: boolean) => {
