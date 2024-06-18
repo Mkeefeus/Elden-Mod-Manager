@@ -113,7 +113,7 @@ const AddMod = ({ close, fromZip, namesInUse, loadMods }: AddModProps) => {
                     message: 'No folder selected',
                   });
                   return;
-                };
+                }
                 form.setFieldValue('path', pathToCopy);
               }
             }}

@@ -5,7 +5,6 @@ import ModTableMenu from './ModTableMenu';
 import { useModal } from '../providers/ModalProvider';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
 import { sendLog } from 'src/utils/rendererLogger';
-import { send } from 'vite';
 
 const columns = [
   { label: 'Enabled', sortKey: 'enabled' },
