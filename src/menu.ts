@@ -5,6 +5,7 @@ import { createWriteStream, readdirSync, unlinkSync } from 'fs';
 import { logger } from './utils/mainLogger';
 import { errToString } from './utils/utilities';
 import { getModEnginePath, getModsFolder } from './backend/db/api';
+import { promptME2Install } from './backend/me2';
 
 const { debug, warning, error } = logger;
 
@@ -189,6 +190,12 @@ export const template: MenuItemConstructorOptions[] = [
       {
         label: 'Collect Logs',
         click: handleCollectLogs,
+      },
+      {
+        label: 'Reinstall ME2',
+        click: () => {
+          promptME2Install();
+        },
       },
     ],
   },

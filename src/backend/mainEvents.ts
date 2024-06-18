@@ -21,6 +21,7 @@ import { launchEldenRing } from './steam';
 import { browse, extractModZip } from './fileSystem';
 import { handleAddMod, handleDeleteMod, updateModsFolder } from './mods';
 import './toml';
+import { getMainWindow } from '../main';
 
 const { debug, warning, error } = logger;
 
@@ -155,7 +156,13 @@ app
 
     // Startup tasks
     if (isFirstRun()) {
-      promptME2Install();
+      const window = getMainWindow();
+      if (!window) {
+        throw new Error('Main window not found');
+      }
+      window.once('ready-to-show', () => {
+        promptME2Install();
+      });
       clearFirstRun();
     }
     validateModsFolder();

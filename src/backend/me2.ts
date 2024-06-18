@@ -109,21 +109,13 @@ export const downloadModEngine2 = async () => {
 };
 
 export const promptME2Install = async () => {
-  debug('Checking if Mod Engine is installed');
-  // const modEnginePath = getModEnginePath();
-  // if (existsSync(modEnginePath)) {
-  //   debug('Mod Engine found, removing');
-  //   rmSync(modEnginePath, { recursive: true });
-  // }
   debug('Prompting user to install Mod Engine');
   try {
     const window = getMainWindow();
     if (!window) {
       throw new Error('Main window not found');
     }
-    window.once('ready-to-show', () => {
-      window.webContents.send('prompt-me2-install');
-    });
+    window.webContents.send('prompt-me2-install');
   } catch (err) {
     const msg = `An error occured while prompting user to install Mod Engine: ${errToString(err)}`;
     error(msg);
