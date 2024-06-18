@@ -110,11 +110,6 @@ export const downloadModEngine2 = async () => {
 
 export const promptME2Install = async () => {
   debug('Checking if Mod Engine is installed');
-  // const modEnginePath = getModEnginePath();
-  // if (existsSync(modEnginePath)) {
-  //   debug('Mod Engine found, removing');
-  //   rmSync(modEnginePath, { recursive: true });
-  // }
   debug('Prompting user to install Mod Engine');
   try {
     const window = getMainWindow();

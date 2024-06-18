@@ -6,8 +6,8 @@ const TEXT_INPUT_STYLE = { flex: 7 };
 const BUTTON_STYLE = { flex: 1 };
 
 const Settings = () => {
-  const [me2Path, setMe2Path] = useState<string | undefined>('');
-  const [modsPath, setModsPath] = useState<string | undefined>('');
+  const [me2Path, setMe2Path] = useState<string>('');
+  const [modsPath, setModsPath] = useState<string>('');
 
   // Refs to track if it's the initial render
   const isInitialMe2PathRender = useRef(true);
@@ -25,17 +25,14 @@ const Settings = () => {
   }, []);
 
   useEffect(() => {
-    if (!me2Path) return;
     if (isInitialMe2PathRender.current) {
       isInitialMe2PathRender.current = false;
       return;
     }
-    console.log('updating me2 path', me2Path);
     window.electronAPI.updateME2Path(me2Path);
   }, [me2Path]);
 
   useEffect(() => {
-    if (!modsPath) return;
     if (isInitialModsPathRender.current) {
       isInitialModsPathRender.current = false;
       return;
@@ -47,8 +44,8 @@ const Settings = () => {
     const path = await window.electronAPI.browse('directory', 'Select Folder');
     if (!path) {
       sendLog({ level: 'warning', message: 'No path selected' });
+      return;
     }
-    console.log('path', path);
     field === 'me2' ? setMe2Path(path) : setModsPath(path);
   };
 

@@ -1,5 +1,6 @@
 import { Button, Group, HoverCard, Stack, Text } from '@mantine/core';
 import { useState } from 'react';
+import { sendLog } from 'src/utils/rendererLogger';
 
 interface PromptModsFolderModalProps {
   hideModal: () => void;
@@ -18,6 +19,10 @@ const PromptModsFolderModal = ({ hideModal }: PromptModsFolderModalProps) => {
     const modFoler = await window.electronAPI.browse('directory', 'Select Mods Folder');
     if (!modFoler) {
       setLoading(false);
+      sendLog({
+        level: 'warning',
+        message: 'No folder selected',
+      });
       return;
     }
     window.electronAPI.saveModsFolder(modFoler);

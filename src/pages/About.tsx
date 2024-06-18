@@ -3,6 +3,7 @@ import LicenseCard from '../components/LicenseCard';
 import { useEffect, useState } from 'react';
 import { Dependency } from 'types';
 import { useElementSize } from '@mantine/hooks';
+import { sendLog } from '../utils/rendererLogger';
 
 interface DependenciesData {
   [key: string]: Dependency;
@@ -18,7 +19,12 @@ const About = () => {
       try {
         const response = await fetch('./licenses.json');
         if (!response.ok) {
-          throw new Error('Failed to fetch licenses');
+          const msg = 'Failed to fetch licenses with status: ' + response.status;
+          sendLog({
+            level: 'error',
+            message: msg,
+          });
+          throw new Error(msg);
         }
         const data = (await response.json()) as DependenciesData;
         setLicenses(data);

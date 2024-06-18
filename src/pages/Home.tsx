@@ -79,7 +79,7 @@ const Home = () => {
         )}
       </Stack>
       <Paper withBorder p="xs" bg={theme.colors.dark[8]} shadow="s">
-        <ScrollArea.Autosize mah={(pageSize.height - contentSize.height) * 0.9}>
+        <ScrollArea.Autosize mah={(pageSize.height - contentSize.height) * 0.8}>
           <Stack gap={'s'}>
             {news.map((article, index) => {
               return <NewsCard key={index} article={article} />;

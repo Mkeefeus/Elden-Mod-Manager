@@ -169,12 +169,12 @@ export const handleDeleteMod = (mod: Mod) => {
 };
 
 export const promptModsFolder = () => {
-  const modsFolder = getModsFolder();
-  if (existsSync(modsFolder)) {
-    throw new Error('Mods folder found, skipping prompt');
-  }
-  debug('Prompting user to select mods folder');
   try {
+    const modsFolder = getModsFolder();
+    if (existsSync(modsFolder)) {
+      throw new Error('Mods folder found, skipping prompt');
+    }
+    debug('Prompting user to select mods folder');
     const window = getMainWindow();
     if (!window) {
       throw new Error('Main window not found');

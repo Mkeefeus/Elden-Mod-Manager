@@ -1,5 +1,6 @@
 import { TextInput, Checkbox, Group, Button } from '@mantine/core';
 import { UseFormReturnType } from '@mantine/form';
+import { sendLog } from 'src/utils/rendererLogger';
 import { AddModFormValues } from 'types';
 
 interface AddModSettingsProps {
@@ -29,7 +30,13 @@ const AddModSettings = ({ form, showLoader }: AddModSettingsProps) => {
               const dllPath = await window.electronAPI.browse('dll', 'Select mod dll file', form.values.path);
               if (!dllPath) return;
               const dllFile = dllPath.split('\\').pop();
-              if (!dllFile) return;
+              if (!dllFile) {
+                sendLog({
+                  level: 'warning',
+                  message: 'Failed to get dll file name',
+                });
+                return;
+              }
               form.setFieldValue('dllPath', dllFile);
             }}
             style={BROWSE_BUTTON_STYLE}
@@ -55,7 +62,13 @@ const AddModSettings = ({ form, showLoader }: AddModSettingsProps) => {
               const exePath = await window.electronAPI.browse('exe', 'Select mod executable', form.values.path);
               if (!exePath) return;
               const exeFile = exePath.split('\\').pop();
-              if (!exeFile) return;
+              if (!exeFile) {
+                sendLog({
+                  level: 'warning',
+                  message: 'Failed to get exe file name',
+                });
+                return;
+              }
               form.setFieldValue('exePath', exeFile);
             }}
             style={BROWSE_BUTTON_STYLE}

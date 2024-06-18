@@ -4,6 +4,8 @@ import { Table, Checkbox, Center } from '@mantine/core';
 import ModTableMenu from './ModTableMenu';
 import { useModal } from '../providers/ModalProvider';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
+import { sendLog } from 'src/utils/rendererLogger';
+import { send } from 'vite';
 
 const columns = [
   { label: 'Enabled', sortKey: 'enabled' },
@@ -36,6 +38,10 @@ const ModTable = ({ mods, sort, saveMods, loadMods, changeSort }: ModTableProps)
 
   const getSwapIndex = (mod: Mod, direction: 'up' | 'down') => {
     if (!mod.loadOrder) {
+      sendLog({
+        level: 'error',
+        message: `Mod ${mod.name} does not have load order`,
+      });
       return;
     }
     const swapLoadOrder = direction === 'up' ? mod.loadOrder - 1 : mod.loadOrder + 1;
@@ -47,10 +53,18 @@ const ModTable = ({ mods, sort, saveMods, loadMods, changeSort }: ModTableProps)
     const index = mods.findIndex((m) => m.uuid === mod.uuid);
     const swapIndex = getSwapIndex(mod, direction);
     if (swapIndex === undefined) {
+      sendLog({
+        level: 'error',
+        message: `Failed to get swap index for ${mod.name}`,
+      });
       return;
     }
     // Check if swapIndex is within the valid range
     if (swapIndex < 0 || swapIndex >= mods.length) {
+      sendLog({
+        level: 'error',
+        message: `Invalid swap index for ${mod.name}`,
+      });
       return;
     }
     const newMods = [...mods];

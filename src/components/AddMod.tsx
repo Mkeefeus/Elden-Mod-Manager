@@ -4,6 +4,7 @@ import { useState } from 'react';
 import AddModSettings from './AddModSettings';
 import { AddModFormValues } from 'types';
 import { sleep } from '../utils/utilities';
+import { sendLog } from 'src/utils/rendererLogger';
 
 interface AddModProps {
   close: () => void;
@@ -47,6 +48,10 @@ const AddMod = ({ close, fromZip, namesInUse, loadMods }: AddModProps) => {
     const success = await window.electronAPI.addMod(values);
     if (!success) {
       setShowSubmitLoader(false);
+      sendLog({
+        level: 'error',
+        message: 'Failed to add mod',
+      });
       return;
     }
     await sleep(1000);
@@ -58,11 +63,24 @@ const AddMod = ({ close, fromZip, namesInUse, loadMods }: AddModProps) => {
 
   const extractZip = async () => {
     const zipPath = await window.electronAPI.browse('zip', 'Select zip file');
-    if (!zipPath) return;
+    if (!zipPath) {
+      sendLog({
+        level: 'info',
+        message: 'No zip file selected',
+      });
+      return;
+    }
+
     setShowExtractLoader(true);
     const extracted = await window.electronAPI.extractZip(zipPath);
     setShowExtractLoader(false);
-    if (!extracted) return;
+    if (!extracted) {
+      sendLog({
+        level: 'error',
+        message: 'Failed to extract zip',
+      });
+      return;
+    }
     return extracted;
   };
 
@@ -89,7 +107,13 @@ const AddMod = ({ close, fromZip, namesInUse, loadMods }: AddModProps) => {
                   'Select mod folder',
                   form.isDirty('path') ? form.getValues()['path'] : undefined
                 );
-                if (!pathToCopy) return;
+                if (!pathToCopy) {
+                  sendLog({
+                    level: 'info',
+                    message: 'No folder selected',
+                  });
+                  return;
+                };
                 form.setFieldValue('path', pathToCopy);
               }
             }}

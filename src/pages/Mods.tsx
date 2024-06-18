@@ -101,7 +101,13 @@ const Mods = () => {
   const loadMods = async () => {
     try {
       const dbMods = await window.electronAPI.loadMods();
-      if (!dbMods) return;
+      if (!dbMods) {
+        sendLog({
+          level: 'error',
+          message: 'Failed to load mods',
+        });
+        return;
+      }
       setMods(sortMods(dbMods));
     } catch (error) {
       const message = `An error occured while loading mods: ${errToString(error)}`;
@@ -143,7 +149,13 @@ const Mods = () => {
     const sortedMods = sortMods(validatedMods);
     await Promise.resolve();
     const success = await window.electronAPI.saveMods(validatedMods);
-    if (!success) return;
+    if (!success) {
+      sendLog({
+        level: 'error',
+        message: 'Failed to save mods',
+      });
+      return;
+    }
     setMods(sortedMods);
   };
 
