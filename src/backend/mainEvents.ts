@@ -12,7 +12,7 @@ import {
   setModsFolder,
 } from './db/api';
 import { AddModFormValues, BrowseType, Mod } from 'types';
-import { existsSync, rmSync } from 'fs';
+import { existsSync, mkdirSync, readdirSync, rmSync } from 'fs';
 import { CreateModPathFromName, errToString } from '../utils/utilities';
 import { handleLog, logger } from '../utils/mainLogger';
 import { LogEntry } from 'winston';
@@ -22,7 +22,7 @@ import { browse, extractModZip } from './fileSystem';
 import { handleAddMod, handleDeleteMod, updateModsFolder } from './mods';
 import './toml';
 
-const { debug, error } = logger;
+const { debug, warning, error } = logger;
 
 const clearTemp = () => {
   debug('Clearing temp directory');
@@ -37,6 +37,32 @@ const clearTemp = () => {
     debug('Temp directory cleared');
   } catch (err) {
     const msg = `An error occured while clearing temp directory: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg);
+  }
+};
+
+const validateModsFolder = () => {
+  try {
+    debug('Validating mod folder');
+    const modsFolder = getModsFolder();
+    if (!modsFolder) {
+      const msg = 'Mods folder not set';
+      error(msg);
+      throw new Error(msg);
+    }
+    if (!existsSync(modsFolder)) {
+      mkdirSync(modsFolder);
+      debug(`Mods folder created at: ${modsFolder}`);
+    }
+    const modsCount = loadMods().length;
+    const modFoldersCount = readdirSync(modsFolder).length;
+    if (modsCount !== modFoldersCount) {
+      const msg = `Mods folder contains ${modFoldersCount} folders but ${modsCount} mods are loaded`;
+      warning(msg);
+    }
+  } catch (err) {
+    const msg = `An error occured while validating mod folder: ${errToString(err)}`;
     error(msg);
     throw new Error(msg);
   }
@@ -132,7 +158,7 @@ app
       promptME2Install();
       clearFirstRun();
     }
-    // clearTemp();
+    validateModsFolder();
     debug('App started');
   })
   .catch((err) => {

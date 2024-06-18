@@ -31,7 +31,7 @@ const Footer = () => {
         ))}
       </Group>
       <Text size={'sm'} span>
-        &copy; 2024 Mkeefeus Beans Inc. All rights reserved.
+        &copy; 2024 Malcolm Keefe. All rights reserved.
       </Text>
     </Group>
   );

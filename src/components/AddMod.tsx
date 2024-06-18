@@ -4,7 +4,7 @@ import { useState } from 'react';
 import AddModSettings from './AddModSettings';
 import { AddModFormValues } from 'types';
 import { sleep } from '../utils/utilities';
-import { sendLog } from 'src/utils/rendererLogger';
+import { sendLog } from '../utils/rendererLogger';
 
 interface AddModProps {
   close: () => void;

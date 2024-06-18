@@ -1,6 +1,6 @@
 import { TextInput, Checkbox, Group, Button } from '@mantine/core';
 import { UseFormReturnType } from '@mantine/form';
-import { sendLog } from 'src/utils/rendererLogger';
+import { sendLog } from '../utils/rendererLogger';
 import { AddModFormValues } from 'types';
 
 interface AddModSettingsProps {

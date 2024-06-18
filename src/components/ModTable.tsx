@@ -4,7 +4,7 @@ import { Table, Checkbox, Center } from '@mantine/core';
 import ModTableMenu from './ModTableMenu';
 import { useModal } from '../providers/ModalProvider';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
-import { sendLog } from 'src/utils/rendererLogger';
+import { sendLog } from '../utils/rendererLogger';
 
 const columns = [
   { label: 'Enabled', sortKey: 'enabled' },

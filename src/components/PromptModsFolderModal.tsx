@@ -1,6 +1,6 @@
 import { Button, Group, HoverCard, Stack, Text } from '@mantine/core';
 import { useState } from 'react';
-import { sendLog } from 'src/utils/rendererLogger';
+import { sendLog } from '../utils/rendererLogger';
 
 interface PromptModsFolderModalProps {
   hideModal: () => void;

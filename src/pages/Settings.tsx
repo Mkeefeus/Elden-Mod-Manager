@@ -1,5 +1,5 @@
 import { TextInput, Button, Stack, Group } from '@mantine/core';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { sendLog } from '../utils/rendererLogger';
 
 const TEXT_INPUT_STYLE = { flex: 7 };
@@ -8,10 +8,6 @@ const BUTTON_STYLE = { flex: 1 };
 const Settings = () => {
   const [me2Path, setMe2Path] = useState<string>('');
   const [modsPath, setModsPath] = useState<string>('');
-
-  // Refs to track if it's the initial render
-  const isInitialMe2PathRender = useRef(true);
-  const isInitialModsPathRender = useRef(true);
 
   const getPaths = async () => {
     const me2Path = await window.electronAPI.getME2Path();
@@ -24,22 +20,6 @@ const Settings = () => {
     getPaths();
   }, []);
 
-  useEffect(() => {
-    if (isInitialMe2PathRender.current) {
-      isInitialMe2PathRender.current = false;
-      return;
-    }
-    window.electronAPI.updateME2Path(me2Path);
-  }, [me2Path]);
-
-  useEffect(() => {
-    if (isInitialModsPathRender.current) {
-      isInitialModsPathRender.current = false;
-      return;
-    }
-    window.electronAPI.updateModsFolder(modsPath);
-  }, [modsPath]);
-
   const handleBrowse = async (field: string) => {
     const path = await window.electronAPI.browse('directory', 'Select Folder');
     if (!path) {
@@ -47,6 +27,7 @@ const Settings = () => {
       return;
     }
     field === 'me2' ? setMe2Path(path) : setModsPath(path);
+    field === 'me2' ? window.electronAPI.updateME2Path(path) : window.electronAPI.updateModsFolder(path);
   };
 
   return (
