@@ -48,13 +48,13 @@ const AddMod = ({ close, fromZip, namesInUse, loadMods }: AddModProps) => {
     const success = await window.electronAPI.addMod(values);
     if (!success) {
       setShowSubmitLoader(false);
-      sendLog({
-        level: 'error',
-        message: 'Failed to add mod',
-      });
       return;
     }
     await sleep(1000);
+    sendLog({
+      level: 'info',
+      message: 'Mod added successfully',
+    });
     loadMods();
     setShowSubmitLoader(false);
     form.reset();

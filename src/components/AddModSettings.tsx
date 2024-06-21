@@ -14,7 +14,7 @@ const BROWSE_BUTTON_STYLE = { flex: '1' };
 const AddModSettings = ({ form, showLoader }: AddModSettingsProps) => {
   return (
     <>
-      <Checkbox mt="md" label="Is DLL?" {...form.getInputProps('isDll', { type: 'checkbox' })} />
+      <Checkbox mt="md" label="Is DLL mod?" {...form.getInputProps('isDll', { type: 'checkbox' })} />
       {form.values.isDll && (
         <Group align="end">
           <TextInput
@@ -45,8 +45,7 @@ const AddModSettings = ({ form, showLoader }: AddModSettingsProps) => {
           </Button>
         </Group>
       )}
-      <Checkbox mt="md" label="Delete after import?" {...form.getInputProps('delete', { type: 'checkbox' })} />
-      <Checkbox mt="md" label="Has exe?" {...form.getInputProps('hasExe', { type: 'checkbox' })} />
+      <Checkbox mt="md" label="Has application?" {...form.getInputProps('hasExe', { type: 'checkbox' })} />
       {form.values.hasExe && (
         <Group align="end">
           <TextInput
@@ -77,6 +76,7 @@ const AddModSettings = ({ form, showLoader }: AddModSettingsProps) => {
           </Button>
         </Group>
       )}
+      <Checkbox mt="md" label="Delete after import?" {...form.getInputProps('delete', { type: 'checkbox' })} />
       <Group justify="flex-end" mt="md">
         <Button loading={showLoader} type="submit">
           Submit

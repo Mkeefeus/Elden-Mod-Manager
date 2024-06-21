@@ -2,6 +2,7 @@ import { Button, Group, Text, Space } from '@mantine/core';
 import { useModal } from '../providers/ModalProvider';
 import { Mod } from 'types';
 import { useState } from 'react';
+import { sendLog } from '../utils/rendererLogger';
 
 interface ConfirmDeleteModalProps {
   mod: Mod;
@@ -20,7 +21,11 @@ const ConfirmDeleteModal = ({ mod, loadMods }: ConfirmDeleteModalProps) => {
   const handleDelete = async () => {
     setSpinner(true);
     await window.electronAPI.deleteMod(mod);
-    hideModal();
+    sendLog({
+      level: 'info',
+      message: `Deleted mod ${mod.name}`,
+    });
+    cleanupModal();
     loadMods();
   };
 

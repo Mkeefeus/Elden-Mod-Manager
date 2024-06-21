@@ -42,11 +42,12 @@ const clickableMessage = (message: string) => {
 };
 
 const showNotification = (log: LogEntry) => {
+  console.log('showNotification', log)
   const label = getLogLabel(log.level);
   notifications.show({
     color: getLogColor(log.level),
-    title: label + ' (Click to copy)',
-    message: clickableMessage(log.message),
+    title: `${label + (log.level === 'info' ? '' : ' (Click to copy)')}`,
+    message: log.level === 'info' ? log.message : clickableMessage(log.message),
   });
 };
 

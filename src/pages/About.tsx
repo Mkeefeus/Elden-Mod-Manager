@@ -1,9 +1,10 @@
-import { Accordion, Stack, Title, ScrollArea } from '@mantine/core';
+import { Accordion, Stack, Title, ScrollArea, Text } from '@mantine/core';
 import LicenseCard from '../components/LicenseCard';
 import { useEffect, useState } from 'react';
 import { Dependency } from 'types';
 import { useElementSize } from '@mantine/hooks';
 import { sendLog } from '../utils/rendererLogger';
+import { version } from '../../package.json';
 
 interface DependenciesData {
   [key: string]: Dependency;
@@ -50,6 +51,7 @@ const About = () => {
           ))}
         </Accordion>
       </ScrollArea.Autosize>
+      <Text>{`Version ${version}`}</Text>
     </Stack>
   );
 };
