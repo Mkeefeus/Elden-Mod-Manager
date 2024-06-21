@@ -42,7 +42,7 @@ const clickableMessage = (message: string) => {
 };
 
 const showNotification = (log: LogEntry) => {
-  console.log('showNotification', log)
+  console.log('showNotification', log);
   const label = getLogLabel(log.level);
   notifications.show({
     color: getLogColor(log.level),
