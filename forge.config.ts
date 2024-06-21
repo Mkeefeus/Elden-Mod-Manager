@@ -19,6 +19,7 @@ const config: ForgeConfig = {
       authors: 'Mkeefeus and Mark1127',
       description: 'A mod manager for Elden Ring',
     }),
+    new MakerZIP({}, ['win32']),
   ],
   plugins: [
     new VitePlugin({
