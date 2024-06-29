@@ -1,14 +1,22 @@
 import { AppShell, Button, Stack, Group, Title } from '@mantine/core';
 import { Outlet, Link } from 'react-router-dom';
 import { pages } from './pages/pages';
-import NewsProvider from './providers/NewsProvider';
 import Footer from './components/Footer';
 import ModalProvider from './providers/ModalProvider';
 import Modal from './components/Modal';
 import './utils/rendererLogger';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const App = () => {
   // Main to Renderer events
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        refetchOnWindowFocus: false,
+        staleTime: 1000 * 60 * 5,
+      },
+    },
+  });
   return (
     <AppShell
       header={{ height: { base: 60, md: 70, lg: 80 } }}
@@ -36,10 +44,10 @@ const App = () => {
       </AppShell.Navbar>
       <AppShell.Main display={'flex'} style={{ flexDirection: 'column' }}>
         <ModalProvider>
-          <NewsProvider>
+          <QueryClientProvider client={queryClient}>
             <Modal />
             <Outlet />
-          </NewsProvider>
+          </QueryClientProvider>
         </ModalProvider>
       </AppShell.Main>
       <AppShell.Footer>

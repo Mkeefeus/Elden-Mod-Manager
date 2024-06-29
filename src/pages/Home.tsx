@@ -11,18 +11,96 @@ import {
   Paper,
 } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
-import { useNews } from '../providers/NewsProvider';
 import NewsCard from '../components/NewsCard';
 import { useElementSize } from '@mantine/hooks';
+import { useQuery } from '@tanstack/react-query';
+import { sendLog } from '../utils/rendererLogger';
+import { errToString } from '../utils/utilities';
 
 const quickActions: string[] = ['Play', 'Play Vanilla', 'Add a Mod (Zip)', 'Add a Mod (Folder)'];
+
+interface Author {
+  name: string;
+  avatar_URL: string;
+}
+
+interface Categories {
+  [key: string]: {
+    ID: number;
+    name: string;
+    description: string;
+    parent: number;
+    post_count: number;
+  };
+}
+
+interface UncleanPost {
+  title: string;
+  content: string;
+  featured_image: string;
+  author: Author;
+  categories: Categories;
+  date: string;
+}
+
+interface Post {
+  title: string;
+  body: string;
+  imageLink: string;
+  author: string;
+  authorAvatar: string;
+  postCategory: string[];
+  postDate: string;
+}
+
+interface NewsData {
+  posts: UncleanPost[];
+}
 
 const Home = () => {
   const navigate = useNavigate();
   const theme = useMantineTheme();
-  const { news } = useNews();
   const pageSize = useElementSize();
   const contentSize = useElementSize();
+
+  const cleanHTML = (html: string) => {
+    return html.replace(/<[^>]*>?/gm, '');
+  };
+
+  const cleanNewsData = (data: NewsData) => {
+    const cleanedData = data.posts.map<Post>((post) => {
+      const postCategoties = Object.entries(post.categories).map((category) => {
+        return category[0];
+      });
+      return {
+        title: post.title,
+        body: cleanHTML(post.content),
+        imageLink: post.featured_image,
+        author: post.author.name,
+        authorAvatar: post.author.avatar_URL,
+        postCategory: postCategoties,
+        postDate: post.date,
+      };
+    });
+    return cleanedData;
+  };
+  const fetchNews = async () => {
+    const response = await fetch('https://public-api.wordpress.com/rest/v1.1/sites/eldenringmm.wordpress.com/posts/');
+    const uncleanedData = await response.json();
+    const cleanedData = cleanNewsData(uncleanedData);
+    return cleanedData;
+  };
+  const {
+    data: news,
+    isPending,
+    error,
+    isError,
+  } = useQuery<Post[]>({
+    queryKey: ['news'],
+    queryFn: fetchNews,
+  });
+
+  error && sendLog({ level: 'error', message: `An error occured while fetching news: ${errToString(error)}` });
 
   const handleQuckAction = (index: number) => {
     try {
@@ -70,21 +148,28 @@ const Home = () => {
         <Title order={4} my={1} m={0} p={0} fs="italic">
           Recent News
         </Title>
-        {!news && (
-          <Container fluid pl={5}>
-            <Text size={theme.fontSizes.md} style={{ marginRight: 'auto' }}>
-              Loading...
-            </Text>
-          </Container>
-        )}
       </Stack>
       <Paper withBorder p="xs" bg={theme.colors.dark[8]} shadow="s">
         <ScrollArea.Autosize mah={(pageSize.height - contentSize.height) * 0.8}>
-          <Stack gap={'s'}>
-            {news.map((article, index) => {
-              return <NewsCard key={index} article={article} />;
-            })}
-          </Stack>
+          {isPending ? (
+            <Container fluid pl={5}>
+              <Text size={theme.fontSizes.md} style={{ marginRight: 'auto' }}>
+                Loading...
+              </Text>
+            </Container>
+          ) : isError ? (
+            <Container fluid pl={5}>
+              <Text size={theme.fontSizes.md} style={{ marginRight: 'auto' }}>
+                Error: {error instanceof Error ? error.message : error}
+              </Text>
+            </Container>
+          ) : (
+            <Stack gap={'s'}>
+              {news?.map((article, index) => {
+                return <NewsCard key={index} article={article} />;
+              })}
+            </Stack>
+          )}
         </ScrollArea.Autosize>
       </Paper>
     </Stack>
