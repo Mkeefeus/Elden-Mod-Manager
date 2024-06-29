@@ -2,6 +2,7 @@ import Home from './Home';
 import Mods from './Mods';
 import About from './About';
 import Settings from './Settings';
+import ModsProvider from '../providers/ModsProvider';
 
 export type Page = {
   displayName: string;
@@ -18,7 +19,13 @@ export const pages: Page[] = [
   {
     displayName: 'Mods',
     route: '/mods',
-    element: Mods,
+    element: () => {
+      return (
+        <ModsProvider>
+          <Mods />
+        </ModsProvider>
+      );
+    },
   },
   {
     displayName: 'Settings',
