@@ -21,7 +21,7 @@ import { launchEldenRing } from './steam';
 import { browse, extractModZip } from './fileSystem';
 import { handleAddMod, handleDeleteMod, updateModsFolder } from './mods';
 import './toml';
-import './ini'
+import './ini';
 import { getMainWindow } from '../main';
 
 const { debug, warning, error } = logger;
