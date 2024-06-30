@@ -16,7 +16,6 @@ interface IElectronAPI {
   launchModExe: (mod: Mod) => void;
   log: (log: LogEntry) => void;
   extractZip: (zipPath: string) => Promise<string>;
-  clearTemp: () => void;
   setME2Path: (path: string) => void;
   getME2Path: () => Promise<string>;
   getModsPath: () => Promise<string>;
@@ -51,7 +50,6 @@ const electronAPI: IElectronAPI = {
   launchModExe: (...args) => ipcRenderer.send('launch-mod-exe', ...args),
   log: (...args) => ipcRenderer.send('log', ...args),
   extractZip: (...args) => ipcRenderer.invoke('extract-zip', ...args),
-  clearTemp: () => ipcRenderer.send('clear-temp'),
   setME2Path: (path) => ipcRenderer.send('set-me2-path', path),
   getME2Path: () => ipcRenderer.invoke('get-me2-path'),
   getModsPath: () => ipcRenderer.invoke('get-mods-path'),

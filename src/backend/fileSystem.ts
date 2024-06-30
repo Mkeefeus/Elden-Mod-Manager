@@ -5,7 +5,7 @@ import { errToString } from '../utils/utilities';
 import { BrowseType } from 'types';
 import { randomUUID } from 'crypto';
 import decompress from 'decompress';
-import MOD_SUBFOLDERS from './modSubfolders';
+import { MOD_SUBFOLDERS } from './constants';
 
 const { debug, error, warning } = logger;
 

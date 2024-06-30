@@ -1,13 +1,14 @@
 import { execSync } from 'child_process';
 import { existsSync, readdirSync, renameSync, rmSync, writeFileSync } from 'fs';
 import { logger } from '../utils/mainLogger';
-import { getModEnginePath, loadMods, setModEnginePath } from './db/api';
+import { getModEnginePath, getModsFolder, loadMods, setModEnginePath } from './db/api';
 import { errToString } from '../utils/utilities';
 import { Octokit } from 'octokit';
 import decompress from 'decompress';
 import { writeTomlFile } from './toml';
 import { getMainWindow } from '../main';
 import { app } from 'electron';
+import { INI_PATH } from './constants';
 
 const { debug, warning, error } = logger;
 
@@ -15,8 +16,16 @@ export const launchEldenRingModded = () => {
   const modEnginePath = getModEnginePath();
   debug('Launching game with mods');
   try {
-    debug(`Executing ${modEnginePath}\\launchmod_eldenring.bat`)
-    const result = execSync('launchmod_eldenring.bat', { cwd: modEnginePath });
+    debug(`Executing ${modEnginePath}\\launchmod_eldenring.bat`);
+    const result = execSync('launchmod_eldenring.bat', {
+      cwd: modEnginePath,
+      env: {
+        ...process.env,
+        MODS_PATH: `${getModsFolder()}dlls`,
+        INI_PATH: INI_PATH,
+        LOG_PATH: `${app.getPath('logs')}\\elden_mod_loader.txt`,
+      },
+    });
     console.log(result.toString());
   } catch (err) {
     const msg = `An error occured while launching game with mods: ${errToString(err)}`;

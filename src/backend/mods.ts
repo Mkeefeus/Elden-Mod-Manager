@@ -5,7 +5,7 @@ import { errToString, CreateModPathFromName } from '../utils/utilities';
 import { AddModFormValues, Mod } from 'types';
 import { logger } from '../utils/mainLogger';
 import { getModsFolder, loadMods, saveMods, setModsFolder } from './db/api';
-import MOD_SUBFOLDERS from './modSubfolders';
+import { MOD_SUBFOLDERS } from './constants';
 import { getMainWindow } from '../main';
 
 const { debug, error, warning } = logger;
@@ -59,7 +59,7 @@ const validateMod = (path: string, isDll: boolean) => {
   return hasDll || hasValidSubfolder;
 };
 
-export const handleAddMod = async (formData: AddModFormValues) => {
+export const handleAddMod = (formData: AddModFormValues) => {
   const mods = loadMods();
   const uuid = genUUID();
   const newMod: Mod = {
@@ -80,7 +80,7 @@ export const handleAddMod = async (formData: AddModFormValues) => {
   }
 
   const pathName = CreateModPathFromName(newMod.name);
-  const installPath = `${getModsFolder()}${pathName}\\`;
+  const installPath = newMod.dllFile ? `${getModsFolder()}dlls\\${pathName}` : `${getModsFolder()}${pathName}\\`;
   debug(`Installing mod to: ${installPath}`);
 
   if (existsSync(installPath)) {

@@ -14,10 +14,7 @@ const Mods = () => {
   const { mods, loadMods } = useMods();
   const pageSize = useElementSize();
 
-  const handleModalClose = (fromZip: boolean) => {
-    if (fromZip) {
-      window.electronAPI.clearTemp();
-    }
+  const handleModalClose = () => {
     hideModal();
   };
 
@@ -26,7 +23,7 @@ const Mods = () => {
       title: 'Add Mod',
       content: (
         <AddMod
-          close={() => handleModalClose(fromZip)}
+          close={handleModalClose}
           fromZip={fromZip}
           namesInUse={mods.map((mod) => mod.name.toLowerCase())}
           loadMods={loadMods}

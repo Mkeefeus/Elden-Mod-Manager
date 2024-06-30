@@ -12,7 +12,7 @@ import {
   setModsFolder,
 } from './db/api';
 import { AddModFormValues, BrowseType, Mod } from 'types';
-import { existsSync, mkdirSync, readdirSync, rmSync } from 'fs';
+import { existsSync, mkdirSync, readdirSync } from 'fs';
 import { CreateModPathFromName, errToString } from '../utils/utilities';
 import { handleLog, logger } from '../utils/mainLogger';
 import { LogEntry } from 'winston';
@@ -21,27 +21,10 @@ import { launchEldenRing } from './steam';
 import { browse, extractModZip } from './fileSystem';
 import { handleAddMod, handleDeleteMod, updateModsFolder } from './mods';
 import './toml';
+import './ini'
 import { getMainWindow } from '../main';
 
 const { debug, warning, error } = logger;
-
-const clearTemp = () => {
-  debug('Clearing temp directory');
-  const tempDir = app.getPath('temp');
-  //check if temp directory exists
-  if (!existsSync(tempDir)) {
-    debug('Temp directory not found');
-    return;
-  }
-  try {
-    rmSync(tempDir, { recursive: true });
-    debug('Temp directory cleared');
-  } catch (err) {
-    const msg = `An error occured while clearing temp directory: ${errToString(err)}`;
-    error(msg);
-    throw new Error(msg);
-  }
-};
 
 const validateModsFolder = () => {
   try {
@@ -84,7 +67,7 @@ app
     });
 
     ipcMain.handle('extract-zip', async (_, zipPath: string) => {
-      return extractModZip(zipPath);
+      return await extractModZip(zipPath);
     });
 
     ipcMain.handle('add-mod', (_, formData: AddModFormValues) => {
@@ -112,10 +95,6 @@ app
 
     ipcMain.on('log', (_, log: LogEntry) => {
       handleLog(log);
-    });
-
-    ipcMain.on('clear-temp', () => {
-      clearTemp();
     });
 
     ipcMain.on('set-me2-path', (_, path: string) => {
@@ -167,6 +146,7 @@ app
     }
     validateModsFolder();
     debug('App started');
+    console.log(app.getPath('temp'));
   })
   .catch((err) => {
     error(`An error occured while starting app: ${errToString(err)}`);
