@@ -1,4 +1,4 @@
-import { execFile } from 'child_process';
+import { execSync } from 'child_process';
 import { existsSync, readdirSync, renameSync, rmSync, writeFileSync } from 'fs';
 import { logger } from '../utils/mainLogger';
 import { getModEnginePath, loadMods, setModEnginePath } from './db/api';
@@ -15,7 +15,9 @@ export const launchEldenRingModded = () => {
   const modEnginePath = getModEnginePath();
   debug('Launching game with mods');
   try {
-    execFile('launchmod_eldenring.bat', { cwd: modEnginePath });
+    debug(`Executing ${modEnginePath}\\launchmod_eldenring.bat`)
+    const result = execSync('launchmod_eldenring.bat', { cwd: modEnginePath });
+    console.log(result.toString());
   } catch (err) {
     const msg = `An error occured while launching game with mods: ${errToString(err)}`;
     error(msg);

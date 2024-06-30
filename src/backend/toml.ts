@@ -13,7 +13,7 @@ const GenerateTomlString = (mods: Mod[]) => {
   let fileString = '';
   mods.forEach((mod) => {
     if (!mod.enabled) return;
-    const path = `${getModsFolder()}\\${CreateModPathFromName(mod.name)}${mod.dllFile ? '\\' + mod.dllFile : ''}`;
+    const path = `${getModsFolder()}${CreateModPathFromName(mod.name)}${mod.dllFile ? '\\' + mod.dllFile : ''}`;
 
     // keep double backslashes for toml
     const escapedPath = path.replace(/\\/g, '\\\\');
