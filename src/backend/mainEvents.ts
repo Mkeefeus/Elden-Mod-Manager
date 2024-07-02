@@ -12,7 +12,7 @@ import {
   setModsFolder,
 } from './db/api';
 import { AddModFormValues, BrowseType, Mod } from 'types';
-import { cpSync, existsSync, mkdirSync, readdirSync, renameSync } from 'fs';
+import { cpSync, existsSync, renameSync } from 'fs';
 import { CreateModPathFromName, errToString } from '../utils/utilities';
 import { handleLog, logger } from '../utils/mainLogger';
 import { LogEntry } from 'winston';
