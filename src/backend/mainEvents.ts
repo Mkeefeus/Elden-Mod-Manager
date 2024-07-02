@@ -12,7 +12,7 @@ import {
   setModsFolder,
 } from './db/api';
 import { AddModFormValues, BrowseType, Mod } from 'types';
-import { existsSync, mkdirSync, readdirSync } from 'fs';
+import { existsSync, mkdirSync, readdirSync, renameSync } from 'fs';
 import { CreateModPathFromName, errToString } from '../utils/utilities';
 import { handleLog, logger } from '../utils/mainLogger';
 import { LogEntry } from 'winston';
@@ -23,6 +23,7 @@ import { handleAddMod, handleDeleteMod, updateModsFolder } from './mods';
 import './toml';
 import './ini';
 import { getMainWindow } from '../main';
+import path from 'path';
 
 const { debug, warning, error } = logger;
 
@@ -135,6 +136,14 @@ app
 
     // Startup tasks
     if (isFirstRun()) {
+      const me2Dir = getModEnginePath();
+      const modsDir = getModsFolder();
+      if (!existsSync(me2Dir)) {
+        renameSync(path.join(__dirname, 'ModEngine2'), me2Dir);
+      }
+      if (!existsSync(modsDir)) {
+        renameSync(path.join(__dirname, 'Mods'), modsDir);
+      }
       const window = getMainWindow();
       if (!window) {
         throw new Error('Main window not found');
