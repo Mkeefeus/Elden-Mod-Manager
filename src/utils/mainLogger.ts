@@ -29,7 +29,9 @@ export const logger = createLogger({
     printf((info) => `[${info.timestamp}] [${info.level}] ${info.message.trim()}`)
   ),
   transports: [
-    // new transports.Console(),
+    new transports.Console({
+      level: 'info',
+    }),
     new transports.DailyRotateFile({
       datePattern: 'YYYY-MM-DD',
       filename: 'EMM-%DATE%.log',

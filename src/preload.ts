@@ -19,7 +19,7 @@ interface IElectronAPI {
   setME2Path: (path: string) => void;
   getME2Path: () => Promise<string>;
   getModsPath: () => Promise<string>;
-  installME2: () => Promise<void>;
+  // installME2: () => Promise<void>;
   checkModsFolderPrompt: () => Promise<boolean>;
   saveModsFolder: (path: string) => void;
   clearPromptedModsFolder: () => void;
@@ -53,7 +53,7 @@ const electronAPI: IElectronAPI = {
   setME2Path: (path) => ipcRenderer.send('set-me2-path', path),
   getME2Path: () => ipcRenderer.invoke('get-me2-path'),
   getModsPath: () => ipcRenderer.invoke('get-mods-path'),
-  installME2: () => ipcRenderer.invoke('install-me2'),
+  // installME2: () => ipcRenderer.invoke('install-me2'),
   checkModsFolderPrompt: () => ipcRenderer.invoke('check-mods-folder-prompt'),
   saveModsFolder: (path) => ipcRenderer.send('save-mods-folder', path),
   clearPromptedModsFolder: () => ipcRenderer.send('clear-prompted-mods-folder'),

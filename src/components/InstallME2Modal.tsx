@@ -37,7 +37,7 @@ const InstallME2Modal = ({ hideModal }: InstallME2ModalProps) => {
       }
       window.electronAPI.setME2Path(me2Path);
     }
-    await window.electronAPI.installME2();
+    // await window.electronAPI.installME2();
     setLoading(false);
     hideModal();
   };

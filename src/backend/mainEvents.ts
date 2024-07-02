@@ -12,11 +12,11 @@ import {
   setModsFolder,
 } from './db/api';
 import { AddModFormValues, BrowseType, Mod } from 'types';
-import { existsSync, mkdirSync, readdirSync, renameSync } from 'fs';
+import { cpSync, existsSync, mkdirSync, readdirSync, renameSync } from 'fs';
 import { CreateModPathFromName, errToString } from '../utils/utilities';
 import { handleLog, logger } from '../utils/mainLogger';
 import { LogEntry } from 'winston';
-import { downloadModEngine2, launchEldenRingModded, promptME2Install, updateME2Path } from './me2';
+import { launchEldenRingModded, promptME2Install, updateME2Path } from './me2';
 import { launchEldenRing } from './steam';
 import { browse, extractModZip } from './fileSystem';
 import { handleAddMod, handleDeleteMod, updateModsFolder } from './mods';
@@ -25,33 +25,7 @@ import './ini';
 import { getMainWindow } from '../main';
 import path from 'path';
 
-const { debug, warning, error } = logger;
-
-const validateModsFolder = () => {
-  try {
-    debug('Validating mod folder');
-    const modsFolder = getModsFolder();
-    if (!modsFolder) {
-      const msg = 'Mods folder not set';
-      error(msg);
-      throw new Error(msg);
-    }
-    if (!existsSync(modsFolder)) {
-      mkdirSync(modsFolder);
-      debug(`Mods folder created at: ${modsFolder}`);
-    }
-    const modsCount = loadMods().length;
-    const modFoldersCount = readdirSync(modsFolder).length;
-    if (modsCount !== modFoldersCount) {
-      const msg = `Mods folder contains ${modFoldersCount} folders but ${modsCount} mods are loaded`;
-      warning(msg);
-    }
-  } catch (err) {
-    const msg = `An error occured while validating mod folder: ${errToString(err)}`;
-    error(msg);
-    throw new Error(msg);
-  }
-};
+const { debug, error } = logger;
 
 app
   .whenReady()
@@ -110,9 +84,10 @@ app
       return getModsFolder();
     });
 
-    ipcMain.handle('install-me2', () => {
-      return downloadModEngine2();
-    });
+    // Packaging ME2 with the app as a redist instead
+    // ipcMain.handle('install-me2', () => {
+    //   return downloadModEngine2();
+    // });
 
     ipcMain.handle('check-mods-folder-prompt', () => {
       return getPromptedModsFolder();
@@ -136,13 +111,18 @@ app
 
     // Startup tasks
     if (isFirstRun()) {
+      const dev = process.env.NODE_ENV === 'development';
+      const me2Source = dev
+        ? path.join(__dirname, '/../../ModEngine2')
+        : path.join(process.resourcesPath, '/ModEngine2');
+      const modsSource = dev ? path.join(__dirname, '/../../Mods') : path.join(process.resourcesPath, '/Mods');
       const me2Dir = getModEnginePath();
       const modsDir = getModsFolder();
       if (!existsSync(me2Dir)) {
-        renameSync(path.join(__dirname, 'ModEngine2'), me2Dir);
+        dev ? cpSync(me2Source, me2Dir, { recursive: true }) : renameSync(me2Source, me2Dir);
       }
       if (!existsSync(modsDir)) {
-        renameSync(path.join(__dirname, 'Mods'), modsDir);
+        dev ? cpSync(modsSource, modsDir, { recursive: true }) : renameSync(modsSource, modsDir);
       }
       const window = getMainWindow();
       if (!window) {
@@ -153,9 +133,7 @@ app
       });
       clearFirstRun();
     }
-    validateModsFolder();
     debug('App started');
-    console.log(app.getPath('temp'));
   })
   .catch((err) => {
     error(`An error occured while starting app: ${errToString(err)}`);
