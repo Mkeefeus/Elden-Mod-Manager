@@ -17,9 +17,12 @@ const config: ForgeConfig = {
   // makers: [new MakerSquirrel({}), new MakerZIP({}, ['darwin']), new MakerRpm({}), new MakerDeb({})],
   makers: [
     new MakerSquirrel({
-      name: 'EldenModManager',
+      name: 'Elden Mod Manager',
       authors: 'Mkeefeus and Mark1127',
       description: 'A mod manager for Elden Ring',
+      exe: 'EldenModManager',
+      iconUrl: 'https://raw.githubusercontent.com/Mkeefeus/Elden-Mod-Manager/main/public/256x256.png',
+      setupIcon: 'public/256x256.ico',
     }),
     new MakerZIP({}, ['win32']),
   ],
