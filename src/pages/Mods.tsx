@@ -65,7 +65,7 @@ const Mods = () => {
           }}
           variant="outline"
         >
-          Add Mod From Folder
+          Add Mod from Folder
         </Button>
         <Button
           onClick={() => {
@@ -73,7 +73,7 @@ const Mods = () => {
           }}
           variant="outline"
         >
-          Add Mod From Zip
+          Add Mod from Zip
         </Button>
         <Button variant="outline" onClick={() => window.electronAPI.launchGame(true)}>
           Launch Game

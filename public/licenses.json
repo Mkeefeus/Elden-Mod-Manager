@@ -77,6 +77,12 @@
     "licenseUrl": "https://github.com/kevva/decompress/raw/master/license",
     "parents": "elden-mod-manager"
   },
+  "dotenv": {
+    "licenses": "BSD-2-Clause",
+    "repository": "https://github.com/motdotla/dotenv",
+    "licenseUrl": "https://github.com/motdotla/dotenv/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
   "electron-squirrel-startup": {
     "licenses": "Apache-2.0",
     "repository": "https://github.com/mongodb-js/electron-squirrel-startup",
@@ -113,6 +119,12 @@
     "licenseUrl": "https://github.com/facebook/react/raw/master/LICENSE",
     "parents": "elden-mod-manager"
   },
+  "update-electron-app": {
+    "licenses": "MIT",
+    "repository": "https://github.com/electron/update-electron-app",
+    "licenseUrl": "https://github.com/electron/update-electron-app/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
   "vdf-parser": {
     "licenses": "MIT",
     "repository": "https://github.com/p0358/vdf-parser",
@@ -143,18 +155,6 @@
     "licenseUrl": "https://github.com/electron/forge/raw/master/LICENSE",
     "parents": "elden-mod-manager"
   },
-  "@electron-forge/maker-deb": {
-    "licenses": "MIT",
-    "repository": "https://github.com/electron/forge",
-    "licenseUrl": "https://github.com/electron/forge/raw/master/LICENSE",
-    "parents": "elden-mod-manager"
-  },
-  "@electron-forge/maker-rpm": {
-    "licenses": "MIT",
-    "repository": "https://github.com/electron/forge",
-    "licenseUrl": "https://github.com/electron/forge/raw/master/LICENSE",
-    "parents": "elden-mod-manager"
-  },
   "@electron-forge/maker-squirrel": {
     "licenses": "MIT",
     "repository": "https://github.com/electron/forge",
@@ -180,6 +180,12 @@
     "parents": "elden-mod-manager"
   },
   "@electron-forge/plugin-vite": {
+    "licenses": "MIT",
+    "repository": "https://github.com/electron/forge",
+    "licenseUrl": "https://github.com/electron/forge/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@electron-forge/publisher-github": {
     "licenses": "MIT",
     "repository": "https://github.com/electron/forge",
     "licenseUrl": "https://github.com/electron/forge/raw/master/LICENSE",
@@ -279,12 +285,6 @@
     "licenses": "MIT",
     "repository": "https://github.com/eslint/eslint",
     "licenseUrl": "https://github.com/eslint/eslint/raw/master/LICENSE",
-    "parents": "elden-mod-manager"
-  },
-  "npm-license-crawler": {
-    "licenses": "BSD-3-Clause",
-    "repository": "http://github.com/mwittig/npm-license-crawler",
-    "licenseUrl": "http://github.com/mwittig/npm-license-crawler/raw/master/LICENSE",
     "parents": "elden-mod-manager"
   },
   "prettier": {

@@ -31,7 +31,7 @@ const Footer = () => {
         ))}
       </Group>
       <Text size={'sm'} span>
-        &copy; 2024 Malcolm Keefe. All rights reserved.
+        &copy; 2024 Malcolm Keefe. Licensed under AGPLv3
       </Text>
     </Group>
   );

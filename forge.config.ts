@@ -11,8 +11,9 @@ dotenv.config();
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
-    extraResource: ['./Mods', './ModEngine2'],
+    extraResource: ['./ModEngine2'],
     icon: 'public/EMM-Icon.ico',
+    name: 'Elden Mod Manager',
   },
   rebuildConfig: {},
   makers: [
@@ -33,7 +34,6 @@ const config: ForgeConfig = {
           owner: 'Mkeefeus',
           name: 'Elden-Mod-Manager',
         },
-        prerelease: true,
       },
     },
   ],

@@ -118,11 +118,11 @@ app
         : path.join(process.resourcesPath, '/ModEngine2');
       cpSync(me2Source, me2Dir, { recursive: true });
     }
-    const modsDir = getModsFolder();
-    if (!existsSync(modsDir)) {
-      const modsSource = devMode ? path.join(__dirname, '/../../Mods') : path.join(process.resourcesPath, '/Mods');
-      cpSync(modsSource, modsDir, { recursive: true });
-    }
+    // const modsDir = getModsFolder();
+    // if (!existsSync(modsDir)) {
+    //   const modsSource = devMode ? path.join(__dirname, '/../../Mods') : path.join(process.resourcesPath, '/Mods');
+    //   cpSync(modsSource, modsDir, { recursive: true });
+    // }
 
     // Startup tasks
     if (isFirstRun()) {
