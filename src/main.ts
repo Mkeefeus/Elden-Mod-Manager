@@ -3,6 +3,13 @@ import path from 'path';
 import './backend/mainEvents';
 import './backend/db/api';
 import { template } from './menu';
+import { updateElectronApp } from 'update-electron-app';
+
+updateElectronApp({
+  repo: 'Mkeefeus/Elden-Mod-Manager',
+  updateInterval: '5 minutes',
+});
+
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
   app.quit();
