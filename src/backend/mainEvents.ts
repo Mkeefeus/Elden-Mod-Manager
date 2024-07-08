@@ -12,7 +12,7 @@ import {
   setModsFolder,
 } from './db/api';
 import { AddModFormValues, BrowseType, Mod } from 'types';
-import { cpSync, existsSync, renameSync } from 'fs';
+import { cpSync, existsSync } from 'fs';
 import { CreateModPathFromName, errToString } from '../utils/utilities';
 import { handleLog, logger } from '../utils/mainLogger';
 import { LogEntry } from 'winston';
@@ -42,7 +42,7 @@ app
     });
 
     ipcMain.handle('extract-zip', async (_, zipPath: string) => {
-      console.log(zipPath)
+      console.log(zipPath);
       return await extractModZip(zipPath);
     });
 

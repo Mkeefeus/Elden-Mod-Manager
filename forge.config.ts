@@ -1,11 +1,12 @@
 import type { ForgeConfig } from '@electron-forge/shared-types';
 import { MakerSquirrel } from '@electron-forge/maker-squirrel';
 import { MakerZIP } from '@electron-forge/maker-zip';
-import { MakerDeb } from '@electron-forge/maker-deb';
-import { MakerRpm } from '@electron-forge/maker-rpm';
 import { VitePlugin } from '@electron-forge/plugin-vite';
 import { FusesPlugin } from '@electron-forge/plugin-fuses';
 import { FuseV1Options, FuseVersion } from '@electron/fuses';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const config: ForgeConfig = {
   packagerConfig: {
@@ -21,6 +22,18 @@ const config: ForgeConfig = {
       description: 'A mod manager for Elden Ring',
     }),
     new MakerZIP({}, ['win32']),
+  ],
+  publishers: [
+    {
+      name: '@electron-forge/publisher-github',
+      config: {
+        repository: {
+          owner: 'Mkeefeus',
+          name: 'Elden-Mod-Manager',
+        },
+        prerelease: true,
+      },
+    },
   ],
   plugins: [
     new VitePlugin({
