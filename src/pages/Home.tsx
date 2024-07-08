@@ -16,6 +16,7 @@ import { useElementSize } from '@mantine/hooks';
 import { useQuery } from '@tanstack/react-query';
 import { sendLog } from '../utils/rendererLogger';
 import { errToString } from '../utils/utilities';
+import he from 'he';
 
 const quickActions: string[] = ['Play', 'Play Vanilla', 'Add a Mod (Zip)', 'Add a Mod (Folder)'];
 
@@ -64,7 +65,10 @@ const Home = () => {
   const contentSize = useElementSize();
 
   const cleanHTML = (html: string) => {
-    return html.replace(/<[^>]*>?/gm, '');
+    // Remove newlines and all <p> tags
+    let cleanedHTML = html.replace(/\n/g, '').replace(/<\/?p>/g, '');
+    // Decode HTML entities
+    return he.decode(cleanedHTML);
   };
 
   const cleanNewsData = (data: NewsData) => {

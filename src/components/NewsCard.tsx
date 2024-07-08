@@ -1,5 +1,8 @@
+import React from 'react';
 import { Badge, Group, Avatar, Divider, Text, Paper, Spoiler, Stack, Title } from '@mantine/core';
 import { NewsComponentProps } from 'types';
+import parse from 'html-react-parser';
+import he from 'he'; // HTML entities decoder
 
 interface NewsCardProps {
   article: NewsComponentProps;
@@ -27,7 +30,7 @@ const NewsCard = ({ article }: NewsCardProps) => {
   return (
     <Paper p={'md'} shadow="xl">
       <Group>
-        <Stack align="center" gap={'md'} flex={1}>
+        <Stack align="center" gap={'sm'} flex={1}>
           <img src={article.imageLink} alt="Mantine logo" width={130} height={130} id="featuredImage" />
           <Badge id="badgeTag" radius="xs" variant="gradient">
             {article.postCategory}
@@ -50,7 +53,7 @@ const NewsCard = ({ article }: NewsCardProps) => {
           </Group>
           <Divider orientation="horizontal" size="xs" pb="sm" />
           <Spoiler maxHeight={120} showLabel="Show more" hideLabel="Hide">
-            {article.body}
+            {parse(he.decode(article.body))}
           </Spoiler>
         </Stack>
       </Group>
