@@ -12,15 +12,14 @@ const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
     extraResource: ['./Mods', './ModEngine2'],
+    icon: 'public/EMM-Icon.ico',
   },
   rebuildConfig: {},
-  // makers: [new MakerSquirrel({}), new MakerZIP({}, ['darwin']), new MakerRpm({}), new MakerDeb({})],
   makers: [
     new MakerSquirrel({
-      name: 'Elden Mod Manager',
+      name: 'EldenModManager',
       authors: 'Mkeefeus and Mark1127',
       description: 'A mod manager for Elden Ring',
-      exe: 'EldenModManager',
       iconUrl: 'https://raw.githubusercontent.com/Mkeefeus/Elden-Mod-Manager/main/public/EMM-Icon.ico',
       setupIcon: 'public/EMM-Icon.ico',
     }),
