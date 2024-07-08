@@ -42,6 +42,7 @@ app
     });
 
     ipcMain.handle('extract-zip', async (_, zipPath: string) => {
+      console.log(zipPath)
       return await extractModZip(zipPath);
     });
 
@@ -109,21 +110,22 @@ app
       updateModsFolder(path);
     });
 
-    // Startup tasks
-    if (isFirstRun()) {
-      const dev = process.env.NODE_ENV === 'development';
-      const me2Source = dev
+    const devMode = process.env.NODE_ENV === 'development';
+    const me2Dir = getModEnginePath();
+    if (!existsSync(me2Dir)) {
+      const me2Source = devMode
         ? path.join(__dirname, '/../../ModEngine2')
         : path.join(process.resourcesPath, '/ModEngine2');
-      const modsSource = dev ? path.join(__dirname, '/../../Mods') : path.join(process.resourcesPath, '/Mods');
-      const me2Dir = getModEnginePath();
-      const modsDir = getModsFolder();
-      if (!existsSync(me2Dir)) {
-        dev ? cpSync(me2Source, me2Dir, { recursive: true }) : renameSync(me2Source, me2Dir);
-      }
-      if (!existsSync(modsDir)) {
-        dev ? cpSync(modsSource, modsDir, { recursive: true }) : renameSync(modsSource, modsDir);
-      }
+      cpSync(me2Source, me2Dir, { recursive: true });
+    }
+    const modsDir = getModsFolder();
+    if (!existsSync(modsDir)) {
+      const modsSource = devMode ? path.join(__dirname, '/../../Mods') : path.join(process.resourcesPath, '/Mods');
+      cpSync(modsSource, modsDir, { recursive: true });
+    }
+
+    // Startup tasks
+    if (isFirstRun()) {
       const window = getMainWindow();
       if (!window) {
         throw new Error('Main window not found');

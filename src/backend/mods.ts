@@ -80,7 +80,8 @@ export const handleAddMod = (formData: AddModFormValues) => {
   }
 
   const pathName = CreateModPathFromName(newMod.name);
-  const installPath = newMod.dllFile ? `${getModsFolder()}dlls\\${pathName}` : `${getModsFolder()}${pathName}\\`;
+  // const installPath = newMod.dllFile ? `${getModsFolder()}dlls\\${pathName}` : `${getModsFolder()}${pathName}\\`;
+  const installPath = `${getModsFolder()}${pathName}\\`;
   debug(`Installing mod to: ${installPath}`);
 
   if (existsSync(installPath)) {
