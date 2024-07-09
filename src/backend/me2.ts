@@ -23,7 +23,6 @@ export const launchEldenRingModded = () => {
         LOG_PATH: `${app.getPath('logs')}\\elden_mod_loader.txt`,
       },
     });
-    console.log(result.toString());
   } catch (err) {
     const msg = `An error occured while launching game with mods: ${errToString(err)}`;
     error(msg);

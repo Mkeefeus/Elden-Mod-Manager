@@ -11,7 +11,6 @@ const InstallME2Modal = ({ hideModal }: InstallME2ModalProps) => {
   const handleBrowse = async () => {
     setLoading(true);
     const me2Path = await window.electronAPI.browse('exe', 'Select ModEngine2 Executable');
-    console.log(me2Path);
     let invalidPath = false;
     if (!me2Path?.includes('modengine2_launcher.exe')) {
       invalidPath = true;

@@ -21,7 +21,7 @@ import { launchEldenRing } from './steam';
 import { browse, extractModZip } from './fileSystem';
 import { handleAddMod, handleDeleteMod, updateModsFolder } from './mods';
 import './toml';
-import './ini';
+// import './ini';
 import { getMainWindow } from '../main';
 import path from 'path';
 
@@ -42,7 +42,6 @@ app
     });
 
     ipcMain.handle('extract-zip', async (_, zipPath: string) => {
-      console.log(zipPath);
       return await extractModZip(zipPath);
     });
 
