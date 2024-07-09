@@ -25,7 +25,7 @@ const genUUID = (): string => {
   return uuid;
 };
 
-const validateMod = (path: string, isDll: boolean) => {
+const validateMod = (path: string, isDll: boolean, hasExe: boolean) => {
   debug(`Validating path: ${path}`);
   debug(`Reading directory: ${path}`);
   let files;
@@ -49,14 +49,16 @@ const validateMod = (path: string, isDll: boolean) => {
   } else {
     debug('Mod is not dll');
     hasValidSubfolder = files.some((file) => MOD_SUBFOLDERS.includes(file));
-    if (!hasValidSubfolder) {
+    if (!hasValidSubfolder && !hasExe) {
       const msg =
         'No valid subfolder was found in the directory, please select the folder that contains the mod files. It should have one or more of the following subfolders: chr, obj, parts, event, map, menu, msg, mtd, param, remo, script, or sfx.';
       warning(msg);
       return false;
+    } else if (!hasValidSubfolder && hasExe) {
+      debug('Mod does not have valid subfolder but has exe, skipping warning');
     }
   }
-  return hasDll || hasValidSubfolder;
+  return true;
 };
 
 export const handleAddMod = (formData: AddModFormValues) => {
@@ -74,7 +76,7 @@ export const handleAddMod = (formData: AddModFormValues) => {
 
   const source = formData.path;
 
-  if (!validateMod(source, formData.isDll)) {
+  if (!validateMod(source, !!newMod.dllFile, !!newMod.exe)) {
     debug('Invalid path, cancelling mod addition');
     return;
   }
