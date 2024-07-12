@@ -11,7 +11,8 @@ dotenv.config();
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
-    extraResource: ['./ModEngine2'],
+    extraResource: ['./ModEngine2', 'node_modules/create-desktop-shortcuts/src/windows.vbs'],
+
     icon: 'public/EMM-Icon.ico',
     name: 'Elden Mod Manager',
   },

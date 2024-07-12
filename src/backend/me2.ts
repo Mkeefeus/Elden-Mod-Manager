@@ -14,7 +14,7 @@ export const launchEldenRingModded = () => {
   debug('Launching game with mods');
   try {
     debug(`Executing ${modEnginePath}\\launchmod_eldenring.bat`);
-    const result = execSync('launchmod_eldenring.bat', {
+    execSync('launchmod_eldenring.bat', {
       cwd: modEnginePath,
       env: {
         ...process.env,

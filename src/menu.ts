@@ -5,10 +5,13 @@ import { createWriteStream, readdirSync, unlinkSync } from 'fs';
 import { logger } from './utils/mainLogger';
 import { errToString } from './utils/utilities';
 import { getModEnginePath, getModsFolder } from './backend/db/api';
+import createDesktopShortcut from 'create-desktop-shortcuts';
+import path from 'path';
 
 const { debug, warning, error } = logger;
 
-const INSTALL_DIR = process.cwd();
+const INSTALL_DIR = app.getPath('exe');
+const VBSCRIPT_PATH = path.join(process.resourcesPath, 'windows.vbs');
 
 const handleCollectLogs = () => {
   // if ./logs.zip exists, delete it
@@ -110,6 +113,22 @@ const handleCollectLogs = () => {
   debug('Logs collected');
 };
 
+export const createLaunchShortcut = () => {
+  const me2Path = getModEnginePath();
+  createDesktopShortcut({
+    windows: {
+      filePath: `${me2Path}ModEngine2_launcher.exe`,
+      arguments: `-t er -c ${me2Path}config_eldenring.toml`,
+      outputPath: `${app.getPath('desktop')}`,
+      name: 'Launch Modded Elden Ring',
+      comment: 'Launch Elden Ring with mods',
+      icon: INSTALL_DIR,
+      windowMode: 'minimized',
+      VBScriptPath: VBSCRIPT_PATH,
+    },
+  });
+};
+
 export const template: MenuItemConstructorOptions[] = [
   {
     label: 'File',
@@ -154,7 +173,7 @@ export const template: MenuItemConstructorOptions[] = [
       {
         label: 'Install Folder',
         click: () => {
-          shell.openPath(`${INSTALL_DIR}`);
+          shell.openPath(INSTALL_DIR);
         },
       },
       {
@@ -168,6 +187,32 @@ export const template: MenuItemConstructorOptions[] = [
         click: () => {
           shell.openPath(`${app.getPath('appData')}\\elden-mod-manager`);
         },
+      },
+    ],
+  },
+
+  {
+    label: 'Tools',
+    submenu: [
+      {
+        label: 'Add Elden Mod Manager desktop shortcut',
+        click: () => {
+          createDesktopShortcut({
+            windows: {
+              filePath: INSTALL_DIR,
+              outputPath: app.getPath('desktop'),
+              name: 'Elden Mod Manager',
+              comment: 'Launch Elden Mod Manager',
+              icon: INSTALL_DIR,
+              windowMode: 'minimized',
+              VBScriptPath: VBSCRIPT_PATH,
+            },
+          });
+        },
+      },
+      {
+        label: 'Add Launch Modded Elden Ring desktop shortcut',
+        click: createLaunchShortcut,
       },
     ],
   },

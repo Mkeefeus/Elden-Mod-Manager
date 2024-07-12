@@ -2,7 +2,7 @@ import React from 'react';
 import { Badge, Group, Avatar, Divider, Text, Paper, Spoiler, Stack, Title } from '@mantine/core';
 import { NewsComponentProps } from 'types';
 import parse from 'html-react-parser';
-import he from 'he'; // HTML entities decoder
+import { decode } from 'he'; // HTML entities decoder
 
 interface NewsCardProps {
   article: NewsComponentProps;
@@ -53,7 +53,7 @@ const NewsCard = ({ article }: NewsCardProps) => {
           </Group>
           <Divider orientation="horizontal" size="xs" pb="sm" />
           <Spoiler maxHeight={120} showLabel="Show more" hideLabel="Hide">
-            {parse(he.decode(article.body))}
+            {parse(decode(article.body))}
           </Spoiler>
         </Stack>
       </Group>

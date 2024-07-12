@@ -13,7 +13,7 @@ Elden Mod Manager is a GUI for ModEngine2, which aims to simplify the process of
 
 ## Installation
 
-To install, either use the installer from the release or extract the Zip release to a directory of your choosing. Upon the first launch, you will be prompted to select your install locations for ModEngine2. When you first go to the Mods tab, you will be prompted to select an install location for your Mods. I recommend using the defaults for both but feel free to change them.
+To install, either use the installer from the release or extract the Zip release to a directory of your choosing.  Upon the first launch, you will be prompted to select your install locations for ModEngine2. When you first go to the Mods tab, you will be prompted to select an install location for your Mods. I recommend using the defaults for both but feel free to change them. You can add desktop shortcuts for both EMM and launching ER modded from the Tools menu (The setup exe adds these automatically). 
 
 ## Usage
 
