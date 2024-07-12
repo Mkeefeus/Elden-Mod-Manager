@@ -36,6 +36,10 @@ To report a bug or issue, go to Help > Bug Report, or https://github.com/Mkeefeu
 
 ## FAQ
 
+Do I need Elden Mod Loader?
+
+- No. Instead of using Elden Mod Loder to load DLL mods, EMM uses ModEngine2 to load them. Any apps that say they require Elden Mod Loader should still work fine.
+
 How do I install Seamless Co-Op?
 
 - Seamless co-op also requires you to configure some settings. Once you have imported the mod, select "Mods folder" from the Go menu, then find your seamless co-op folder, and open the ini file (as of v1.7.8 this is called ersc_settings.ini). You may also need to copy the crashpad and locale folders to your game directory. Copy those folders from the same location as the ini file. From there, select "Elden Ring folder" from the Go menu, and create a folder titled "SeemlessCoop" if it is not already created. Paste the Locales and Crashpad folders into the SeemelessCoop folder.
