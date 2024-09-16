@@ -71,6 +71,12 @@
     "licenseUrl": "https://github.com/archiverjs/node-archiver/raw/master/LICENSE",
     "parents": "elden-mod-manager"
   },
+  "create-desktop-shortcuts": {
+    "licenses": "MIT",
+    "repository": "https://github.com/nwutils/create-desktop-shortcuts",
+    "licenseUrl": "https://github.com/nwutils/create-desktop-shortcuts/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
   "decompress": {
     "licenses": "MIT",
     "repository": "https://github.com/kevva/decompress",
@@ -93,6 +99,18 @@
     "licenses": "MIT",
     "repository": "https://github.com/sindresorhus/electron-store",
     "licenseUrl": "https://github.com/sindresorhus/electron-store/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "he": {
+    "licenses": "MIT",
+    "repository": "https://github.com/mathiasbynens/he",
+    "licenseUrl": "https://github.com/mathiasbynens/he/raw/master/LICENSE-MIT.txt",
+    "parents": "elden-mod-manager"
+  },
+  "html-react-parser": {
+    "licenses": "MIT",
+    "repository": "https://github.com/remarkablemark/html-react-parser",
+    "licenseUrl": "https://github.com/remarkablemark/html-react-parser/raw/master/LICENSE",
     "parents": "elden-mod-manager"
   },
   "ini": {
@@ -215,6 +233,12 @@
     "licenseUrl": "https://github.com/DefinitelyTyped/DefinitelyTyped/raw/master/LICENSE",
     "parents": "elden-mod-manager"
   },
+  "@types/he": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "licenseUrl": "https://github.com/DefinitelyTyped/DefinitelyTyped/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
   "@types/ini": {
     "licenses": "MIT",
     "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
@@ -285,6 +309,12 @@
     "licenses": "MIT",
     "repository": "https://github.com/eslint/eslint",
     "licenseUrl": "https://github.com/eslint/eslint/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "micromatch": {
+    "licenses": "MIT",
+    "repository": "https://github.com/micromatch/micromatch",
+    "licenseUrl": "https://github.com/micromatch/micromatch/raw/master/LICENSE",
     "parents": "elden-mod-manager"
   },
   "prettier": {
