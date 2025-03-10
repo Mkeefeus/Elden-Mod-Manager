@@ -4,17 +4,15 @@ import './backend/mainEvents';
 import './backend/db/api';
 import { template, createLaunchShortcut } from './menu';
 import { updateElectronApp } from 'update-electron-app';
+import check from './electron-squirrel-startup';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
-if (require('electron-squirrel-startup')) {
+if (check) {
   createLaunchShortcut();
   app.quit();
 }
 
-updateElectronApp({
-  repo: 'Mkeefeus/Elden-Mod-Manager',
-  updateInterval: '5 minutes',
-});
+updateElectronApp({ repo: 'Mkeefeus/Elden-Mod-Manager', updateInterval: '5 minutes' });
 
 let mainWindow: BrowserWindow | null;
 
@@ -29,9 +27,7 @@ const createWindow = () => {
   mainWindow = new BrowserWindow({
     minWidth: 1152,
     minHeight: 648,
-    webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
-    },
+    webPreferences: { preload: path.join(__dirname, 'preload.js') },
     icon: 'public/256x256.png',
   });
 
