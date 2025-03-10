@@ -77,6 +77,12 @@
     "licenseUrl": "https://github.com/nwutils/create-desktop-shortcuts/raw/master/LICENSE",
     "parents": "elden-mod-manager"
   },
+  "debug": {
+    "licenses": "MIT",
+    "repository": "https://github.com/debug-js/debug",
+    "licenseUrl": "https://github.com/debug-js/debug/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
   "decompress": {
     "licenses": "MIT",
     "repository": "https://github.com/kevva/decompress",
@@ -221,7 +227,25 @@
     "licenseUrl": "https://github.com/electron/fuses/raw/master/LICENSE",
     "parents": "elden-mod-manager"
   },
+  "@eslint/compat": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/eslint/rewrite",
+    "licenseUrl": "https://github.com/eslint/rewrite/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@eslint/eslintrc": {
+    "licenses": "MIT",
+    "repository": "https://github.com/eslint/eslintrc",
+    "licenseUrl": "https://github.com/eslint/eslintrc/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
   "@types/archiver": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "licenseUrl": "https://github.com/DefinitelyTyped/DefinitelyTyped/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@types/debug": {
     "licenses": "MIT",
     "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
     "licenseUrl": "https://github.com/DefinitelyTyped/DefinitelyTyped/raw/master/LICENSE",
@@ -269,18 +293,6 @@
     "licenseUrl": "https://github.com/DefinitelyTyped/DefinitelyTyped/raw/master/LICENSE",
     "parents": "elden-mod-manager"
   },
-  "@typescript-eslint/eslint-plugin": {
-    "licenses": "MIT",
-    "repository": "https://github.com/typescript-eslint/typescript-eslint",
-    "licenseUrl": "https://github.com/typescript-eslint/typescript-eslint/raw/master/LICENSE",
-    "parents": "elden-mod-manager"
-  },
-  "@typescript-eslint/parser": {
-    "licenses": "BSD-2-Clause",
-    "repository": "https://github.com/typescript-eslint/typescript-eslint",
-    "licenseUrl": "https://github.com/typescript-eslint/typescript-eslint/raw/master/LICENSE",
-    "parents": "elden-mod-manager"
-  },
   "@vitejs/plugin-react": {
     "licenses": "MIT",
     "repository": "https://github.com/vitejs/vite-plugin-react",
@@ -303,6 +315,12 @@
     "licenses": "ISC",
     "repository": "https://github.com/import-js/eslint-import-resolver-typescript",
     "licenseUrl": "https://github.com/import-js/eslint-import-resolver-typescript/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "eslint-plugin-import": {
+    "licenses": "MIT",
+    "repository": "https://github.com/import-js/eslint-plugin-import",
+    "licenseUrl": "https://github.com/import-js/eslint-plugin-import/raw/master/LICENSE",
     "parents": "elden-mod-manager"
   },
   "eslint": {
@@ -329,10 +347,16 @@
     "licenseUrl": "https://github.com/TypeStrong/ts-node/raw/master/LICENSE",
     "parents": "elden-mod-manager"
   },
+  "typescript-eslint": {
+    "licenses": "MIT",
+    "repository": "https://github.com/typescript-eslint/typescript-eslint",
+    "licenseUrl": "https://github.com/typescript-eslint/typescript-eslint/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
   "typescript": {
     "licenses": "Apache-2.0",
-    "repository": "https://github.com/Microsoft/TypeScript",
-    "licenseUrl": "https://github.com/Microsoft/TypeScript/raw/master/LICENSE.txt",
+    "repository": "https://github.com/microsoft/TypeScript",
+    "licenseUrl": "https://github.com/microsoft/TypeScript/raw/master/LICENSE.txt",
     "parents": "elden-mod-manager"
   },
   "vite": {

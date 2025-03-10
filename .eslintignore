@@ -1,5 +1,0 @@
-forge.config.ts
-vite.*.config.ts
-dist
-.vite
-node_modules

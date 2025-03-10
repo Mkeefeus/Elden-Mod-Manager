@@ -1,6 +1,7 @@
-const prdLicense = require('./prd_licenses.json');
-const devLicense = require('./dev_licenses.json');
-const fs = require('fs');
+import fs from 'fs';
+
+const prdLicense = JSON.parse(fs.readFileSync('./prd_licenses.json', 'utf8'));
+const devLicense = JSON.parse(fs.readFileSync('./dev_licenses.json', 'utf8'));
 
 const combinedLicense = {
   ModEngine2: {
