@@ -34,7 +34,7 @@ const About = () => {
       }
     };
 
-    fetchLicenses();
+    void fetchLicenses();
   }, []);
 
   const handleLinkClick = (url: string) => {

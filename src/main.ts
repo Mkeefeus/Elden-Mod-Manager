@@ -2,13 +2,12 @@ import { app, BrowserWindow, Menu } from 'electron';
 import path from 'path';
 import './backend/mainEvents';
 import './backend/db/api';
-import { template, createLaunchShortcut } from './menu';
+import { template } from './menu';
 import { updateElectronApp } from 'update-electron-app';
 import check from './electron-squirrel-startup';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (check) {
-  createLaunchShortcut();
   app.quit();
 }
 

@@ -1,6 +1,6 @@
 import { randomUUID } from 'crypto';
 import { readdirSync, existsSync, cpSync, rmSync, renameSync } from 'fs';
-import { extname } from 'path';
+import { extname, join } from 'path';
 import { errToString, CreateModPathFromName } from '../utils/utilities';
 import { AddModFormValues, Mod } from 'types';
 import { logger } from '../utils/mainLogger';
@@ -34,10 +34,10 @@ const validateMod = (path: string, isDll: boolean, hasExe: boolean) => {
   } catch (err) {
     const msg = `An error occured while reading directory: ${errToString(err)}`;
     error(msg);
-    throw new Error(msg);
+    throw new Error(msg, { cause: err });
   }
-  let hasDll = false;
-  let hasValidSubfolder = false;
+  let hasDll;
+  let hasValidSubfolder;
   if (isDll) {
     debug('Mod is dll');
     hasDll = files.some((file) => extname(file) === '.dll');
@@ -71,6 +71,7 @@ export const handleAddMod = (formData: AddModFormValues) => {
     installDate: Date.now(),
     dllFile: formData.dllPath !== '' ? formData.dllPath : undefined,
     exe: formData.exePath !== '' ? formData.exePath : undefined,
+    loadEarly: formData.loadEarly ? true : undefined,
   };
   debug(`Adding new mod: ${JSON.stringify(newMod)}`);
 
@@ -82,8 +83,7 @@ export const handleAddMod = (formData: AddModFormValues) => {
   }
 
   const pathName = CreateModPathFromName(newMod.name);
-  // const installPath = newMod.dllFile ? `${getModsFolder()}dlls\\${pathName}` : `${getModsFolder()}${pathName}\\`;
-  const installPath = `${getModsFolder()}${pathName}\\`;
+  const installPath = join(getModsFolder(), pathName);
   debug(`Installing mod to: ${installPath}`);
 
   if (existsSync(installPath)) {
@@ -102,7 +102,7 @@ export const handleAddMod = (formData: AddModFormValues) => {
   } catch (err) {
     const msg = `An error occured while copying mod: ${errToString(err)}`;
     error(msg);
-    throw new Error(msg);
+    throw new Error(msg, { cause: err });
   }
 
   if (formData.delete) {
@@ -114,13 +114,13 @@ export const handleAddMod = (formData: AddModFormValues) => {
       } catch (err) {
         const msg = `An error occured while deleting mod source: ${errToString(err)}`;
         error(msg);
-        throw new Error(msg);
+        throw new Error(msg, { cause: err });
       }
     }
   }
 
   debug('Saving new mod to DB');
-  const newMods = [...(mods as Mod[]), newMod];
+  const newMods = [...mods, newMod];
   saveMods(newMods);
   return true;
 };
@@ -136,7 +136,7 @@ export const handleDeleteMod = (mod: Mod) => {
   const newMods = mods.filter((m) => m.uuid !== mod.uuid);
   const pathName = CreateModPathFromName(mod.name);
   debug(`Removing mod from: ${pathName}`);
-  const installPath = `${getModsFolder()}${pathName}\\`;
+  const installPath = join(getModsFolder(), pathName);
   debug(`Checking if mod path exists: ${installPath}`);
   let foundPath = true;
   try {
@@ -147,7 +147,7 @@ export const handleDeleteMod = (mod: Mod) => {
   } catch (err) {
     const msg = `An error occured while checking mod path: ${errToString(err)}`;
     error(msg);
-    throw new Error(msg);
+    throw new Error(msg, { cause: err });
   }
   if (foundPath) {
     try {
@@ -155,20 +155,11 @@ export const handleDeleteMod = (mod: Mod) => {
     } catch (err) {
       const msg = `An error occured while deleting mod: ${errToString(err)}`;
       error(msg);
-      throw new Error(msg);
+      throw new Error(msg, { cause: err });
     }
   }
-  // loop through remaining mods and check for gaps in load order
-  const enabledMods = newMods.filter((m) => m.enabled);
-  const disabledMods = newMods.filter((m) => !m.enabled);
-  const sortedMods = enabledMods.sort(
-    (a, b) => (a.loadOrder || enabledMods.length) - (b.loadOrder || enabledMods.length)
-  );
-  sortedMods.forEach((mod, index) => {
-    mod.loadOrder = index + 1;
-  });
   debug('Mod deleted successfully');
-  saveMods([...sortedMods, ...disabledMods]);
+  saveMods(newMods);
 };
 
 export const promptModsFolder = () => {
@@ -188,7 +179,7 @@ export const promptModsFolder = () => {
   } catch (err) {
     const msg = `An error occured while prompting user to select mods folder: ${errToString(err)}`;
     error(msg);
-    throw new Error(msg);
+    throw new Error(msg, { cause: err });
   }
 };
 
@@ -221,6 +212,6 @@ export const updateModsFolder = (newPath: string) => {
   } catch (err) {
     const msg = `An error occured while updating mods folder: ${errToString(err)}`;
     error(msg);
-    throw new Error(msg);
+    throw new Error(msg, { cause: err });
   }
 };

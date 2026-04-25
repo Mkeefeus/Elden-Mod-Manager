@@ -26,7 +26,7 @@ export const logger = createLogger({
       format: 'YYYY-MM-DD HH:mm:ss.SSS',
     }),
     align(),
-    printf((info) => `[${info.timestamp}] [${info.level}] ${info.message.trim()}`)
+    printf((info) => `[${info.timestamp as string}] [${info.level}] ${String(info.message).trim()}`)
   ),
   transports: [
     new transports.Console({

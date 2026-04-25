@@ -39,7 +39,7 @@ const PromptModsFolderModal = ({ hideModal }: PromptModsFolderModalProps) => {
         <Button loading>Button</Button>
       ) : (
         <Group justify="space-evenly">
-          <Button style={{ flex: 1 }} onClick={handleSelectModFolder}>
+          <Button style={{ flex: 1 }} onClick={() => { void handleSelectModFolder(); }}>
             Browse
           </Button>
           <HoverCard>
@@ -49,7 +49,7 @@ const PromptModsFolderModal = ({ hideModal }: PromptModsFolderModalProps) => {
               </Button>
             </HoverCard.Target>
             <HoverCard.Dropdown>
-              <Text>The default mod location is %AppData%/elden-mod-manager/mods</Text>
+              <Text>The default location is your OS application data folder under elden-mod-manager/mods</Text>
             </HoverCard.Dropdown>
           </HoverCard>
         </Group>

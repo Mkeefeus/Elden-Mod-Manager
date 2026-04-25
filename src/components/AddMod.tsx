@@ -32,6 +32,7 @@ const AddMod = ({ close, fromZip, namesInUse, loadMods }: AddModProps) => {
       hasExe: false,
       exePath: '',
       dllPath: '',
+      loadEarly: false,
     },
 
     validate: {
@@ -43,7 +44,6 @@ const AddMod = ({ close, fromZip, namesInUse, loadMods }: AddModProps) => {
 
   const handleSubmit = async (values: AddModFormValues) => {
     values.modName = values.modName.trim();
-    form.isValid;
     setShowSubmitLoader(true);
     const success = await window.electronAPI.addMod(values);
     if (!success) {
@@ -93,7 +93,8 @@ const AddMod = ({ close, fromZip, namesInUse, loadMods }: AddModProps) => {
           <Button
             loading={showExtractLoader}
             style={{ flex: '1' }}
-            onClick={async () => {
+            onClick={() => {
+              void (async () => {
               // step 1, exctract zip to temp folder if required
               let tempPath: string | undefined;
               if (fromZip && !form.isDirty('path')) {
@@ -116,7 +117,8 @@ const AddMod = ({ close, fromZip, namesInUse, loadMods }: AddModProps) => {
                 }
                 form.setFieldValue('path', pathToCopy);
               }
-            }}
+            })();
+          }}
           >
             Browse
           </Button>

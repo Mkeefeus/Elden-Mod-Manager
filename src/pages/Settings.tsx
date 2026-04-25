@@ -6,18 +6,18 @@ const TEXT_INPUT_STYLE = { flex: 7 };
 const BUTTON_STYLE = { flex: 1 };
 
 const Settings = () => {
-  const [me2Path, setMe2Path] = useState<string>('');
+  const [me3Path, setMe3Path] = useState<string>('');
   const [modsPath, setModsPath] = useState<string>('');
 
   const getPaths = async () => {
-    const me2Path = await window.electronAPI.getME2Path();
+    const me3Path = await window.electronAPI.getME3Path();
     const modsPath = await window.electronAPI.getModsPath();
-    setMe2Path(me2Path);
+    setMe3Path(me3Path);
     setModsPath(modsPath);
   };
 
   useEffect(() => {
-    getPaths();
+    void getPaths();
   }, []);
 
   const handleBrowse = async (field: string) => {
@@ -26,8 +26,23 @@ const Settings = () => {
       sendLog({ level: 'warning', message: 'No path selected' });
       return;
     }
-    field === 'me2' ? setMe2Path(path) : setModsPath(path);
-    field === 'me2' ? window.electronAPI.updateME2Path(path) : window.electronAPI.updateModsFolder(path);
+    if (field === 'me3') {
+      setMe3Path(path);
+      window.electronAPI.updateME3Path(path);
+    } else {
+      setModsPath(path);
+      window.electronAPI.updateModsFolder(path);
+    }
+  };
+
+  const handleBrowseME3Exe = async () => {
+    const path = await window.electronAPI.browse('exe', 'Select ME3 Executable (me3.exe)');
+    if (!path) {
+      sendLog({ level: 'warning', message: 'No path selected' });
+      return;
+    }
+    setMe3Path(path);
+    window.electronAPI.updateME3Path(path);
   };
 
   return (
@@ -37,22 +52,22 @@ const Settings = () => {
           label="Mods Folder Path"
           placeholder="Select Mod Folder"
           style={TEXT_INPUT_STYLE}
-          defaultValue={modsPath}
+          value={modsPath}
           disabled
         />
-        <Button style={BUTTON_STYLE} onClick={() => handleBrowse('mods')}>
+        <Button style={BUTTON_STYLE} onClick={() => { void handleBrowse('mods'); }}>
           Browse
         </Button>
       </Group>
       <Group align={'flex-end'} justify={'space-between'}>
         <TextInput
-          label="Mod Engine 2 Path"
-          placeholder="Select Mod Engine 2 Executable"
+          label="Mod Engine 3 Path (me3.exe)"
+          placeholder="Auto-detected or browse to me3.exe"
           style={TEXT_INPUT_STYLE}
-          defaultValue={me2Path}
+          value={me3Path}
           disabled
         />
-        <Button style={BUTTON_STYLE} onClick={() => handleBrowse('me2')}>
+        <Button style={BUTTON_STYLE} onClick={() => { void handleBrowseME3Exe(); }}>
           Browse
         </Button>
       </Group>

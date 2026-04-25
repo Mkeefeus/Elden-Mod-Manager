@@ -1,0 +1,128 @@
+import { randomUUID } from 'crypto';
+import { ModProfile } from 'types';
+import { logger } from '../utils/mainLogger';
+import { errToString } from '../utils/utilities';
+import {
+  getActiveProfileId,
+  getProfiles,
+  getSavefile,
+  getStartOnline,
+  loadMods,
+  saveProfiles,
+  saveMods,
+  setActiveProfileId,
+  setSavefile,
+  setStartOnline,
+} from './db/api';
+
+const { debug } = logger;
+
+export const handleCreateProfile = (name: string): ModProfile => {
+  debug(`Creating profile: ${name}`);
+  try {
+    const profile: ModProfile = {
+      uuid: randomUUID(),
+      name,
+      createdAt: Date.now(),
+      mods: loadMods(),
+      savefile: getSavefile(),
+      startOnline: getStartOnline(),
+    };
+    const profiles = getProfiles();
+    profiles.push(profile);
+    saveProfiles(profiles);
+    setActiveProfileId(profile.uuid);
+    debug(`Profile created: ${profile.uuid}`);
+    return profile;
+  } catch (err) {
+    const msg = `An error occurred while creating profile: ${errToString(err)}`;
+    throw new Error(msg, { cause: err });
+  }
+};
+
+export const handleApplyProfile = (uuid: string) => {
+  debug(`Applying profile: ${uuid}`);
+  try {
+    const profiles = getProfiles();
+    const profile = profiles.find((p) => p.uuid === uuid);
+    if (!profile) throw new Error(`Profile not found: ${uuid}`);
+
+    // Build a map of uuid → saved mod state
+    const profileModMap = new Map(profile.mods.map((m) => [m.uuid, m]));
+
+    // For each currently installed mod, restore saved state or disable if not in profile
+    const installedMods = loadMods();
+    const updatedMods = installedMods.map((mod) => {
+      const saved = profileModMap.get(mod.uuid);
+      if (saved) {
+        return { ...mod, enabled: saved.enabled, loadBefore: saved.loadBefore, loadAfter: saved.loadAfter };
+      }
+      // Mod wasn't in this profile — disable it
+      return { ...mod, enabled: false };
+    });
+
+    saveMods(updatedMods);
+    setSavefile(profile.savefile);
+    setStartOnline(profile.startOnline);
+    setActiveProfileId(uuid);
+    debug(`Profile applied: ${uuid}`);
+  } catch (err) {
+    const msg = `An error occurred while applying profile: ${errToString(err)}`;
+    throw new Error(msg, { cause: err });
+  }
+};
+
+export const handleUpdateProfile = (uuid: string) => {
+  debug(`Updating profile: ${uuid}`);
+  try {
+    const profiles = getProfiles();
+    const index = profiles.findIndex((p) => p.uuid === uuid);
+    if (index === -1) throw new Error(`Profile not found: ${uuid}`);
+
+    profiles[index] = {
+      ...profiles[index],
+      mods: loadMods(),
+      savefile: getSavefile(),
+      startOnline: getStartOnline(),
+    };
+    saveProfiles(profiles);
+    debug(`Profile updated: ${uuid}`);
+  } catch (err) {
+    const msg = `An error occurred while updating profile: ${errToString(err)}`;
+    throw new Error(msg, { cause: err });
+  }
+};
+
+export const handleDeleteProfile = (uuid: string) => {
+  debug(`Deleting profile: ${uuid}`);
+  try {
+    const profiles = getProfiles();
+    const profile = profiles.find((p) => p.uuid === uuid);
+    if (profile?.name === 'Default') throw new Error('The Default profile cannot be deleted.');
+    const updated = profiles.filter((p) => p.uuid !== uuid);
+    saveProfiles(updated);
+    if (getActiveProfileId() === uuid) {
+      setActiveProfileId('');
+    }
+    debug(`Profile deleted: ${uuid}`);
+  } catch (err) {
+    const msg = `An error occurred while deleting profile: ${errToString(err)}`;
+    throw new Error(msg, { cause: err });
+  }
+};
+
+export const handleRenameProfile = (uuid: string, name: string) => {
+  debug(`Renaming profile ${uuid} to: ${name}`);
+  try {
+    const profiles = getProfiles();
+    const index = profiles.findIndex((p) => p.uuid === uuid);
+    if (index === -1) throw new Error(`Profile not found: ${uuid}`);
+    if (profiles[index].name === 'Default') throw new Error('The Default profile cannot be renamed.');
+    profiles[index] = { ...profiles[index], name };
+    saveProfiles(profiles);
+    debug(`Profile renamed: ${uuid}`);
+  } catch (err) {
+    const msg = `An error occurred while renaming profile: ${errToString(err)}`;
+    throw new Error(msg, { cause: err });
+  }
+};

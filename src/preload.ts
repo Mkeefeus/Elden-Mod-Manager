@@ -1,7 +1,7 @@
 // See the Electron documentation for details on how to use preload scripts:
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 import { contextBridge, ipcRenderer } from 'electron';
-import { Mod, AddModFormValues, BrowseType } from 'types';
+import { Mod, AddModFormValues, BrowseType, ModProfile } from 'types';
 import { LogEntry } from 'winston';
 
 interface IElectronAPI {
@@ -16,18 +16,30 @@ interface IElectronAPI {
   launchModExe: (mod: Mod) => void;
   log: (log: LogEntry) => void;
   extractZip: (zipPath: string) => Promise<string>;
-  setME2Path: (path: string) => void;
-  getME2Path: () => Promise<string>;
+  setME3Path: (path: string) => void;
+  getME3Path: () => Promise<string>;
   getModsPath: () => Promise<string>;
-  // installME2: () => Promise<void>;
+  detectME3: () => Promise<string | null>;
   checkModsFolderPrompt: () => Promise<boolean>;
   saveModsFolder: (path: string) => void;
   clearPromptedModsFolder: () => void;
   updateModsFolder: (path: string) => void;
-  updateME2Path: (path: string) => void;
+  updateME3Path: (path: string) => void;
+  getSavefile: () => Promise<string>;
+  setSavefile: (value: string) => void;
+  getStartOnline: () => Promise<boolean>;
+  setStartOnline: (value: boolean) => void;
+  // Profiles
+  loadProfiles: () => Promise<ModProfile[]>;
+  getActiveProfileId: () => Promise<string>;
+  createProfile: (name: string) => Promise<ModProfile>;
+  applyProfile: (uuid: string) => Promise<void>;
+  deleteProfile: (uuid: string) => void;
+  renameProfile: (uuid: string, name: string) => void;
+  updateProfile: (uuid: string) => Promise<void>;
   // Main to renderer
   notify: (callback: (log: LogEntry) => void) => void;
-  promptME2Install: (callback: () => void) => void;
+  promptME3Install: (callback: () => void) => void;
 }
 
 declare global {
@@ -50,18 +62,30 @@ const electronAPI: IElectronAPI = {
   launchModExe: (...args) => ipcRenderer.send('launch-mod-exe', ...args),
   log: (...args) => ipcRenderer.send('log', ...args),
   extractZip: (...args) => ipcRenderer.invoke('extract-zip', ...args),
-  setME2Path: (path) => ipcRenderer.send('set-me2-path', path),
-  getME2Path: () => ipcRenderer.invoke('get-me2-path'),
+  setME3Path: (path) => ipcRenderer.send('set-me3-path', path),
+  getME3Path: () => ipcRenderer.invoke('get-me3-path'),
   getModsPath: () => ipcRenderer.invoke('get-mods-path'),
-  // installME2: () => ipcRenderer.invoke('install-me2'),
+  detectME3: () => ipcRenderer.invoke('detect-me3'),
   checkModsFolderPrompt: () => ipcRenderer.invoke('check-mods-folder-prompt'),
   saveModsFolder: (path) => ipcRenderer.send('save-mods-folder', path),
   clearPromptedModsFolder: () => ipcRenderer.send('clear-prompted-mods-folder'),
   updateModsFolder: (path) => ipcRenderer.send('update-mods-folder', path),
-  updateME2Path: (path) => ipcRenderer.send('update-me2-path', path),
+  updateME3Path: (path) => ipcRenderer.send('update-me3-path', path),
+  getSavefile: () => ipcRenderer.invoke('get-savefile'),
+  setSavefile: (value) => ipcRenderer.send('set-savefile', value),
+  getStartOnline: () => ipcRenderer.invoke('get-start-online'),
+  setStartOnline: (value) => ipcRenderer.send('set-start-online', value),
+  // Profiles
+  loadProfiles: () => ipcRenderer.invoke('load-profiles'),
+  getActiveProfileId: () => ipcRenderer.invoke('get-active-profile-id'),
+  createProfile: (name) => ipcRenderer.invoke('create-profile', name),
+  applyProfile: (uuid) => ipcRenderer.invoke('apply-profile', uuid),
+  deleteProfile: (uuid) => ipcRenderer.send('delete-profile', uuid),
+  renameProfile: (uuid, name) => ipcRenderer.send('rename-profile', uuid, name),
+  updateProfile: (uuid) => ipcRenderer.invoke('update-profile', uuid),
   // Main to renderer
-  notify: (callback) => ipcRenderer.on('notify', (_event, value) => callback(value)),
-  promptME2Install: (callback) => ipcRenderer.on('prompt-me2-install', callback),
+  notify: (callback) => ipcRenderer.on('notify', (_event, value) => callback(value as LogEntry)),
+  promptME3Install: (callback) => ipcRenderer.on('prompt-me3-install', callback),
 };
 
 contextBridge.exposeInMainWorld('electronAPI', electronAPI);

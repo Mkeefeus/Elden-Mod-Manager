@@ -31,10 +31,11 @@ import { createRoot } from 'react-dom/client';
 import { RouterProvider, createHashRouter, RouteObject } from 'react-router-dom';
 import App from './App';
 import '@mantine/core/styles.css';
+import '@mantine/notifications/styles.css';
+import '@fontsource/cinzel';
 import { MantineProvider } from '@mantine/core';
 import { pages } from './pages/pages';
 import { theme } from './themes';
-import '@mantine/notifications/styles.css';
 import { Notifications } from '@mantine/notifications';
 
 const rootElement = document.getElementById('root') as Element;

@@ -1,13 +1,13 @@
+import React from 'react';
 import Home from './Home';
 import Mods from './Mods';
 import About from './About';
 import Settings from './Settings';
-import ModsProvider from '../providers/ModsProvider';
 
 export type Page = {
   displayName: string;
   route: string;
-  element: () => JSX.Element;
+  element: () => React.JSX.Element;
 };
 
 export const pages: Page[] = [
@@ -19,13 +19,7 @@ export const pages: Page[] = [
   {
     displayName: 'Mods',
     route: '/mods',
-    element: () => {
-      return (
-        <ModsProvider>
-          <Mods />
-        </ModsProvider>
-      );
-    },
+    element: Mods,
   },
   {
     displayName: 'Settings',

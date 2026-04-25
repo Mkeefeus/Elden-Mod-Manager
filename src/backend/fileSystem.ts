@@ -1,5 +1,6 @@
 import { OpenDialogOptions, app, dialog } from 'electron';
 import { existsSync, readdirSync } from 'fs';
+import { join, normalize, sep } from 'path';
 import { logger } from '../utils/mainLogger';
 import { errToString } from '../utils/utilities';
 import { BrowseType } from 'types';
@@ -16,7 +17,11 @@ const getBrowseFilters = (type: BrowseType) => {
     case 'dll':
       return [{ name: 'Dynamic Link Libraries', extensions: ['dll'] }];
     case 'exe':
-      return [{ name: 'Executable Files', extensions: ['exe'] }];
+      return process.platform === 'linux'
+        ? undefined
+        : [{ name: 'Executable Files', extensions: ['exe'] }];
+    case 'binary':
+      return undefined;
     default:
       return undefined;
   }
@@ -37,15 +42,15 @@ export const browse = (type: BrowseType, title?: string, startingDir?: string) =
   } catch (err) {
     const msg = `An error occured while browsing for ${type}: ${errToString(err)}`;
     error(msg);
-    throw new Error(msg);
+    throw new Error(msg, { cause: err });
   }
 };
 
 export const extractModZip = async (zipPath: string) => {
   debug(`Extracting zip: ${zipPath}`);
-  let tempPath = `${app.getPath('temp')}\\${randomUUID()}`;
+  let tempPath = join(app.getPath('temp'), randomUUID());
   if (existsSync(tempPath)) {
-    tempPath = `${app.getPath('temp')}\\${randomUUID()}`;
+    tempPath = join(app.getPath('temp'), randomUUID());
   }
   try {
     debug(`Extracting zip to temp directory: ${tempPath} from ${zipPath}`);
@@ -53,7 +58,7 @@ export const extractModZip = async (zipPath: string) => {
   } catch (err) {
     const msg = `An error occured while extracting zip: ${errToString(err)}`;
     error(msg);
-    throw new Error(msg);
+    throw new Error(msg, { cause: err });
   }
   debug('Zip extracted successfully');
   const files = readdirSync(tempPath, { recursive: true });
@@ -65,12 +70,12 @@ export const extractModZip = async (zipPath: string) => {
       break;
     }
     const file = files[index] as string;
-    // if file contains any of the subfolders
-    const pathChunks = file.split('\\');
+    // Normalize to platform separators so splitting works on all OSes
+    const pathChunks = normalize(file).split(sep);
     for (const chunk of pathChunks) {
       if (MOD_SUBFOLDERS.includes(chunk) || chunk.includes('.dll')) {
         subfolder = chunk;
-        validPath = pathChunks.slice(0, -1).join('\\');
+        validPath = pathChunks.slice(0, -1).join(sep);
         break;
       }
     }
@@ -81,7 +86,7 @@ export const extractModZip = async (zipPath: string) => {
     warning(msg);
     return;
   }
-  tempPath = `${tempPath}\\${validPath}`;
+  tempPath = join(tempPath, validPath);
 
   return tempPath;
 };
