@@ -15,9 +15,9 @@ const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
     extraResource: ['public/256x256.png'],
-
     icon: 'public/EMM-Icon.ico',
     name: 'Elden Mod Manager',
+    executableName: 'elden-mod-manager',
   },
   rebuildConfig: {},
   makers: [
