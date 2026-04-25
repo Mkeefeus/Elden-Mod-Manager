@@ -1,29 +1,44 @@
 import { app, ipcMain, shell } from 'electron';
+import { randomUUID } from 'crypto';
 import {
   clearFirstRun,
   getModEnginePath,
   getModsFolder,
   getPromptedModsFolder,
+  getSavefile,
+  getStartOnline,
   isFirstRun,
   loadMods,
   saveMods,
   setModEnginePath,
   clearPromptedModsFolder,
   setModsFolder,
+  setSavefile,
+  setStartOnline,
+  getProfiles,
+  getActiveProfileId,
+  saveProfiles,
+  setActiveProfileId,
 } from './db/api';
 import { AddModFormValues, BrowseType, Mod } from 'types';
-import { cpSync, existsSync } from 'fs';
+import { existsSync } from 'fs';
+import { join } from 'path';
 import { CreateModPathFromName, errToString } from '../utils/utilities';
 import { handleLog, logger } from '../utils/mainLogger';
 import { LogEntry } from 'winston';
-import { launchEldenRingModded, promptME2Install, updateME2Path } from './me2';
+import { launchEldenRingModded, promptME3Install, updateME3Path, detectME3 } from './me3';
 import { launchEldenRing } from './steam';
 import { browse, extractModZip } from './fileSystem';
 import { handleAddMod, handleDeleteMod, updateModsFolder } from './mods';
-import './toml';
-// import './ini';
+import {
+  handleCreateProfile,
+  handleApplyProfile,
+  handleUpdateProfile,
+  handleDeleteProfile,
+  handleRenameProfile,
+} from './profiles';
+import './me3Profile';
 import { getMainWindow } from '../main';
-import path from 'path';
 
 const { debug, error } = logger;
 
@@ -33,7 +48,7 @@ app
     debug('App starting');
     debug('Registering IPC events');
     ipcMain.on('open-external-link', (_, href: string) => {
-      shell.openExternal(href);
+      void shell.openExternal(href);
     });
     ipcMain.handle('load-mods', loadMods);
     ipcMain.handle('set-mods', (_, mods: Mod[]) => saveMods(mods));
@@ -60,11 +75,11 @@ app
     ipcMain.on('launch-mod-exe', (_, mod: Mod) => {
       debug(`Launching mod executable: ${mod.exe}`);
       try {
-        shell.openPath(`${getModsFolder()}\\${CreateModPathFromName(mod.name)}\\${mod.exe}`);
+        void shell.openPath(join(getModsFolder(), CreateModPathFromName(mod.name), mod.exe!));
       } catch (err) {
         const msg = `An error occured while launching mod executable: ${errToString(err)}`;
         error(msg);
-        throw new Error(msg);
+        throw new Error(msg, { cause: err });
       }
     });
 
@@ -72,22 +87,17 @@ app
       handleLog(log);
     });
 
-    ipcMain.on('set-me2-path', (_, path: string) => {
+    ipcMain.on('set-me3-path', (_, path: string) => {
       setModEnginePath(path);
     });
 
-    ipcMain.handle('get-me2-path', () => {
+    ipcMain.handle('get-me3-path', () => {
       return getModEnginePath();
     });
 
     ipcMain.handle('get-mods-path', () => {
       return getModsFolder();
     });
-
-    // Packaging ME2 with the app as a redist instead
-    // ipcMain.handle('install-me2', () => {
-    //   return downloadModEngine2();
-    // });
 
     ipcMain.handle('check-mods-folder-prompt', () => {
       return getPromptedModsFolder();
@@ -101,42 +111,83 @@ app
       setModsFolder(path);
     });
 
-    ipcMain.on('update-me2-path', (_, path: string) => {
-      updateME2Path(path);
+    ipcMain.on('update-me3-path', (_, path: string) => {
+      updateME3Path(path);
     });
 
     ipcMain.on('update-mods-folder', (_, path: string) => {
       updateModsFolder(path);
     });
 
-    const devMode = process.env.NODE_ENV === 'development';
-    const me2Dir = getModEnginePath();
-    if (!existsSync(me2Dir)) {
-      const me2Source = devMode
-        ? path.join(__dirname, '/../../ModEngine2')
-        : path.join(process.resourcesPath, '/ModEngine2');
-      cpSync(me2Source, me2Dir, { recursive: true });
-    }
-    // const modsDir = getModsFolder();
-    // if (!existsSync(modsDir)) {
-    //   const modsSource = devMode ? path.join(__dirname, '/../../Mods') : path.join(process.resourcesPath, '/Mods');
-    //   cpSync(modsSource, modsDir, { recursive: true });
-    // }
+    ipcMain.handle('get-savefile', () => {
+      return getSavefile();
+    });
 
-    // Startup tasks
-    if (isFirstRun()) {
-      const window = getMainWindow();
-      if (!window) {
-        throw new Error('Main window not found');
+    ipcMain.on('set-savefile', (_, value: string) => {
+      setSavefile(value);
+    });
+
+    ipcMain.handle('get-start-online', () => {
+      return getStartOnline();
+    });
+
+    ipcMain.on('set-start-online', (_, value: boolean) => {
+      setStartOnline(value);
+    });
+
+    ipcMain.handle('detect-me3', () => {
+      return detectME3();
+    });
+
+    // Profile handlers
+    ipcMain.handle('load-profiles', () => getProfiles());
+    ipcMain.handle('get-active-profile-id', () => getActiveProfileId());
+    ipcMain.handle('create-profile', (_, name: string) => handleCreateProfile(name));
+    ipcMain.handle('apply-profile', (_, uuid: string) => handleApplyProfile(uuid));
+    ipcMain.on('delete-profile', (_, uuid: string) => handleDeleteProfile(uuid));
+    ipcMain.on('rename-profile', (_, uuid: string, name: string) => handleRenameProfile(uuid, name));
+    ipcMain.handle('update-profile', (_, uuid: string) => handleUpdateProfile(uuid));
+
+    // Startup: check if ME3 is available; prompt user if not found
+    const storedPath = getModEnginePath();
+    const me3Available = (storedPath && existsSync(storedPath)) || (() => {
+      const detected = detectME3();
+      if (detected) {
+        setModEnginePath(detected);
+        return true;
       }
-      window.once('ready-to-show', () => {
-        promptME2Install();
-      });
+      return false;
+    })();
+    if (!me3Available) {
+      const window = getMainWindow();
+      if (window) {
+        window.once('ready-to-show', () => {
+          promptME3Install();
+        });
+      }
+    }
+
+    // Bootstrap a "Default" profile on first launch if none exist
+    if (getProfiles().length === 0) {
+      const defaultProfile = {
+        uuid: randomUUID(),
+        name: 'Default',
+        createdAt: Date.now(),
+        mods: [],
+        savefile: '',
+        startOnline: false,
+      };
+      saveProfiles([defaultProfile]);
+      setActiveProfileId(defaultProfile.uuid);
+      debug(`Created default profile: ${defaultProfile.uuid}`);
+    }
+
+    if (isFirstRun()) {
       clearFirstRun();
     }
+
     debug('App started');
   })
   .catch((err) => {
     error(`An error occured while starting app: ${errToString(err)}`);
   });
-process;

@@ -3,11 +3,13 @@ export type Dict<T> = { [key: string]: T };
 export type Mod = {
   uuid: string;
   enabled: boolean;
-  loadOrder?: number;
   name: string;
   installDate: number;
   dllFile?: string;
   exe?: string;
+  loadEarly?: boolean;
+  loadBefore?: string[];
+  loadAfter?: string[];
 };
 
 export type AddModFormValues = {
@@ -18,6 +20,7 @@ export type AddModFormValues = {
   hasExe: boolean;
   exePath: string;
   dllPath: string;
+  loadEarly: boolean;
 };
 
 export type NewsComponentProps = {
@@ -30,7 +33,16 @@ export type NewsComponentProps = {
   postDate: string;
 };
 
-export type BrowseType = 'zip' | 'dll' | 'exe' | 'directory';
+export type BrowseType = 'zip' | 'dll' | 'exe' | 'binary' | 'directory';
+
+export type ModProfile = {
+  uuid: string;
+  name: string;
+  createdAt: number;
+  mods: Mod[];
+  savefile: string;
+  startOnline: boolean;
+};
 
 export type Dependency = {
   licenses: string;

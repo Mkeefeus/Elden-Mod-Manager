@@ -18,7 +18,12 @@ import { sendLog } from '../utils/rendererLogger';
 import { errToString } from '../utils/utilities';
 import { decode } from 'he';
 
-const quickActions: string[] = ['Play', 'Play Vanilla', 'Add a Mod (Zip)', 'Add a Mod (Folder)'];
+const quickActions: { label: string; variant: string }[] = [
+    { label: 'Play', variant: 'filled' },
+    { label: 'Play Vanilla', variant: 'light' },
+    { label: 'Add a Mod (Zip)', variant: 'outline' },
+    { label: 'Add a Mod (Folder)', variant: 'outline' },
+  ];
 
 interface Author {
   name: string;
@@ -90,7 +95,7 @@ const Home = () => {
   };
   const fetchNews = async () => {
     const response = await fetch('https://public-api.wordpress.com/rest/v1.1/sites/eldenringmm.wordpress.com/posts/');
-    const uncleanedData = await response.json();
+    const uncleanedData = (await response.json()) as NewsData;
     const cleanedData = cleanNewsData(uncleanedData);
     return cleanedData;
   };
@@ -104,7 +109,7 @@ const Home = () => {
     queryFn: fetchNews,
   });
 
-  error && sendLog({ level: 'error', message: `An error occured while fetching news: ${errToString(error)}` });
+  if (error) sendLog({ level: 'error', message: `An error occured while fetching news: ${errToString(error)}` });
 
   const handleQuckAction = (index: number) => {
     try {
@@ -116,10 +121,10 @@ const Home = () => {
           window.electronAPI.launchGame(false);
           break;
         case 2:
-          navigate('/mods', { state: { fromZip: true, opened: true } });
+          void navigate('/mods', { state: { fromZip: true, opened: true } });
           break;
         case 3:
-          navigate('/mods', { state: { fromZip: false, opened: true } });
+          void navigate('/mods', { state: { fromZip: false, opened: true } });
           break;
       }
     } catch (error) {
@@ -138,13 +143,13 @@ const Home = () => {
         <Group gap={'lg'} justify="space-between" grow>
           {quickActions.map((action, index) => (
             <Button
-              variant="light"
+              variant={action.variant}
               key={index}
               onClick={() => {
                 handleQuckAction(index);
               }}
             >
-              {action}
+              {action.label}
             </Button>
           ))}
         </Group>

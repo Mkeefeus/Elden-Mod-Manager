@@ -1,6 +1,7 @@
-import { Mod } from 'types';
+import { Mod, ModProfile } from 'types';
 import { Schema } from 'electron-store';
 import { app } from 'electron';
+import { join } from 'path';
 
 export type DBSchema = {
   mods: Mod[];
@@ -9,6 +10,10 @@ export type DBSchema = {
   modFolderPath: string;
   firstRun: boolean;
   promptedModsFolder: boolean;
+  savefile: string;
+  startOnline: boolean;
+  profiles: ModProfile[];
+  activeProfileId: string;
 };
 
 const schema: Schema<DBSchema> = {
@@ -19,10 +24,12 @@ const schema: Schema<DBSchema> = {
       properties: {
         uuid: { type: 'string' },
         enabled: { type: 'boolean' },
-        loadOrder: { type: 'number' },
         name: { type: 'string' },
         installDate: { type: 'number' },
         dllFile: { type: 'string' },
+        loadEarly: { type: 'boolean' },
+        loadBefore: { type: 'array', items: { type: 'string' } },
+        loadAfter: { type: 'array', items: { type: 'string' } },
       },
       required: ['uuid', 'enabled', 'name', 'installDate'],
     },
@@ -30,7 +37,7 @@ const schema: Schema<DBSchema> = {
   },
   modEnginePath: {
     type: 'string',
-    default: app.getPath('userData') + '\\ModEngine\\',
+    default: '',
   },
   eldenRingFolder: {
     type: 'string',
@@ -38,7 +45,7 @@ const schema: Schema<DBSchema> = {
   },
   modFolderPath: {
     type: 'string',
-    default: app.getPath('userData') + '\\mods\\',
+    default: join(app.getPath('userData'), 'mods'),
   },
   firstRun: {
     type: 'boolean',
@@ -47,6 +54,34 @@ const schema: Schema<DBSchema> = {
   promptedModsFolder: {
     type: 'boolean',
     default: false,
+  },
+  savefile: {
+    type: 'string',
+    default: '',
+  },
+  startOnline: {
+    type: 'boolean',
+    default: false,
+  },
+  profiles: {
+    type: 'array',
+    items: {
+      type: 'object',
+      properties: {
+        uuid: { type: 'string' },
+        name: { type: 'string' },
+        createdAt: { type: 'number' },
+        mods: { type: 'array' },
+        savefile: { type: 'string' },
+        startOnline: { type: 'boolean' },
+      },
+      required: ['uuid', 'name', 'createdAt', 'mods', 'savefile', 'startOnline'],
+    },
+    default: [],
+  },
+  activeProfileId: {
+    type: 'string',
+    default: '',
   },
 };
 

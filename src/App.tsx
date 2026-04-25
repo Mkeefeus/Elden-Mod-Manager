@@ -1,14 +1,42 @@
-import { AppShell, Button, Stack, Group, Title } from '@mantine/core';
-import { Outlet, Link } from 'react-router-dom';
+import { AppShell, Group, NavLink, Title } from '@mantine/core';
+import { Outlet, Link, useLocation } from 'react-router-dom';
 import { pages } from './pages/pages';
 import Footer from './components/Footer';
 import ModalProvider from './providers/ModalProvider';
+import ModsProvider from './providers/ModsProvider';
 import Modal from './components/Modal';
 import './utils/rendererLogger';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { IconHome2, IconPuzzle, IconSettings, IconInfoCircle } from '@tabler/icons-react';
+
+const pageIcons: Record<string, React.ReactNode> = {
+  '/': <IconHome2 size={18} />,
+  '/mods': <IconPuzzle size={18} />,
+  '/settings': <IconSettings size={18} />,
+  '/about': <IconInfoCircle size={18} />,
+};
+
+const AppNavbar = () => {
+  const location = useLocation();
+  return (
+    <>
+      {pages.map((page) => (
+        <NavLink
+          key={page.route}
+          component={Link}
+          to={page.route}
+          label={page.displayName}
+          leftSection={pageIcons[page.route]}
+          active={location.pathname === page.route}
+          variant="filled"
+          style={{ borderRadius: 'var(--mantine-radius-sm)' }}
+        />
+      ))}
+    </>
+  );
+};
 
 const App = () => {
-  // Main to Renderer events
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
@@ -26,29 +54,37 @@ const App = () => {
         breakpoint: 'sm',
       }}
     >
-      <AppShell.Header>
+      <AppShell.Header
+        style={{
+          borderBottom: '1px solid var(--mantine-color-gold-7)',
+          display: 'flex',
+          alignItems: 'center',
+        }}
+      >
         <Group h="100%" px="md">
-          <Title>Elden Mod Manager</Title>
+          <Title
+            style={{
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              fontSize: 'clamp(1rem, 2vw, 1.4rem)',
+            }}
+          >
+            Elden Mod Manager
+          </Title>
         </Group>
       </AppShell.Header>
       <AppShell.Navbar p="md">
-        <Stack mih={50} gap="md" justify="flex-start" align="stretch">
-          {pages.map((page) => (
-            <Link to={page.route} key={page.route} style={{ textDecoration: 'none' }}>
-              <Button fullWidth variant="outline">
-                {page.displayName}
-              </Button>
-            </Link>
-          ))}
-        </Stack>
+        <AppNavbar />
       </AppShell.Navbar>
       <AppShell.Main display={'flex'} style={{ flexDirection: 'column' }}>
-        <ModalProvider>
-          <QueryClientProvider client={queryClient}>
-            <Modal />
-            <Outlet />
-          </QueryClientProvider>
-        </ModalProvider>
+        <ModsProvider>
+          <ModalProvider>
+            <QueryClientProvider client={queryClient}>
+              <Modal />
+              <Outlet />
+            </QueryClientProvider>
+          </ModalProvider>
+        </ModsProvider>
       </AppShell.Main>
       <AppShell.Footer>
         <Footer />

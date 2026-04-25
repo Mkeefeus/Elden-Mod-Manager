@@ -1,6 +1,6 @@
 import { useContext, createContext, Context, ReactNode, useState } from 'react';
 import { useDisclosure } from '@mantine/hooks';
-import InstallME2Modal from '../components/InstallME2Modal';
+import InstallME3Modal from '../components/InstallME3Modal';
 
 interface ShowOptions {
   title: string;
@@ -36,10 +36,10 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
 
   // Main to Renderer modal triggers
 
-  window.electronAPI.promptME2Install(() => {
+  window.electronAPI.promptME3Install(() => {
     showModal({
-      title: 'Install ModEngine2',
-      content: <InstallME2Modal hideModal={hideModal} />,
+      title: 'Install ModEngine3',
+      content: <InstallME3Modal hideModal={hideModal} />,
     });
   });
 

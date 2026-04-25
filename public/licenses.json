@@ -1,179 +1,65 @@
 {
-  "ModEngine2": {
-    "licenses": "MIT",
-    "repository": "https://github.com/soulsmods/ModEngine2",
-    "licenseURL": "https://raw.githubusercontent.com/soulsmods/ModEngine2/main/LICENSE-MIT",
-    "parents": "elden-mod-manager"
-  },
-  "@fortawesome/fontawesome-svg-core": {
-    "licenses": "MIT",
-    "repository": "https://github.com/FortAwesome/Font-Awesome",
-    "licenseUrl": "https://github.com/FortAwesome/Font-Awesome/raw/master/LICENSE.txt",
-    "parents": "elden-mod-manager"
-  },
-  "@fortawesome/free-brands-svg-icons": {
-    "licenses": "(CC-BY-4.0 AND MIT)",
-    "repository": "https://github.com/FortAwesome/Font-Awesome",
-    "licenseUrl": "https://github.com/FortAwesome/Font-Awesome/raw/master/LICENSE.txt",
-    "parents": "elden-mod-manager"
-  },
-  "@fortawesome/free-solid-svg-icons": {
-    "licenses": "(CC-BY-4.0 AND MIT)",
-    "repository": "https://github.com/FortAwesome/Font-Awesome",
-    "licenseUrl": "https://github.com/FortAwesome/Font-Awesome/raw/master/faDriversLicense.d.ts",
-    "parents": "elden-mod-manager"
-  },
-  "@fortawesome/react-fontawesome": {
-    "licenses": "MIT",
-    "repository": "https://github.com/FortAwesome/react-fontawesome",
-    "licenseUrl": "https://github.com/FortAwesome/react-fontawesome/raw/master/LICENSE.txt",
-    "parents": "elden-mod-manager"
-  },
-  "@mantine/core": {
-    "licenses": "MIT",
-    "repository": "https://github.com/mantinedev/mantine",
-    "licenseUrl": "https://github.com/mantinedev/mantine",
-    "parents": "elden-mod-manager"
-  },
-  "@mantine/form": {
-    "licenses": "MIT",
-    "repository": "https://github.com/mantinedev/mantine",
-    "licenseUrl": "https://github.com/mantinedev/mantine",
-    "parents": "elden-mod-manager"
-  },
-  "@mantine/hooks": {
-    "licenses": "MIT",
-    "repository": "https://github.com/mantinedev/mantine",
-    "licenseUrl": "https://github.com/mantinedev/mantine",
-    "parents": "elden-mod-manager"
-  },
-  "@mantine/notifications": {
-    "licenses": "MIT",
-    "repository": "https://github.com/mantinedev/mantine",
-    "licenseUrl": "https://github.com/mantinedev/mantine",
-    "parents": "elden-mod-manager"
-  },
-  "@tabler/icons-react": {
-    "licenses": "MIT",
-    "repository": "https://github.com/tabler/tabler-icons",
-    "licenseUrl": "https://github.com/tabler/tabler-icons/raw/master/LICENSE",
-    "parents": "elden-mod-manager"
-  },
-  "@tanstack/react-query": {
-    "licenses": "MIT",
-    "repository": "https://github.com/TanStack/query",
-    "licenseUrl": "https://github.com/TanStack/query/raw/master/LICENSE",
-    "parents": "elden-mod-manager"
-  },
-  "archiver": {
-    "licenses": "MIT",
-    "repository": "https://github.com/archiverjs/node-archiver",
-    "licenseUrl": "https://github.com/archiverjs/node-archiver/raw/master/LICENSE",
-    "parents": "elden-mod-manager"
-  },
-  "create-desktop-shortcuts": {
-    "licenses": "MIT",
-    "repository": "https://github.com/nwutils/create-desktop-shortcuts",
-    "licenseUrl": "https://github.com/nwutils/create-desktop-shortcuts/raw/master/LICENSE",
-    "parents": "elden-mod-manager"
-  },
-  "debug": {
-    "licenses": "MIT",
-    "repository": "https://github.com/debug-js/debug",
-    "licenseUrl": "https://github.com/debug-js/debug/raw/master/LICENSE",
-    "parents": "elden-mod-manager"
-  },
-  "decompress": {
-    "licenses": "MIT",
-    "repository": "https://github.com/kevva/decompress",
-    "licenseUrl": "https://github.com/kevva/decompress/raw/master/license",
-    "parents": "elden-mod-manager"
-  },
-  "dotenv": {
-    "licenses": "BSD-2-Clause",
-    "repository": "https://github.com/motdotla/dotenv",
-    "licenseUrl": "https://github.com/motdotla/dotenv/raw/master/LICENSE",
-    "parents": "elden-mod-manager"
-  },
-  "electron-squirrel-startup": {
+  "me3": {
     "licenses": "Apache-2.0",
-    "repository": "https://github.com/mongodb-js/electron-squirrel-startup",
-    "licenseUrl": "https://github.com/mongodb-js/electron-squirrel-startup/raw/master/LICENSE",
+    "repository": "https://github.com/garyttierney/me3",
+    "licenseURL": "https://raw.githubusercontent.com/garyttierney/me3/refs/heads/main/LICENSE-APACHE",
     "parents": "elden-mod-manager"
   },
-  "electron-store": {
+  "@babel/runtime": {
     "licenses": "MIT",
-    "repository": "https://github.com/sindresorhus/electron-store",
-    "licenseUrl": "https://github.com/sindresorhus/electron-store/raw/master/license",
+    "repository": "https://github.com/babel/babel",
+    "licenseUrl": "https://github.com/babel/babel/raw/master/LICENSE",
     "parents": "elden-mod-manager"
   },
-  "he": {
+  "@colors/colors": {
     "licenses": "MIT",
-    "repository": "https://github.com/mathiasbynens/he",
-    "licenseUrl": "https://github.com/mathiasbynens/he/raw/master/LICENSE-MIT.txt",
+    "repository": "http://github.com/DABH/colors.js",
+    "licenseUrl": "http://github.com/DABH/colors.js/raw/master/LICENSE",
     "parents": "elden-mod-manager"
   },
-  "html-react-parser": {
+  "@cspotcode/source-map-support": {
     "licenses": "MIT",
-    "repository": "https://github.com/remarkablemark/html-react-parser",
-    "licenseUrl": "https://github.com/remarkablemark/html-react-parser/raw/master/LICENSE",
+    "repository": "https://github.com/cspotcode/node-source-map-support",
+    "licenseUrl": "https://github.com/cspotcode/node-source-map-support/raw/master/LICENSE.md",
     "parents": "elden-mod-manager"
   },
-  "ini": {
-    "licenses": "ISC",
-    "repository": "https://github.com/npm/ini",
-    "licenseUrl": "https://github.com/npm/ini/raw/master/LICENSE",
-    "parents": "elden-mod-manager"
-  },
-  "react-dom": {
+  "@dabh/diagnostics": {
     "licenses": "MIT",
-    "repository": "https://github.com/facebook/react",
-    "licenseUrl": "https://github.com/facebook/react/raw/master/LICENSE",
-    "parents": "elden-mod-manager"
-  },
-  "react-router-dom": {
-    "licenses": "MIT",
-    "repository": "https://github.com/remix-run/react-router",
-    "licenseUrl": "https://github.com/remix-run/react-router/raw/master/LICENSE.md",
-    "parents": "elden-mod-manager"
-  },
-  "react": {
-    "licenses": "MIT",
-    "repository": "https://github.com/facebook/react",
-    "licenseUrl": "https://github.com/facebook/react/raw/master/LICENSE",
-    "parents": "elden-mod-manager"
-  },
-  "update-electron-app": {
-    "licenses": "MIT",
-    "repository": "https://github.com/electron/update-electron-app",
-    "licenseUrl": "https://github.com/electron/update-electron-app/raw/master/LICENSE",
-    "parents": "elden-mod-manager"
-  },
-  "vdf-parser": {
-    "licenses": "MIT",
-    "repository": "https://github.com/p0358/vdf-parser",
-    "licenseUrl": "https://github.com/p0358/vdf-parser/raw/master/LICENSE",
-    "parents": "elden-mod-manager"
-  },
-  "winston-daily-rotate-file": {
-    "licenses": "MIT",
-    "repository": "https://github.com/winstonjs/winston-daily-rotate-file",
-    "licenseUrl": "https://github.com/winstonjs/winston-daily-rotate-file/raw/master/LICENSE",
-    "parents": "elden-mod-manager"
-  },
-  "winston-transport": {
-    "licenses": "MIT",
-    "repository": "https://github.com/winstonjs/winston-transport",
-    "licenseUrl": "https://github.com/winstonjs/winston-transport/raw/master/LICENSE",
-    "parents": "elden-mod-manager"
-  },
-  "winston": {
-    "licenses": "MIT",
-    "repository": "https://github.com/winstonjs/winston",
-    "licenseUrl": "https://github.com/winstonjs/winston/raw/master/LICENSE",
+    "repository": "https://github.com/DABH/diagnostics",
+    "licenseUrl": "https://github.com/DABH/diagnostics/raw/master/LICENSE",
     "parents": "elden-mod-manager"
   },
   "@electron-forge/cli": {
+    "licenses": "MIT",
+    "repository": "https://github.com/electron/forge",
+    "licenseUrl": "https://github.com/electron/forge/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@electron-forge/core-utils": {
+    "licenses": "MIT",
+    "repository": "https://github.com/electron/forge",
+    "licenseUrl": "https://github.com/electron/forge/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@electron-forge/core": {
+    "licenses": "MIT",
+    "repository": "https://github.com/electron/forge",
+    "licenseUrl": "https://github.com/electron/forge/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@electron-forge/maker-base": {
+    "licenses": "MIT",
+    "repository": "https://github.com/electron/forge",
+    "licenseUrl": "https://github.com/electron/forge/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@electron-forge/maker-deb": {
+    "licenses": "MIT",
+    "repository": "https://github.com/electron/forge",
+    "licenseUrl": "https://github.com/electron/forge/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@electron-forge/maker-rpm": {
     "licenses": "MIT",
     "repository": "https://github.com/electron/forge",
     "licenseUrl": "https://github.com/electron/forge/raw/master/LICENSE",
@@ -197,6 +83,12 @@
     "licenseUrl": "https://github.com/electron/forge/raw/master/LICENSE",
     "parents": "elden-mod-manager"
   },
+  "@electron-forge/plugin-base": {
+    "licenses": "MIT",
+    "repository": "https://github.com/electron/forge",
+    "licenseUrl": "https://github.com/electron/forge/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
   "@electron-forge/plugin-fuses": {
     "licenses": "MIT",
     "repository": "https://github.com/electron/forge",
@@ -204,6 +96,12 @@
     "parents": "elden-mod-manager"
   },
   "@electron-forge/plugin-vite": {
+    "licenses": "MIT",
+    "repository": "https://github.com/electron/forge",
+    "licenseUrl": "https://github.com/electron/forge/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@electron-forge/publisher-base": {
     "licenses": "MIT",
     "repository": "https://github.com/electron/forge",
     "licenseUrl": "https://github.com/electron/forge/raw/master/LICENSE",
@@ -221,25 +119,631 @@
     "licenseUrl": "https://github.com/electron/forge/raw/master/LICENSE",
     "parents": "elden-mod-manager"
   },
+  "@electron-forge/template-base": {
+    "licenses": "MIT",
+    "repository": "https://github.com/electron/forge",
+    "licenseUrl": "https://github.com/electron/forge/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@electron-forge/template-vite-typescript": {
+    "licenses": "MIT",
+    "repository": "https://github.com/electron/forge",
+    "licenseUrl": "https://github.com/electron/forge/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@electron-forge/template-vite": {
+    "licenses": "MIT",
+    "repository": "https://github.com/electron/forge",
+    "licenseUrl": "https://github.com/electron/forge/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@electron-forge/template-webpack-typescript": {
+    "licenses": "MIT",
+    "repository": "https://github.com/electron/forge",
+    "licenseUrl": "https://github.com/electron/forge/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@electron-forge/template-webpack": {
+    "licenses": "MIT",
+    "repository": "https://github.com/electron/forge",
+    "licenseUrl": "https://github.com/electron/forge/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@electron-forge/tracer": {
+    "licenses": "MIT",
+    "repository": "https://github.com/electron/forge",
+    "licenseUrl": "https://github.com/electron/forge/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@electron/asar": {
+    "licenses": "MIT",
+    "repository": "https://github.com/electron/asar",
+    "licenseUrl": "https://github.com/electron/asar/raw/master/LICENSE.md",
+    "parents": "elden-mod-manager"
+  },
   "@electron/fuses": {
     "licenses": "MIT",
     "repository": "https://github.com/electron/fuses",
     "licenseUrl": "https://github.com/electron/fuses/raw/master/LICENSE",
     "parents": "elden-mod-manager"
   },
-  "@eslint/compat": {
+  "@electron/get": {
+    "licenses": "MIT",
+    "repository": "https://github.com/electron/get",
+    "licenseUrl": "https://github.com/electron/get/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@electron/node-gyp": {
+    "licenses": "MIT",
+    "repository": "https://github.com/nodejs/node-gyp",
+    "licenseUrl": "https://github.com/nodejs/node-gyp/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@electron/notarize": {
+    "licenses": "MIT",
+    "repository": "https://github.com/electron/notarize",
+    "licenseUrl": "https://github.com/electron/notarize/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@electron/osx-sign": {
+    "licenses": "BSD-2-Clause",
+    "repository": "https://github.com/electron/osx-sign",
+    "licenseUrl": "https://github.com/electron/osx-sign/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@electron/packager": {
+    "licenses": "BSD-2-Clause",
+    "repository": "https://github.com/electron/packager",
+    "licenseUrl": "https://github.com/electron/packager/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@electron/rebuild": {
+    "licenses": "MIT",
+    "repository": "https://github.com/electron/rebuild",
+    "licenseUrl": "https://github.com/electron/rebuild/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@electron/universal": {
+    "licenses": "MIT",
+    "repository": "https://github.com/electron/universal",
+    "licenseUrl": "https://github.com/electron/universal/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@electron/windows-sign": {
+    "licenses": "BSD-2-Clause",
+    "repository": "https://github.com/electron/windows-sign",
+    "licenseUrl": "https://github.com/electron/windows-sign/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@eslint-community/eslint-utils": {
+    "licenses": "MIT",
+    "repository": "https://github.com/eslint-community/eslint-utils",
+    "licenseUrl": "https://github.com/eslint-community/eslint-utils/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@eslint-community/regexpp": {
+    "licenses": "MIT",
+    "repository": "https://github.com/eslint-community/regexpp",
+    "licenseUrl": "https://github.com/eslint-community/regexpp/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@eslint/config-array": {
     "licenses": "Apache-2.0",
     "repository": "https://github.com/eslint/rewrite",
     "licenseUrl": "https://github.com/eslint/rewrite/raw/master/LICENSE",
     "parents": "elden-mod-manager"
   },
-  "@eslint/eslintrc": {
+  "@eslint/config-helpers": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/eslint/rewrite",
+    "licenseUrl": "https://github.com/eslint/rewrite/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@eslint/core": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/eslint/rewrite",
+    "licenseUrl": "https://github.com/eslint/rewrite/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@eslint/js": {
     "licenses": "MIT",
-    "repository": "https://github.com/eslint/eslintrc",
-    "licenseUrl": "https://github.com/eslint/eslintrc/raw/master/LICENSE",
+    "repository": "https://github.com/eslint/eslint",
+    "licenseUrl": "https://github.com/eslint/eslint/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@eslint/object-schema": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/eslint/rewrite",
+    "licenseUrl": "https://github.com/eslint/rewrite/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@eslint/plugin-kit": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/eslint/rewrite",
+    "licenseUrl": "https://github.com/eslint/rewrite/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@floating-ui/core": {
+    "licenses": "MIT",
+    "repository": "https://github.com/floating-ui/floating-ui",
+    "licenseUrl": "https://github.com/floating-ui/floating-ui/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@floating-ui/dom": {
+    "licenses": "MIT",
+    "repository": "https://github.com/floating-ui/floating-ui",
+    "licenseUrl": "https://github.com/floating-ui/floating-ui/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@floating-ui/react-dom": {
+    "licenses": "MIT",
+    "repository": "https://github.com/floating-ui/floating-ui",
+    "licenseUrl": "https://github.com/floating-ui/floating-ui/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@floating-ui/react": {
+    "licenses": "MIT",
+    "repository": "https://github.com/floating-ui/floating-ui",
+    "licenseUrl": "https://github.com/floating-ui/floating-ui/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@floating-ui/utils": {
+    "licenses": "MIT",
+    "repository": "https://github.com/floating-ui/floating-ui",
+    "licenseUrl": "https://github.com/floating-ui/floating-ui/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@fontsource/cinzel": {
+    "licenses": "OFL-1.1",
+    "repository": "https://github.com/fontsource/font-files",
+    "licenseUrl": "https://github.com/fontsource/font-files/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@fortawesome/fontawesome-common-types": {
+    "licenses": "MIT",
+    "repository": "https://github.com/FortAwesome/Font-Awesome",
+    "licenseUrl": "https://github.com/FortAwesome/Font-Awesome/raw/master/LICENSE.txt",
+    "parents": "elden-mod-manager"
+  },
+  "@fortawesome/fontawesome-svg-core": {
+    "licenses": "MIT",
+    "repository": "https://github.com/FortAwesome/Font-Awesome",
+    "licenseUrl": "https://github.com/FortAwesome/Font-Awesome/raw/master/LICENSE.txt",
+    "parents": "elden-mod-manager"
+  },
+  "@fortawesome/free-brands-svg-icons": {
+    "licenses": "(CC-BY-4.0 AND MIT)",
+    "repository": "https://github.com/FortAwesome/Font-Awesome",
+    "licenseUrl": "https://github.com/FortAwesome/Font-Awesome/raw/master/LICENSE.txt",
+    "parents": "elden-mod-manager"
+  },
+  "@fortawesome/free-solid-svg-icons": {
+    "licenses": "(CC-BY-4.0 AND MIT)",
+    "repository": "https://github.com/FortAwesome/Font-Awesome",
+    "licenseUrl": "https://github.com/FortAwesome/Font-Awesome/raw/master/LICENSE.txt",
+    "parents": "elden-mod-manager"
+  },
+  "@fortawesome/react-fontawesome": {
+    "licenses": "MIT",
+    "repository": "https://github.com/FortAwesome/react-fontawesome",
+    "licenseUrl": "https://github.com/FortAwesome/react-fontawesome/raw/master/LICENSE.txt",
+    "parents": "elden-mod-manager"
+  },
+  "@gar/promisify": {
+    "licenses": "MIT",
+    "repository": "https://github.com/wraithgar/gar-promisify",
+    "licenseUrl": "https://github.com/wraithgar/gar-promisify/raw/master/LICENSE.md",
+    "parents": "elden-mod-manager"
+  },
+  "@humanfs/core": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/humanwhocodes/humanfs",
+    "licenseUrl": "https://github.com/humanwhocodes/humanfs/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@humanfs/node": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/humanwhocodes/humanfs",
+    "licenseUrl": "https://github.com/humanwhocodes/humanfs/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@humanfs/types": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/humanwhocodes/humanfs",
+    "licenseUrl": "https://github.com/humanwhocodes/humanfs",
+    "parents": "elden-mod-manager"
+  },
+  "@humanwhocodes/module-importer": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/humanwhocodes/module-importer",
+    "licenseUrl": "https://github.com/humanwhocodes/module-importer/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@humanwhocodes/retry": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/humanwhocodes/retry",
+    "licenseUrl": "https://github.com/humanwhocodes/retry/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@inquirer/checkbox": {
+    "licenses": "MIT",
+    "repository": "https://github.com/SBoudrias/Inquirer.js",
+    "licenseUrl": "https://github.com/SBoudrias/Inquirer.js/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@inquirer/confirm": {
+    "licenses": "MIT",
+    "repository": "https://github.com/SBoudrias/Inquirer.js",
+    "licenseUrl": "https://github.com/SBoudrias/Inquirer.js/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@inquirer/core": {
+    "licenses": "MIT",
+    "repository": "https://github.com/SBoudrias/Inquirer.js",
+    "licenseUrl": "https://github.com/SBoudrias/Inquirer.js/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@inquirer/editor": {
+    "licenses": "MIT",
+    "repository": "https://github.com/SBoudrias/Inquirer.js",
+    "licenseUrl": "https://github.com/SBoudrias/Inquirer.js/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@inquirer/expand": {
+    "licenses": "MIT",
+    "repository": "https://github.com/SBoudrias/Inquirer.js",
+    "licenseUrl": "https://github.com/SBoudrias/Inquirer.js/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@inquirer/figures": {
+    "licenses": "MIT",
+    "repository": "https://github.com/SBoudrias/Inquirer.js",
+    "licenseUrl": "https://github.com/SBoudrias/Inquirer.js/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@inquirer/input": {
+    "licenses": "MIT",
+    "repository": "https://github.com/SBoudrias/Inquirer.js",
+    "licenseUrl": "https://github.com/SBoudrias/Inquirer.js/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@inquirer/number": {
+    "licenses": "MIT",
+    "repository": "https://github.com/SBoudrias/Inquirer.js",
+    "licenseUrl": "https://github.com/SBoudrias/Inquirer.js/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@inquirer/password": {
+    "licenses": "MIT",
+    "repository": "https://github.com/SBoudrias/Inquirer.js",
+    "licenseUrl": "https://github.com/SBoudrias/Inquirer.js/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@inquirer/prompts": {
+    "licenses": "MIT",
+    "repository": "https://github.com/SBoudrias/Inquirer.js",
+    "licenseUrl": "https://github.com/SBoudrias/Inquirer.js/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@inquirer/rawlist": {
+    "licenses": "MIT",
+    "repository": "https://github.com/SBoudrias/Inquirer.js",
+    "licenseUrl": "https://github.com/SBoudrias/Inquirer.js/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@inquirer/search": {
+    "licenses": "MIT",
+    "repository": "https://github.com/SBoudrias/Inquirer.js",
+    "licenseUrl": "https://github.com/SBoudrias/Inquirer.js/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@inquirer/select": {
+    "licenses": "MIT",
+    "repository": "https://github.com/SBoudrias/Inquirer.js",
+    "licenseUrl": "https://github.com/SBoudrias/Inquirer.js/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@inquirer/type": {
+    "licenses": "MIT",
+    "repository": "https://github.com/SBoudrias/Inquirer.js",
+    "licenseUrl": "https://github.com/SBoudrias/Inquirer.js/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@isaacs/cliui": {
+    "licenses": "ISC",
+    "repository": "https://github.com/yargs/cliui",
+    "licenseUrl": "https://github.com/yargs/cliui/raw/master/LICENSE.txt",
+    "parents": "elden-mod-manager"
+  },
+  "@jridgewell/gen-mapping": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jridgewell/sourcemaps",
+    "licenseUrl": "https://github.com/jridgewell/sourcemaps/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@jridgewell/resolve-uri": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jridgewell/resolve-uri",
+    "licenseUrl": "https://github.com/jridgewell/resolve-uri/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@jridgewell/source-map": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jridgewell/sourcemaps",
+    "licenseUrl": "https://github.com/jridgewell/sourcemaps/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@jridgewell/sourcemap-codec": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jridgewell/sourcemaps",
+    "licenseUrl": "https://github.com/jridgewell/sourcemaps/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@jridgewell/trace-mapping": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jridgewell/trace-mapping",
+    "licenseUrl": "https://github.com/jridgewell/trace-mapping/raw/master/LICENSE",
+    "parents": "@cspotcode/source-map-support:elden-mod-manager"
+  },
+  "@listr2/prompt-adapter-inquirer": {
+    "licenses": "MIT",
+    "repository": "https://github.com/listr2/listr2",
+    "licenseUrl": "https://github.com/listr2/listr2/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@malept/cross-spawn-promise": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/malept/cross-spawn-promise",
+    "licenseUrl": "https://github.com/malept/cross-spawn-promise/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@mantine/core": {
+    "licenses": "MIT",
+    "repository": "https://github.com/mantinedev/mantine",
+    "licenseUrl": "https://github.com/mantinedev/mantine/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@mantine/form": {
+    "licenses": "MIT",
+    "repository": "https://github.com/mantinedev/mantine",
+    "licenseUrl": "https://github.com/mantinedev/mantine/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@mantine/hooks": {
+    "licenses": "MIT",
+    "repository": "https://github.com/mantinedev/mantine",
+    "licenseUrl": "https://github.com/mantinedev/mantine/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@mantine/notifications": {
+    "licenses": "MIT",
+    "repository": "https://github.com/mantinedev/mantine",
+    "licenseUrl": "https://github.com/mantinedev/mantine/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@mantine/store": {
+    "licenses": "MIT",
+    "repository": "https://github.com/mantinedev/mantine",
+    "licenseUrl": "https://github.com/mantinedev/mantine/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@nodelib/fs.scandir": {
+    "licenses": "MIT",
+    "repository": "https://github.com/nodelib/nodelib/tree/master/packages/fs/fs.scandir",
+    "licenseUrl": "https://github.com/nodelib/nodelib/tree/master/packages/fs/fs.scandir/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@nodelib/fs.stat": {
+    "licenses": "MIT",
+    "repository": "https://github.com/nodelib/nodelib/tree/master/packages/fs/fs.stat",
+    "licenseUrl": "https://github.com/nodelib/nodelib/tree/master/packages/fs/fs.stat/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@nodelib/fs.walk": {
+    "licenses": "MIT",
+    "repository": "https://github.com/nodelib/nodelib/tree/master/packages/fs/fs.walk",
+    "licenseUrl": "https://github.com/nodelib/nodelib/tree/master/packages/fs/fs.walk/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@npmcli/fs": {
+    "licenses": "ISC",
+    "repository": "https://github.com/npm/fs",
+    "licenseUrl": "https://github.com/npm/fs/raw/master/LICENSE.md",
+    "parents": "elden-mod-manager"
+  },
+  "@npmcli/move-file": {
+    "licenses": "MIT",
+    "repository": "https://github.com/npm/move-file",
+    "licenseUrl": "https://github.com/npm/move-file/raw/master/LICENSE.md",
+    "parents": "elden-mod-manager"
+  },
+  "@octokit/auth-token": {
+    "licenses": "MIT",
+    "repository": "github:octokit/auth-token.js",
+    "licenseUrl": "github:octokit/auth-token.js",
+    "parents": "elden-mod-manager"
+  },
+  "@octokit/core": {
+    "licenses": "MIT",
+    "repository": "github:octokit/core.js",
+    "licenseUrl": "github:octokit/core.js",
+    "parents": "elden-mod-manager"
+  },
+  "@octokit/endpoint": {
+    "licenses": "MIT",
+    "repository": "github:octokit/endpoint.js",
+    "licenseUrl": "github:octokit/endpoint.js",
+    "parents": "elden-mod-manager"
+  },
+  "@octokit/graphql": {
+    "licenses": "MIT",
+    "repository": "github:octokit/graphql.js",
+    "licenseUrl": "github:octokit/graphql.js",
+    "parents": "elden-mod-manager"
+  },
+  "@octokit/openapi-types": {
+    "licenses": "MIT",
+    "repository": "https://github.com/octokit/openapi-types.ts",
+    "licenseUrl": "https://github.com/octokit/openapi-types.ts/raw/master/LICENSE",
+    "parents": "@octokit/endpoint:elden-mod-manager"
+  },
+  "@octokit/plugin-paginate-rest": {
+    "licenses": "MIT",
+    "repository": "github:octokit/plugin-paginate-rest.js",
+    "licenseUrl": "github:octokit/plugin-paginate-rest.js",
+    "parents": "elden-mod-manager"
+  },
+  "@octokit/plugin-request-log": {
+    "licenses": "MIT",
+    "repository": "github:octokit/plugin-request-log.js",
+    "licenseUrl": "github:octokit/plugin-request-log.js",
+    "parents": "elden-mod-manager"
+  },
+  "@octokit/plugin-rest-endpoint-methods": {
+    "licenses": "MIT",
+    "repository": "github:octokit/plugin-rest-endpoint-methods.js",
+    "licenseUrl": "github:octokit/plugin-rest-endpoint-methods.js",
+    "parents": "elden-mod-manager"
+  },
+  "@octokit/plugin-retry": {
+    "licenses": "MIT",
+    "repository": "github:octokit/plugin-retry.js",
+    "licenseUrl": "github:octokit/plugin-retry.js",
+    "parents": "elden-mod-manager"
+  },
+  "@octokit/request-error": {
+    "licenses": "MIT",
+    "repository": "github:octokit/request-error.js",
+    "licenseUrl": "github:octokit/request-error.js",
+    "parents": "elden-mod-manager"
+  },
+  "@octokit/request": {
+    "licenses": "MIT",
+    "repository": "github:octokit/request.js",
+    "licenseUrl": "github:octokit/request.js",
+    "parents": "elden-mod-manager"
+  },
+  "@octokit/rest": {
+    "licenses": "MIT",
+    "repository": "github:octokit/rest.js",
+    "licenseUrl": "github:octokit/rest.js",
+    "parents": "elden-mod-manager"
+  },
+  "@octokit/types": {
+    "licenses": "MIT",
+    "repository": "github:octokit/types.ts",
+    "licenseUrl": "github:octokit/types.ts",
+    "parents": "elden-mod-manager"
+  },
+  "@oxc-project/types": {
+    "licenses": "MIT",
+    "repository": "https://github.com/oxc-project/oxc",
+    "licenseUrl": "https://github.com/oxc-project/oxc/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@pkgjs/parseargs": {
+    "licenses": "MIT",
+    "repository": "https://github.com/pkgjs/parseargs",
+    "licenseUrl": "https://github.com/pkgjs/parseargs/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@rolldown/binding-linux-x64-gnu": {
+    "licenses": "MIT",
+    "repository": "https://github.com/rolldown/rolldown",
+    "licenseUrl": "https://github.com/rolldown/rolldown",
+    "parents": "elden-mod-manager"
+  },
+  "@rolldown/pluginutils": {
+    "licenses": "MIT",
+    "repository": "https://github.com/rolldown/rolldown",
+    "licenseUrl": "https://github.com/rolldown/rolldown/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@sindresorhus/is": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/is",
+    "licenseUrl": "https://github.com/sindresorhus/is/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "@so-ric/colorspace": {
+    "licenses": "MIT",
+    "repository": "https://github.com/so-ric/colorspace",
+    "licenseUrl": "https://github.com/so-ric/colorspace/raw/master/LICENSE.md",
+    "parents": "elden-mod-manager"
+  },
+  "@standard-schema/spec": {
+    "licenses": "MIT",
+    "repository": "https://github.com/standard-schema/standard-schema",
+    "licenseUrl": "https://github.com/standard-schema/standard-schema/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@szmarczak/http-timer": {
+    "licenses": "MIT",
+    "repository": "https://github.com/szmarczak/http-timer",
+    "licenseUrl": "https://github.com/szmarczak/http-timer/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@tabler/icons-react": {
+    "licenses": "MIT",
+    "repository": "https://github.com/tabler/tabler-icons",
+    "licenseUrl": "https://github.com/tabler/tabler-icons/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@tabler/icons": {
+    "licenses": "MIT",
+    "repository": "https://github.com/tabler/tabler-icons",
+    "licenseUrl": "https://github.com/tabler/tabler-icons/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@tanstack/query-core": {
+    "licenses": "MIT",
+    "repository": "https://github.com/TanStack/query",
+    "licenseUrl": "https://github.com/TanStack/query/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@tanstack/react-query": {
+    "licenses": "MIT",
+    "repository": "https://github.com/TanStack/query",
+    "licenseUrl": "https://github.com/TanStack/query/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@tootallnate/once": {
+    "licenses": "MIT",
+    "repository": "https://github.com/TooTallNate/once",
+    "licenseUrl": "https://github.com/TooTallNate/once/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@tsconfig/node10": {
+    "licenses": "MIT",
+    "repository": "https://github.com/tsconfig/bases",
+    "licenseUrl": "https://github.com/tsconfig/bases/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@tsconfig/node12": {
+    "licenses": "MIT",
+    "repository": "https://github.com/tsconfig/bases",
+    "licenseUrl": "https://github.com/tsconfig/bases/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@tsconfig/node14": {
+    "licenses": "MIT",
+    "repository": "https://github.com/tsconfig/bases",
+    "licenseUrl": "https://github.com/tsconfig/bases/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@tsconfig/node16": {
+    "licenses": "MIT",
+    "repository": "https://github.com/tsconfig/bases",
+    "licenseUrl": "https://github.com/tsconfig/bases/raw/master/LICENSE",
     "parents": "elden-mod-manager"
   },
   "@types/archiver": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "licenseUrl": "https://github.com/DefinitelyTyped/DefinitelyTyped/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@types/cacheable-request": {
     "licenses": "MIT",
     "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
     "licenseUrl": "https://github.com/DefinitelyTyped/DefinitelyTyped/raw/master/LICENSE",
@@ -257,13 +761,79 @@
     "licenseUrl": "https://github.com/DefinitelyTyped/DefinitelyTyped/raw/master/LICENSE",
     "parents": "elden-mod-manager"
   },
+  "@types/eslint-scope": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "licenseUrl": "https://github.com/DefinitelyTyped/DefinitelyTyped/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@types/eslint": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "licenseUrl": "https://github.com/DefinitelyTyped/DefinitelyTyped/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@types/esrecurse": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "licenseUrl": "https://github.com/DefinitelyTyped/DefinitelyTyped/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@types/estree": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "licenseUrl": "https://github.com/DefinitelyTyped/DefinitelyTyped/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@types/fs-extra": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "licenseUrl": "https://github.com/DefinitelyTyped/DefinitelyTyped/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
   "@types/he": {
     "licenses": "MIT",
     "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
     "licenseUrl": "https://github.com/DefinitelyTyped/DefinitelyTyped/raw/master/LICENSE",
     "parents": "elden-mod-manager"
   },
+  "@types/history": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "licenseUrl": "https://github.com/DefinitelyTyped/DefinitelyTyped/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@types/http-cache-semantics": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "licenseUrl": "https://github.com/DefinitelyTyped/DefinitelyTyped/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
   "@types/ini": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "licenseUrl": "https://github.com/DefinitelyTyped/DefinitelyTyped/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@types/json-schema": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "licenseUrl": "https://github.com/DefinitelyTyped/DefinitelyTyped/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@types/keyv": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "licenseUrl": "https://github.com/DefinitelyTyped/DefinitelyTyped/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@types/ms": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "licenseUrl": "https://github.com/DefinitelyTyped/DefinitelyTyped/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@types/mute-stream": {
     "licenses": "MIT",
     "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
     "licenseUrl": "https://github.com/DefinitelyTyped/DefinitelyTyped/raw/master/LICENSE",
@@ -287,10 +857,106 @@
     "licenseUrl": "https://github.com/DefinitelyTyped/DefinitelyTyped/raw/master/LICENSE",
     "parents": "elden-mod-manager"
   },
+  "@types/react-router": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "licenseUrl": "https://github.com/DefinitelyTyped/DefinitelyTyped/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
   "@types/react": {
     "licenses": "MIT",
     "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
     "licenseUrl": "https://github.com/DefinitelyTyped/DefinitelyTyped/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@types/readdir-glob": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "licenseUrl": "https://github.com/DefinitelyTyped/DefinitelyTyped/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@types/responselike": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "licenseUrl": "https://github.com/DefinitelyTyped/DefinitelyTyped/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@types/triple-beam": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "licenseUrl": "https://github.com/DefinitelyTyped/DefinitelyTyped/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@types/wrap-ansi": {
+    "licenses": "MIT",
+    "repository": "https://wwwhub.com/DefinitelyTyped/DefinitelyTyped",
+    "licenseUrl": "https://wwwhub.com/DefinitelyTyped/DefinitelyTyped",
+    "parents": "elden-mod-manager"
+  },
+  "@types/yauzl": {
+    "licenses": "MIT",
+    "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+    "licenseUrl": "https://github.com/DefinitelyTyped/DefinitelyTyped/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@typescript-eslint/eslint-plugin": {
+    "licenses": "MIT",
+    "repository": "https://github.com/typescript-eslint/typescript-eslint",
+    "licenseUrl": "https://github.com/typescript-eslint/typescript-eslint/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@typescript-eslint/parser": {
+    "licenses": "MIT",
+    "repository": "https://github.com/typescript-eslint/typescript-eslint",
+    "licenseUrl": "https://github.com/typescript-eslint/typescript-eslint/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@typescript-eslint/project-service": {
+    "licenses": "MIT",
+    "repository": "https://github.com/typescript-eslint/typescript-eslint",
+    "licenseUrl": "https://github.com/typescript-eslint/typescript-eslint/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@typescript-eslint/scope-manager": {
+    "licenses": "MIT",
+    "repository": "https://github.com/typescript-eslint/typescript-eslint",
+    "licenseUrl": "https://github.com/typescript-eslint/typescript-eslint/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@typescript-eslint/tsconfig-utils": {
+    "licenses": "MIT",
+    "repository": "https://github.com/typescript-eslint/typescript-eslint",
+    "licenseUrl": "https://github.com/typescript-eslint/typescript-eslint/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@typescript-eslint/type-utils": {
+    "licenses": "MIT",
+    "repository": "https://github.com/typescript-eslint/typescript-eslint",
+    "licenseUrl": "https://github.com/typescript-eslint/typescript-eslint/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@typescript-eslint/types": {
+    "licenses": "MIT",
+    "repository": "https://github.com/typescript-eslint/typescript-eslint",
+    "licenseUrl": "https://github.com/typescript-eslint/typescript-eslint/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@typescript-eslint/typescript-estree": {
+    "licenses": "MIT",
+    "repository": "https://github.com/typescript-eslint/typescript-eslint",
+    "licenseUrl": "https://github.com/typescript-eslint/typescript-eslint/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@typescript-eslint/utils": {
+    "licenses": "MIT",
+    "repository": "https://github.com/typescript-eslint/typescript-eslint",
+    "licenseUrl": "https://github.com/typescript-eslint/typescript-eslint/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@typescript-eslint/visitor-keys": {
+    "licenses": "MIT",
+    "repository": "https://github.com/typescript-eslint/typescript-eslint",
+    "licenseUrl": "https://github.com/typescript-eslint/typescript-eslint/raw/master/LICENSE",
     "parents": "elden-mod-manager"
   },
   "@vitejs/plugin-react": {
@@ -299,10 +965,970 @@
     "licenseUrl": "https://github.com/vitejs/vite-plugin-react/raw/master/LICENSE",
     "parents": "elden-mod-manager"
   },
+  "@vscode/sudo-prompt": {
+    "licenses": "MIT",
+    "repository": "https://github.com/microsoft/vscode-sudo-prompt",
+    "licenseUrl": "https://github.com/microsoft/vscode-sudo-prompt/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@webassemblyjs/ast": {
+    "licenses": "MIT",
+    "repository": "https://github.com/xtuc/webassemblyjs",
+    "licenseUrl": "https://github.com/xtuc/webassemblyjs/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@webassemblyjs/floating-point-hex-parser": {
+    "licenses": "MIT",
+    "repository": "https://github.com/xtuc/webassemblyjs",
+    "licenseUrl": "https://github.com/xtuc/webassemblyjs/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@webassemblyjs/helper-api-error": {
+    "licenses": "MIT",
+    "repository": "https://github.com/xtuc/webassemblyjs",
+    "licenseUrl": "https://github.com/xtuc/webassemblyjs/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@webassemblyjs/helper-buffer": {
+    "licenses": "MIT",
+    "repository": "https://github.com/xtuc/webassemblyjs",
+    "licenseUrl": "https://github.com/xtuc/webassemblyjs/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@webassemblyjs/helper-numbers": {
+    "licenses": "MIT",
+    "repository": "https://github.com/xtuc/webassemblyjs",
+    "licenseUrl": "https://github.com/xtuc/webassemblyjs/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@webassemblyjs/helper-wasm-bytecode": {
+    "licenses": "MIT",
+    "repository": "https://github.com/xtuc/webassemblyjs",
+    "licenseUrl": "https://github.com/xtuc/webassemblyjs/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@webassemblyjs/helper-wasm-section": {
+    "licenses": "MIT",
+    "repository": "https://github.com/xtuc/webassemblyjs",
+    "licenseUrl": "https://github.com/xtuc/webassemblyjs/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@webassemblyjs/ieee754": {
+    "licenses": "MIT",
+    "repository": "https://github.com/xtuc/webassemblyjs",
+    "licenseUrl": "https://github.com/xtuc/webassemblyjs/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@webassemblyjs/leb128": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/xtuc/webassemblyjs",
+    "licenseUrl": "https://github.com/xtuc/webassemblyjs/raw/master/LICENSE.txt",
+    "parents": "elden-mod-manager"
+  },
+  "@webassemblyjs/utf8": {
+    "licenses": "MIT",
+    "repository": "https://github.com/xtuc/webassemblyjs",
+    "licenseUrl": "https://github.com/xtuc/webassemblyjs/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@webassemblyjs/wasm-edit": {
+    "licenses": "MIT",
+    "repository": "https://github.com/xtuc/webassemblyjs",
+    "licenseUrl": "https://github.com/xtuc/webassemblyjs/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@webassemblyjs/wasm-gen": {
+    "licenses": "MIT",
+    "repository": "https://github.com/xtuc/webassemblyjs",
+    "licenseUrl": "https://github.com/xtuc/webassemblyjs/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@webassemblyjs/wasm-opt": {
+    "licenses": "MIT",
+    "repository": "https://github.com/xtuc/webassemblyjs",
+    "licenseUrl": "https://github.com/xtuc/webassemblyjs/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@webassemblyjs/wasm-parser": {
+    "licenses": "MIT",
+    "repository": "https://github.com/xtuc/webassemblyjs",
+    "licenseUrl": "https://github.com/xtuc/webassemblyjs/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@webassemblyjs/wast-printer": {
+    "licenses": "MIT",
+    "repository": "https://github.com/xtuc/webassemblyjs",
+    "licenseUrl": "https://github.com/xtuc/webassemblyjs/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@xmldom/xmldom": {
+    "licenses": "MIT",
+    "repository": "https://github.com/xmldom/xmldom",
+    "licenseUrl": "https://github.com/xmldom/xmldom/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@xtuc/ieee754": {
+    "licenses": "BSD-3-Clause",
+    "repository": "https://github.com/feross/ieee754",
+    "licenseUrl": "https://github.com/feross/ieee754/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@xtuc/long": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/dcodeIO/long.js",
+    "licenseUrl": "https://github.com/dcodeIO/long.js/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "abbrev": {
+    "licenses": "ISC",
+    "repository": "http://github.com/isaacs/abbrev-js",
+    "licenseUrl": "http://github.com/isaacs/abbrev-js/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "abort-controller": {
+    "licenses": "MIT",
+    "repository": "https://github.com/mysticatea/abort-controller",
+    "licenseUrl": "https://github.com/mysticatea/abort-controller/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "acorn-import-phases": {
+    "licenses": "MIT",
+    "repository": "https://github.com/nicolo-ribaudo/acorn-import-phases",
+    "licenseUrl": "https://github.com/nicolo-ribaudo/acorn-import-phases/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "acorn-jsx": {
+    "licenses": "MIT",
+    "repository": "https://github.com/acornjs/acorn-jsx",
+    "licenseUrl": "https://github.com/acornjs/acorn-jsx/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "acorn-walk": {
+    "licenses": "MIT",
+    "repository": "https://github.com/acornjs/acorn",
+    "licenseUrl": "https://github.com/acornjs/acorn/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "acorn": {
+    "licenses": "MIT",
+    "repository": "https://github.com/acornjs/acorn",
+    "licenseUrl": "https://github.com/acornjs/acorn/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "agent-base": {
+    "licenses": "MIT",
+    "repository": "https://github.com/TooTallNate/node-agent-base",
+    "licenseUrl": "https://github.com/TooTallNate/node-agent-base",
+    "parents": "elden-mod-manager"
+  },
+  "agentkeepalive": {
+    "licenses": "MIT",
+    "repository": "https://github.com/node-modules/agentkeepalive",
+    "licenseUrl": "https://github.com/node-modules/agentkeepalive/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "aggregate-error": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/aggregate-error",
+    "licenseUrl": "https://github.com/sindresorhus/aggregate-error/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "ajv-formats": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ajv-validator/ajv-formats",
+    "licenseUrl": "https://github.com/ajv-validator/ajv-formats/raw/master/LICENSE",
+    "parents": "conf:elden-mod-manager"
+  },
+  "ajv-keywords": {
+    "licenses": "MIT",
+    "repository": "https://github.com/epoberezkin/ajv-keywords",
+    "licenseUrl": "https://github.com/epoberezkin/ajv-keywords/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "ajv": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ajv-validator/ajv",
+    "licenseUrl": "https://github.com/ajv-validator/ajv/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "ansi-escapes": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/ansi-escapes",
+    "licenseUrl": "https://github.com/sindresorhus/ansi-escapes/raw/master/license",
+    "parents": "log-update:elden-mod-manager"
+  },
+  "ansi-regex": {
+    "licenses": "MIT",
+    "repository": "https://github.com/chalk/ansi-regex",
+    "licenseUrl": "https://github.com/chalk/ansi-regex/raw/master/license",
+    "parents": "string-width:elden-mod-manager"
+  },
+  "ansi-styles": {
+    "licenses": "MIT",
+    "repository": "https://github.com/chalk/ansi-styles",
+    "licenseUrl": "https://github.com/chalk/ansi-styles/raw/master/license",
+    "parents": "@isaacs/cliui:elden-mod-manager"
+  },
+  "archiver-utils": {
+    "licenses": "MIT",
+    "repository": "https://github.com/archiverjs/archiver-utils",
+    "licenseUrl": "https://github.com/archiverjs/archiver-utils/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "archiver": {
+    "licenses": "MIT",
+    "repository": "https://github.com/archiverjs/node-archiver",
+    "licenseUrl": "https://github.com/archiverjs/node-archiver/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "arg": {
+    "licenses": "MIT",
+    "repository": "https://github.com/zeit/arg",
+    "licenseUrl": "https://github.com/zeit/arg/raw/master/LICENSE.md",
+    "parents": "elden-mod-manager"
+  },
+  "asap": {
+    "licenses": "MIT",
+    "repository": "https://github.com/kriskowal/asap",
+    "licenseUrl": "https://github.com/kriskowal/asap/raw/master/LICENSE.md",
+    "parents": "elden-mod-manager"
+  },
+  "async": {
+    "licenses": "MIT",
+    "repository": "https://github.com/caolan/async",
+    "licenseUrl": "https://github.com/caolan/async/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "at-least-node": {
+    "licenses": "ISC",
+    "repository": "https://github.com/RyanZim/at-least-node",
+    "licenseUrl": "https://github.com/RyanZim/at-least-node/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "atomically": {
+    "licenses": "MIT",
+    "repository": "github:fabiospampinato/atomically",
+    "licenseUrl": "github:fabiospampinato/atomically",
+    "parents": "elden-mod-manager"
+  },
+  "author-regex": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jonschlinkert/author-regex",
+    "licenseUrl": "https://github.com/jonschlinkert/author-regex/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "available-typed-arrays": {
+    "licenses": "MIT",
+    "repository": "https://github.com/inspect-js/available-typed-arrays",
+    "licenseUrl": "https://github.com/inspect-js/available-typed-arrays/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "b4a": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/holepunchto/b4a",
+    "licenseUrl": "https://github.com/holepunchto/b4a/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "balanced-match": {
+    "licenses": "MIT",
+    "repository": "https://github.com/juliangruber/balanced-match",
+    "licenseUrl": "https://github.com/juliangruber/balanced-match/raw/master/LICENSE.md",
+    "parents": "@typescript-eslint/typescript-estree:elden-mod-manager"
+  },
+  "bare-events": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/holepunchto/bare-events",
+    "licenseUrl": "https://github.com/holepunchto/bare-events/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "bare-fs": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/holepunchto/bare-fs",
+    "licenseUrl": "https://github.com/holepunchto/bare-fs/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "bare-os": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/holepunchto/bare-os",
+    "licenseUrl": "https://github.com/holepunchto/bare-os/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "bare-path": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/holepunchto/bare-path",
+    "licenseUrl": "https://github.com/holepunchto/bare-path/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "bare-stream": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/holepunchto/bare-stream",
+    "licenseUrl": "https://github.com/holepunchto/bare-stream/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "bare-url": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/holepunchto/bare-url",
+    "licenseUrl": "https://github.com/holepunchto/bare-url/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "base64-js": {
+    "licenses": "MIT",
+    "repository": "https://github.com/beatgammit/base64-js",
+    "licenseUrl": "https://github.com/beatgammit/base64-js/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "baseline-browser-mapping": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/web-platform-dx/baseline-browser-mapping",
+    "licenseUrl": "https://github.com/web-platform-dx/baseline-browser-mapping/raw/master/LICENSE.txt",
+    "parents": "elden-mod-manager"
+  },
+  "before-after-hook": {
+    "licenses": "Apache-2.0",
+    "repository": "github:gr2m/before-after-hook",
+    "licenseUrl": "github:gr2m/before-after-hook",
+    "parents": "elden-mod-manager"
+  },
+  "bl": {
+    "licenses": "MIT",
+    "repository": "https://github.com/rvagg/bl",
+    "licenseUrl": "https://github.com/rvagg/bl/raw/master/LICENSE.md",
+    "parents": "elden-mod-manager"
+  },
+  "bluebird": {
+    "licenses": "MIT",
+    "repository": "https://github.com/petkaantonov/bluebird",
+    "licenseUrl": "https://github.com/petkaantonov/bluebird/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "boolean": {
+    "licenses": "MIT",
+    "repository": "https://github.com/thenativeweb/boolean",
+    "licenseUrl": "https://github.com/thenativeweb/boolean/raw/master/LICENSE.txt",
+    "parents": "elden-mod-manager"
+  },
+  "bottleneck": {
+    "licenses": "MIT",
+    "repository": "https://github.com/SGrondin/bottleneck",
+    "licenseUrl": "https://github.com/SGrondin/bottleneck/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "brace-expansion": {
+    "licenses": "MIT",
+    "repository": "https://github.com/juliangruber/brace-expansion",
+    "licenseUrl": "https://github.com/juliangruber/brace-expansion/raw/master/LICENSE",
+    "parents": "@typescript-eslint/typescript-estree:elden-mod-manager"
+  },
+  "braces": {
+    "licenses": "MIT",
+    "repository": "https://github.com/micromatch/braces",
+    "licenseUrl": "https://github.com/micromatch/braces/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "browserslist": {
+    "licenses": "MIT",
+    "repository": "https://github.com/browserslist/browserslist",
+    "licenseUrl": "https://github.com/browserslist/browserslist/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "buffer-alloc-unsafe": {
+    "licenses": "MIT",
+    "repository": "https://github.com/LinusU/buffer-alloc-unsafe",
+    "licenseUrl": "https://github.com/LinusU/buffer-alloc-unsafe",
+    "parents": "elden-mod-manager"
+  },
+  "buffer-alloc": {
+    "licenses": "MIT",
+    "repository": "https://github.com/LinusU/buffer-alloc",
+    "licenseUrl": "https://github.com/LinusU/buffer-alloc",
+    "parents": "elden-mod-manager"
+  },
+  "buffer-crc32": {
+    "licenses": "MIT",
+    "repository": "https://github.com/brianloveswords/buffer-crc32",
+    "licenseUrl": "https://github.com/brianloveswords/buffer-crc32/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "buffer-fill": {
+    "licenses": "MIT",
+    "repository": "https://github.com/LinusU/buffer-fill",
+    "licenseUrl": "https://github.com/LinusU/buffer-fill",
+    "parents": "elden-mod-manager"
+  },
+  "buffer-from": {
+    "licenses": "MIT",
+    "repository": "https://github.com/LinusU/buffer-from",
+    "licenseUrl": "https://github.com/LinusU/buffer-from/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "buffer": {
+    "licenses": "MIT",
+    "repository": "https://github.com/feross/buffer",
+    "licenseUrl": "https://github.com/feross/buffer/raw/master/LICENSE",
+    "parents": "readable-stream:elden-mod-manager"
+  },
+  "cacache": {
+    "licenses": "ISC",
+    "repository": "https://github.com/npm/cacache",
+    "licenseUrl": "https://github.com/npm/cacache/raw/master/LICENSE.md",
+    "parents": "elden-mod-manager"
+  },
+  "cacheable-lookup": {
+    "licenses": "MIT",
+    "repository": "https://github.com/szmarczak/cacheable-lookup",
+    "licenseUrl": "https://github.com/szmarczak/cacheable-lookup/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "cacheable-request": {
+    "licenses": "MIT",
+    "repository": "https://github.com/lukechilds/cacheable-request",
+    "licenseUrl": "https://github.com/lukechilds/cacheable-request/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "call-bind-apply-helpers": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ljharb/call-bind-apply-helpers",
+    "licenseUrl": "https://github.com/ljharb/call-bind-apply-helpers/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "call-bind": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ljharb/call-bind",
+    "licenseUrl": "https://github.com/ljharb/call-bind/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "call-bound": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ljharb/call-bound",
+    "licenseUrl": "https://github.com/ljharb/call-bound/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "caniuse-lite": {
+    "licenses": "CC-BY-4.0",
+    "repository": "https://github.com/browserslist/caniuse-lite",
+    "licenseUrl": "https://github.com/browserslist/caniuse-lite/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "chalk": {
+    "licenses": "MIT",
+    "repository": "https://github.com/chalk/chalk",
+    "licenseUrl": "https://github.com/chalk/chalk/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "chardet": {
+    "licenses": "MIT",
+    "repository": "https://github.com/runk/node-chardet",
+    "licenseUrl": "https://github.com/runk/node-chardet/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "chownr": {
+    "licenses": "ISC",
+    "repository": "https://github.com/isaacs/chownr",
+    "licenseUrl": "https://github.com/isaacs/chownr/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "chrome-trace-event": {
+    "licenses": "MIT",
+    "repository": "github:samccone/chrome-trace-event",
+    "licenseUrl": "github:samccone/chrome-trace-event",
+    "parents": "elden-mod-manager"
+  },
+  "clean-stack": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/clean-stack",
+    "licenseUrl": "https://github.com/sindresorhus/clean-stack/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "cli-cursor": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/cli-cursor",
+    "licenseUrl": "https://github.com/sindresorhus/cli-cursor/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "cli-spinners": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/cli-spinners",
+    "licenseUrl": "https://github.com/sindresorhus/cli-spinners/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "cli-truncate": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/cli-truncate",
+    "licenseUrl": "https://github.com/sindresorhus/cli-truncate/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "cli-width": {
+    "licenses": "ISC",
+    "repository": "https://github.com/knownasilya/cli-width",
+    "licenseUrl": "https://github.com/knownasilya/cli-width/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "cliui": {
+    "licenses": "ISC",
+    "repository": "https://github.com/yargs/cliui",
+    "licenseUrl": "https://github.com/yargs/cliui/raw/master/LICENSE.txt",
+    "parents": "elden-mod-manager"
+  },
+  "clone-response": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/clone-response",
+    "licenseUrl": "https://github.com/sindresorhus/clone-response/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "clone": {
+    "licenses": "MIT",
+    "repository": "https://github.com/pvorb/node-clone",
+    "licenseUrl": "https://github.com/pvorb/node-clone/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "clsx": {
+    "licenses": "MIT",
+    "repository": "https://github.com/lukeed/clsx",
+    "licenseUrl": "https://github.com/lukeed/clsx/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "color-convert": {
+    "licenses": "MIT",
+    "repository": "https://github.com/Qix-/color-convert",
+    "licenseUrl": "https://github.com/Qix-/color-convert/raw/master/LICENSE",
+    "parents": "color:elden-mod-manager"
+  },
+  "color-name": {
+    "licenses": "MIT",
+    "repository": "http://github.com/colorjs/color-name",
+    "licenseUrl": "http://github.com/colorjs/color-name/raw/master/LICENSE",
+    "parents": "color:elden-mod-manager"
+  },
+  "color-string": {
+    "licenses": "MIT",
+    "repository": "https://github.com/Qix-/color-string",
+    "licenseUrl": "https://github.com/Qix-/color-string/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "color": {
+    "licenses": "MIT",
+    "repository": "https://github.com/Qix-/color",
+    "licenseUrl": "https://github.com/Qix-/color/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "colorette": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jorgebucaran/colorette",
+    "licenseUrl": "https://github.com/jorgebucaran/colorette/raw/master/LICENSE.md",
+    "parents": "elden-mod-manager"
+  },
+  "commander": {
+    "licenses": "MIT",
+    "repository": "https://github.com/tj/commander.js",
+    "licenseUrl": "https://github.com/tj/commander.js/raw/master/LICENSE",
+    "parents": "postject:elden-mod-manager"
+  },
+  "compare-version": {
+    "licenses": "MIT",
+    "repository": "https://github.com/kevva/compare-version",
+    "licenseUrl": "https://github.com/kevva/compare-version",
+    "parents": "elden-mod-manager"
+  },
+  "compress-commons": {
+    "licenses": "MIT",
+    "repository": "https://github.com/archiverjs/node-compress-commons",
+    "licenseUrl": "https://github.com/archiverjs/node-compress-commons/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "concat-map": {
+    "licenses": "MIT",
+    "repository": "https://github.com/substack/node-concat-map",
+    "licenseUrl": "https://github.com/substack/node-concat-map/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "conf": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/conf",
+    "licenseUrl": "https://github.com/sindresorhus/conf/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "cookie": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jshttp/cookie",
+    "licenseUrl": "https://github.com/jshttp/cookie/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "core-util-is": {
+    "licenses": "MIT",
+    "repository": "https://github.com/isaacs/core-util-is",
+    "licenseUrl": "https://github.com/isaacs/core-util-is/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "crc-32": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/SheetJS/js-crc32",
+    "licenseUrl": "https://github.com/SheetJS/js-crc32/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "crc32-stream": {
+    "licenses": "MIT",
+    "repository": "https://github.com/archiverjs/node-crc32-stream",
+    "licenseUrl": "https://github.com/archiverjs/node-crc32-stream/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "create-require": {
+    "licenses": "MIT",
+    "repository": "https://github.com/nuxt-contrib/create-require",
+    "licenseUrl": "https://github.com/nuxt-contrib/create-require/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "cross-dirname": {
+    "licenses": "MIT",
+    "repository": "https://github.com/JumpLink/cross-dirname",
+    "licenseUrl": "https://github.com/JumpLink/cross-dirname",
+    "parents": "elden-mod-manager"
+  },
+  "cross-spawn": {
+    "licenses": "MIT",
+    "repository": "https://github.com/moxystudio/node-cross-spawn",
+    "licenseUrl": "https://github.com/moxystudio/node-cross-spawn/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "cross-zip": {
+    "licenses": "MIT",
+    "repository": "https://github.com/feross/cross-zip",
+    "licenseUrl": "https://github.com/feross/cross-zip/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "csstype": {
+    "licenses": "MIT",
+    "repository": "https://github.com/frenic/csstype",
+    "licenseUrl": "https://github.com/frenic/csstype/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "debounce-fn": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/debounce-fn",
+    "licenseUrl": "https://github.com/sindresorhus/debounce-fn/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "debug": {
+    "licenses": "MIT",
+    "repository": "https://github.com/debug-js/debug",
+    "licenseUrl": "https://github.com/debug-js/debug/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "debuglog": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sam-github/node-debuglog",
+    "licenseUrl": "https://github.com/sam-github/node-debuglog/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "decompress-response": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/decompress-response",
+    "licenseUrl": "https://github.com/sindresorhus/decompress-response/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "decompress-tar": {
+    "licenses": "MIT",
+    "repository": "https://github.com/kevva/decompress-tar",
+    "licenseUrl": "https://github.com/kevva/decompress-tar/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "decompress-tarbz2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/kevva/decompress-tarbz2",
+    "licenseUrl": "https://github.com/kevva/decompress-tarbz2/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "decompress-targz": {
+    "licenses": "MIT",
+    "repository": "https://github.com/kevva/decompress-targz",
+    "licenseUrl": "https://github.com/kevva/decompress-targz/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "decompress-unzip": {
+    "licenses": "MIT",
+    "repository": "https://github.com/kevva/decompress-unzip",
+    "licenseUrl": "https://github.com/kevva/decompress-unzip/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "decompress": {
+    "licenses": "MIT",
+    "repository": "https://github.com/kevva/decompress",
+    "licenseUrl": "https://github.com/kevva/decompress/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "deep-is": {
+    "licenses": "MIT",
+    "repository": "http://github.com/thlorenz/deep-is",
+    "licenseUrl": "http://github.com/thlorenz/deep-is/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "defaults": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/node-defaults",
+    "licenseUrl": "https://github.com/sindresorhus/node-defaults/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "defer-to-connect": {
+    "licenses": "MIT",
+    "repository": "https://github.com/szmarczak/defer-to-connect",
+    "licenseUrl": "https://github.com/szmarczak/defer-to-connect/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "define-data-property": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ljharb/define-data-property",
+    "licenseUrl": "https://github.com/ljharb/define-data-property/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "define-properties": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ljharb/define-properties",
+    "licenseUrl": "https://github.com/ljharb/define-properties/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "deprecation": {
+    "licenses": "ISC",
+    "repository": "https://github.com/gr2m/deprecation",
+    "licenseUrl": "https://github.com/gr2m/deprecation/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "detect-libc": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/lovell/detect-libc",
+    "licenseUrl": "https://github.com/lovell/detect-libc/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "detect-node-es": {
+    "licenses": "MIT",
+    "repository": "https://github.com/thekashey/detect-node",
+    "licenseUrl": "https://github.com/thekashey/detect-node/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "detect-node": {
+    "licenses": "MIT",
+    "repository": "https://github.com/iliakan/detect-node",
+    "licenseUrl": "https://github.com/iliakan/detect-node/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "dezalgo": {
+    "licenses": "ISC",
+    "repository": "https://github.com/npm/dezalgo",
+    "licenseUrl": "https://github.com/npm/dezalgo/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "diff": {
+    "licenses": "BSD-3-Clause",
+    "repository": "https://github.com/kpdecker/jsdiff",
+    "licenseUrl": "https://github.com/kpdecker/jsdiff/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "dir-compare": {
+    "licenses": "MIT",
+    "repository": "https://github.com/gliviu/dir-compare",
+    "licenseUrl": "https://github.com/gliviu/dir-compare/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "dom-helpers": {
+    "licenses": "MIT",
+    "repository": "https://github.com/react-bootstrap/dom-helpers",
+    "licenseUrl": "https://github.com/react-bootstrap/dom-helpers/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "dom-serializer": {
+    "licenses": "MIT",
+    "repository": "https://github.com/cheeriojs/dom-serializer",
+    "licenseUrl": "https://github.com/cheeriojs/dom-serializer/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "domelementtype": {
+    "licenses": "BSD-2-Clause",
+    "repository": "https://github.com/fb55/domelementtype",
+    "licenseUrl": "https://github.com/fb55/domelementtype/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "domhandler": {
+    "licenses": "BSD-2-Clause",
+    "repository": "https://github.com/fb55/domhandler",
+    "licenseUrl": "https://github.com/fb55/domhandler/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "domutils": {
+    "licenses": "BSD-2-Clause",
+    "repository": "https://github.com/fb55/domutils",
+    "licenseUrl": "https://github.com/fb55/domutils/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "dot-prop": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/dot-prop",
+    "licenseUrl": "https://github.com/sindresorhus/dot-prop/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "dotenv": {
+    "licenses": "BSD-2-Clause",
+    "repository": "https://github.com/motdotla/dotenv",
+    "licenseUrl": "https://github.com/motdotla/dotenv/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "dunder-proto": {
+    "licenses": "MIT",
+    "repository": "https://github.com/es-shims/dunder-proto",
+    "licenseUrl": "https://github.com/es-shims/dunder-proto/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "eastasianwidth": {
+    "licenses": "MIT",
+    "repository": "https://github.com/komagata/eastasianwidth",
+    "licenseUrl": "https://github.com/komagata/eastasianwidth",
+    "parents": "elden-mod-manager"
+  },
+  "elden-mod-manager": {
+    "licenses": "GPL-3.0-only",
+    "repository": "https://github.com/Mkeefeus/Elden-Mod-Manager",
+    "licenseUrl": "https://github.com/Mkeefeus/Elden-Mod-Manager/raw/master/LICENSE",
+    "parents": "UNDEFINED"
+  },
+  "electron-installer-common": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/electron-userland/electron-installer-common",
+    "licenseUrl": "https://github.com/electron-userland/electron-installer-common/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "electron-installer-debian": {
+    "licenses": "MIT",
+    "repository": "https://github.com/electron-userland/electron-installer-debian",
+    "licenseUrl": "https://github.com/electron-userland/electron-installer-debian/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "electron-installer-redhat": {
+    "licenses": "MIT",
+    "repository": "https://github.com/electron-userland/electron-installer-redhat",
+    "licenseUrl": "https://github.com/electron-userland/electron-installer-redhat/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "electron-squirrel-startup": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/mongodb-js/electron-squirrel-startup",
+    "licenseUrl": "https://github.com/mongodb-js/electron-squirrel-startup/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "electron-store": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/electron-store",
+    "licenseUrl": "https://github.com/sindresorhus/electron-store/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "electron-to-chromium": {
+    "licenses": "ISC",
+    "repository": "https://github.com/Kilian/electron-to-chromium",
+    "licenseUrl": "https://github.com/Kilian/electron-to-chromium/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "electron-winstaller": {
+    "licenses": "MIT",
+    "repository": "https://github.com/electron/windows-installer",
+    "licenseUrl": "https://github.com/electron/windows-installer/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
   "electron": {
     "licenses": "MIT",
     "repository": "https://github.com/electron/electron",
     "licenseUrl": "https://github.com/electron/electron/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "emoji-regex": {
+    "licenses": "MIT",
+    "repository": "https://github.com/mathiasbynens/emoji-regex",
+    "licenseUrl": "https://github.com/mathiasbynens/emoji-regex/raw/master/LICENSE-MIT.txt",
+    "parents": "elden-mod-manager"
+  },
+  "enabled": {
+    "licenses": "MIT",
+    "repository": "https://github.com/3rd-Eden/enabled",
+    "licenseUrl": "https://github.com/3rd-Eden/enabled/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "encoding": {
+    "licenses": "MIT",
+    "repository": "https://github.com/andris9/encoding",
+    "licenseUrl": "https://github.com/andris9/encoding/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "end-of-stream": {
+    "licenses": "MIT",
+    "repository": "https://github.com/mafintosh/end-of-stream",
+    "licenseUrl": "https://github.com/mafintosh/end-of-stream/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "enhanced-resolve": {
+    "licenses": "MIT",
+    "repository": "https://github.com/webpack/enhanced-resolve",
+    "licenseUrl": "https://github.com/webpack/enhanced-resolve/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "entities": {
+    "licenses": "BSD-2-Clause",
+    "repository": "https://github.com/fb55/entities",
+    "licenseUrl": "https://github.com/fb55/entities/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "env-paths": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/env-paths",
+    "licenseUrl": "https://github.com/sindresorhus/env-paths/raw/master/license",
+    "parents": "conf:elden-mod-manager"
+  },
+  "err-code": {
+    "licenses": "MIT",
+    "repository": "https://github.com/IndigoUnited/js-err-code",
+    "licenseUrl": "https://github.com/IndigoUnited/js-err-code",
+    "parents": "elden-mod-manager"
+  },
+  "error-ex": {
+    "licenses": "MIT",
+    "repository": "https://github.com/qix-/node-error-ex",
+    "licenseUrl": "https://github.com/qix-/node-error-ex/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "es-define-property": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ljharb/es-define-property",
+    "licenseUrl": "https://github.com/ljharb/es-define-property/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "es-errors": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ljharb/es-errors",
+    "licenseUrl": "https://github.com/ljharb/es-errors/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "es-module-lexer": {
+    "licenses": "MIT",
+    "repository": "https://github.com/guybedford/es-module-lexer",
+    "licenseUrl": "https://github.com/guybedford/es-module-lexer/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "es-object-atoms": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ljharb/es-object-atoms",
+    "licenseUrl": "https://github.com/ljharb/es-object-atoms/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "es6-error": {
+    "licenses": "MIT",
+    "repository": "https://github.com/bjyoungblood/es6-error",
+    "licenseUrl": "https://github.com/bjyoungblood/es6-error/raw/master/LICENSE.md",
+    "parents": "elden-mod-manager"
+  },
+  "escalade": {
+    "licenses": "MIT",
+    "repository": "https://github.com/lukeed/escalade",
+    "licenseUrl": "https://github.com/lukeed/escalade/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "escape-string-regexp": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/escape-string-regexp",
+    "licenseUrl": "https://github.com/sindresorhus/escape-string-regexp/raw/master/license",
     "parents": "elden-mod-manager"
   },
   "eslint-config-prettier": {
@@ -311,16 +1937,16 @@
     "licenseUrl": "https://github.com/prettier/eslint-config-prettier/raw/master/LICENSE",
     "parents": "elden-mod-manager"
   },
-  "eslint-import-resolver-typescript": {
-    "licenses": "ISC",
-    "repository": "https://github.com/import-js/eslint-import-resolver-typescript",
-    "licenseUrl": "https://github.com/import-js/eslint-import-resolver-typescript/raw/master/LICENSE",
+  "eslint-scope": {
+    "licenses": "BSD-2-Clause",
+    "repository": "https://github.com/eslint/js",
+    "licenseUrl": "https://github.com/eslint/js/raw/master/LICENSE",
     "parents": "elden-mod-manager"
   },
-  "eslint-plugin-import": {
-    "licenses": "MIT",
-    "repository": "https://github.com/import-js/eslint-plugin-import",
-    "licenseUrl": "https://github.com/import-js/eslint-plugin-import/raw/master/LICENSE",
+  "eslint-visitor-keys": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/eslint/js",
+    "licenseUrl": "https://github.com/eslint/js/raw/master/LICENSE",
     "parents": "elden-mod-manager"
   },
   "eslint": {
@@ -329,10 +1955,1354 @@
     "licenseUrl": "https://github.com/eslint/eslint/raw/master/LICENSE",
     "parents": "elden-mod-manager"
   },
+  "espree": {
+    "licenses": "BSD-2-Clause",
+    "repository": "https://github.com/eslint/js",
+    "licenseUrl": "https://github.com/eslint/js/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "esquery": {
+    "licenses": "BSD-3-Clause",
+    "repository": "https://github.com/estools/esquery",
+    "licenseUrl": "https://github.com/estools/esquery/raw/master/license.txt",
+    "parents": "elden-mod-manager"
+  },
+  "esrecurse": {
+    "licenses": "BSD-2-Clause",
+    "repository": "https://github.com/estools/esrecurse",
+    "licenseUrl": "https://github.com/estools/esrecurse",
+    "parents": "elden-mod-manager"
+  },
+  "estraverse": {
+    "licenses": "BSD-2-Clause",
+    "repository": "http://github.com/estools/estraverse",
+    "licenseUrl": "http://github.com/estools/estraverse/raw/master/LICENSE.BSD",
+    "parents": "elden-mod-manager"
+  },
+  "esutils": {
+    "licenses": "BSD-2-Clause",
+    "repository": "http://github.com/estools/esutils",
+    "licenseUrl": "http://github.com/estools/esutils/raw/master/LICENSE.BSD",
+    "parents": "elden-mod-manager"
+  },
+  "event-target-shim": {
+    "licenses": "MIT",
+    "repository": "https://github.com/mysticatea/event-target-shim",
+    "licenseUrl": "https://github.com/mysticatea/event-target-shim/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "eventemitter3": {
+    "licenses": "MIT",
+    "repository": "https://github.com/primus/eventemitter3",
+    "licenseUrl": "https://github.com/primus/eventemitter3/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "events-universal": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/holepunchto/events-universal",
+    "licenseUrl": "https://github.com/holepunchto/events-universal/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "events": {
+    "licenses": "MIT",
+    "repository": "https://github.com/Gozala/events",
+    "licenseUrl": "https://github.com/Gozala/events/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "execa": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/execa",
+    "licenseUrl": "https://github.com/sindresorhus/execa/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "exponential-backoff": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/coveooss/exponential-backoff",
+    "licenseUrl": "https://github.com/coveooss/exponential-backoff/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "external-editor": {
+    "licenses": "MIT",
+    "repository": "https://github.com/mrkmg/node-external-editor",
+    "licenseUrl": "https://github.com/mrkmg/node-external-editor/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "extract-zip": {
+    "licenses": "BSD-2-Clause",
+    "repository": "https://github.com/maxogden/extract-zip",
+    "licenseUrl": "https://github.com/maxogden/extract-zip/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "fast-deep-equal": {
+    "licenses": "MIT",
+    "repository": "https://github.com/epoberezkin/fast-deep-equal",
+    "licenseUrl": "https://github.com/epoberezkin/fast-deep-equal/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "fast-fifo": {
+    "licenses": "MIT",
+    "repository": "https://github.com/mafintosh/fast-fifo",
+    "licenseUrl": "https://github.com/mafintosh/fast-fifo/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "fast-glob": {
+    "licenses": "MIT",
+    "repository": "https://github.com/mrmlnc/fast-glob",
+    "licenseUrl": "https://github.com/mrmlnc/fast-glob/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "fast-json-stable-stringify": {
+    "licenses": "MIT",
+    "repository": "https://github.com/epoberezkin/fast-json-stable-stringify",
+    "licenseUrl": "https://github.com/epoberezkin/fast-json-stable-stringify/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "fast-levenshtein": {
+    "licenses": "MIT",
+    "repository": "https://github.com/hiddentao/fast-levenshtein",
+    "licenseUrl": "https://github.com/hiddentao/fast-levenshtein/raw/master/LICENSE.md",
+    "parents": "elden-mod-manager"
+  },
+  "fast-uri": {
+    "licenses": "BSD-3-Clause",
+    "repository": "https://github.com/fastify/fast-uri",
+    "licenseUrl": "https://github.com/fastify/fast-uri/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "fastq": {
+    "licenses": "ISC",
+    "repository": "https://github.com/mcollina/fastq",
+    "licenseUrl": "https://github.com/mcollina/fastq/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "fd-slicer": {
+    "licenses": "MIT",
+    "repository": "https://github.com/andrewrk/node-fd-slicer",
+    "licenseUrl": "https://github.com/andrewrk/node-fd-slicer/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "fdir": {
+    "licenses": "MIT",
+    "repository": "https://github.com/thecodrr/fdir",
+    "licenseUrl": "https://github.com/thecodrr/fdir/raw/master/LICENSE",
+    "parents": "tinyglobby:elden-mod-manager"
+  },
+  "fecha": {
+    "licenses": "MIT",
+    "repository": "https://taylorhakes@github.com/taylorhakes/fecha",
+    "licenseUrl": "https://taylorhakes@github.com/taylorhakes/fecha/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "file-entry-cache": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jaredwray/file-entry-cache",
+    "licenseUrl": "https://github.com/jaredwray/file-entry-cache/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "file-stream-rotator": {
+    "licenses": "MIT",
+    "repository": "https://github.com/rogerc/file-stream-rotator",
+    "licenseUrl": "https://github.com/rogerc/file-stream-rotator/raw/master/LICENSE.txt",
+    "parents": "elden-mod-manager"
+  },
+  "file-type": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/file-type",
+    "licenseUrl": "https://github.com/sindresorhus/file-type/raw/master/license",
+    "parents": "decompress-tarbz2:elden-mod-manager"
+  },
+  "filename-reserved-regex": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/filename-reserved-regex",
+    "licenseUrl": "https://github.com/sindresorhus/filename-reserved-regex/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "filenamify": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/filenamify",
+    "licenseUrl": "https://github.com/sindresorhus/filenamify/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "fill-range": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jonschlinkert/fill-range",
+    "licenseUrl": "https://github.com/jonschlinkert/fill-range/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "find-up": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/find-up",
+    "licenseUrl": "https://github.com/sindresorhus/find-up/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "flat-cache": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jaredwray/flat-cache",
+    "licenseUrl": "https://github.com/jaredwray/flat-cache/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "flatted": {
+    "licenses": "ISC",
+    "repository": "https://github.com/WebReflection/flatted",
+    "licenseUrl": "https://github.com/WebReflection/flatted/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "flora-colossus": {
+    "licenses": "MIT",
+    "repository": "https://github.com/MarshallOfSound/flora-colossus",
+    "licenseUrl": "https://github.com/MarshallOfSound/flora-colossus",
+    "parents": "elden-mod-manager"
+  },
+  "fn.name": {
+    "licenses": "MIT",
+    "repository": "https://github.com/3rd-Eden/fn.name",
+    "licenseUrl": "https://github.com/3rd-Eden/fn.name/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "for-each": {
+    "licenses": "MIT",
+    "repository": "https://github.com/Raynos/for-each",
+    "licenseUrl": "https://github.com/Raynos/for-each/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "foreground-child": {
+    "licenses": "ISC",
+    "repository": "https://github.com/tapjs/foreground-child",
+    "licenseUrl": "https://github.com/tapjs/foreground-child/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "fs-constants": {
+    "licenses": "MIT",
+    "repository": "https://github.com/mafintosh/fs-constants",
+    "licenseUrl": "https://github.com/mafintosh/fs-constants/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "fs-extra": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jprichardson/node-fs-extra",
+    "licenseUrl": "https://github.com/jprichardson/node-fs-extra/raw/master/LICENSE",
+    "parents": "@electron/notarize:elden-mod-manager"
+  },
+  "fs-minipass": {
+    "licenses": "ISC",
+    "repository": "https://github.com/npm/fs-minipass",
+    "licenseUrl": "https://github.com/npm/fs-minipass/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "fs.realpath": {
+    "licenses": "ISC",
+    "repository": "https://github.com/isaacs/fs.realpath",
+    "licenseUrl": "https://github.com/isaacs/fs.realpath/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "function-bind": {
+    "licenses": "MIT",
+    "repository": "https://github.com/Raynos/function-bind",
+    "licenseUrl": "https://github.com/Raynos/function-bind/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "galactus": {
+    "licenses": "MIT",
+    "repository": "https://github.com/marshallOfSound/galactus",
+    "licenseUrl": "https://github.com/marshallOfSound/galactus/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "gar": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ethanent/gar",
+    "licenseUrl": "https://github.com/ethanent/gar/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "get-caller-file": {
+    "licenses": "ISC",
+    "repository": "https://github.com/stefanpenner/get-caller-file",
+    "licenseUrl": "https://github.com/stefanpenner/get-caller-file/raw/master/LICENSE.md",
+    "parents": "elden-mod-manager"
+  },
+  "get-folder-size": {
+    "licenses": "MIT",
+    "repository": "https://github.com/alessioalex/get-folder-size",
+    "licenseUrl": "https://github.com/alessioalex/get-folder-size",
+    "parents": "elden-mod-manager"
+  },
+  "get-intrinsic": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ljharb/get-intrinsic",
+    "licenseUrl": "https://github.com/ljharb/get-intrinsic/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "get-nonce": {
+    "licenses": "MIT",
+    "repository": "https://github.com/theKashey/get-nonce",
+    "licenseUrl": "https://github.com/theKashey/get-nonce/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "get-package-info": {
+    "licenses": "MIT",
+    "repository": "https://github.com/rahatarmanahmed/get-package-info",
+    "licenseUrl": "https://github.com/rahatarmanahmed/get-package-info/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "get-proto": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ljharb/get-proto",
+    "licenseUrl": "https://github.com/ljharb/get-proto/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "get-stream": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/get-stream",
+    "licenseUrl": "https://github.com/sindresorhus/get-stream/raw/master/license",
+    "parents": "cacheable-request:elden-mod-manager"
+  },
+  "github-url-from-git": {
+    "licenses": "MIT",
+    "repository": "https://github.com/visionmedia/node-github-url-from-git",
+    "licenseUrl": "https://github.com/visionmedia/node-github-url-from-git/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "github-url-from-username-repo": {
+    "licenses": "BSD-2-Clause",
+    "repository": "https://github.com/robertkowalski/github-url-from-username-repo",
+    "licenseUrl": "https://github.com/robertkowalski/github-url-from-username-repo/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "github-url-to-object": {
+    "licenses": "MIT",
+    "repository": "https://github.com/zeke/github-url-to-object",
+    "licenseUrl": "https://github.com/zeke/github-url-to-object",
+    "parents": "elden-mod-manager"
+  },
+  "glob-parent": {
+    "licenses": "ISC",
+    "repository": "https://github.com/gulpjs/glob-parent",
+    "licenseUrl": "https://github.com/gulpjs/glob-parent/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "glob-to-regexp": {
+    "licenses": "BSD-2-Clause",
+    "repository": "https://github.com/fitzgen/glob-to-regexp",
+    "licenseUrl": "https://github.com/fitzgen/glob-to-regexp",
+    "parents": "elden-mod-manager"
+  },
+  "glob": {
+    "licenses": "ISC",
+    "repository": "https://github.com/isaacs/node-glob",
+    "licenseUrl": "https://github.com/isaacs/node-glob/raw/master/LICENSE",
+    "parents": "@electron/node-gyp:elden-mod-manager"
+  },
+  "global-agent": {
+    "licenses": "BSD-3-Clause",
+    "repository": "https://github.com/gajus/global-agent",
+    "licenseUrl": "https://github.com/gajus/global-agent/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "global-dirs": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/global-dirs",
+    "licenseUrl": "https://github.com/sindresorhus/global-dirs/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "globals": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/globals",
+    "licenseUrl": "https://github.com/sindresorhus/globals/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "globalthis": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ljharb/System.global",
+    "licenseUrl": "https://github.com/ljharb/System.global/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "gopd": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ljharb/gopd",
+    "licenseUrl": "https://github.com/ljharb/gopd/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "got": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/got",
+    "licenseUrl": "https://github.com/sindresorhus/got/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "graceful-fs": {
+    "licenses": "ISC",
+    "repository": "https://github.com/isaacs/node-graceful-fs",
+    "licenseUrl": "https://github.com/isaacs/node-graceful-fs/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "has-ansi": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/has-ansi",
+    "licenseUrl": "https://github.com/sindresorhus/has-ansi",
+    "parents": "elden-mod-manager"
+  },
+  "has-flag": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/has-flag",
+    "licenseUrl": "https://github.com/sindresorhus/has-flag/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "has-property-descriptors": {
+    "licenses": "MIT",
+    "repository": "https://github.com/inspect-js/has-property-descriptors",
+    "licenseUrl": "https://github.com/inspect-js/has-property-descriptors/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "has-symbols": {
+    "licenses": "MIT",
+    "repository": "https://github.com/inspect-js/has-symbols",
+    "licenseUrl": "https://github.com/inspect-js/has-symbols/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "has-tostringtag": {
+    "licenses": "MIT",
+    "repository": "https://github.com/inspect-js/has-tostringtag",
+    "licenseUrl": "https://github.com/inspect-js/has-tostringtag/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "hasown": {
+    "licenses": "MIT",
+    "repository": "https://github.com/inspect-js/hasOwn",
+    "licenseUrl": "https://github.com/inspect-js/hasOwn/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "he": {
+    "licenses": "MIT",
+    "repository": "https://github.com/mathiasbynens/he",
+    "licenseUrl": "https://github.com/mathiasbynens/he/raw/master/LICENSE-MIT.txt",
+    "parents": "elden-mod-manager"
+  },
+  "hosted-git-info": {
+    "licenses": "ISC",
+    "repository": "https://github.com/npm/hosted-git-info",
+    "licenseUrl": "https://github.com/npm/hosted-git-info/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "html-dom-parser": {
+    "licenses": "MIT",
+    "repository": "https://github.com/remarkablemark/html-dom-parser",
+    "licenseUrl": "https://github.com/remarkablemark/html-dom-parser/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "html-react-parser": {
+    "licenses": "MIT",
+    "repository": "https://github.com/remarkablemark/html-react-parser",
+    "licenseUrl": "https://github.com/remarkablemark/html-react-parser/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "htmlparser2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/fb55/htmlparser2",
+    "licenseUrl": "https://github.com/fb55/htmlparser2/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "http-cache-semantics": {
+    "licenses": "BSD-2-Clause",
+    "repository": "https://github.com/kornelski/http-cache-semantics",
+    "licenseUrl": "https://github.com/kornelski/http-cache-semantics/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "http-proxy-agent": {
+    "licenses": "MIT",
+    "repository": "https://github.com/TooTallNate/node-http-proxy-agent",
+    "licenseUrl": "https://github.com/TooTallNate/node-http-proxy-agent",
+    "parents": "elden-mod-manager"
+  },
+  "http2-wrapper": {
+    "licenses": "MIT",
+    "repository": "https://github.com/szmarczak/http2-wrapper",
+    "licenseUrl": "https://github.com/szmarczak/http2-wrapper/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "https-proxy-agent": {
+    "licenses": "MIT",
+    "repository": "https://github.com/TooTallNate/node-https-proxy-agent",
+    "licenseUrl": "https://github.com/TooTallNate/node-https-proxy-agent",
+    "parents": "elden-mod-manager"
+  },
+  "humanize-ms": {
+    "licenses": "MIT",
+    "repository": "https://github.com/node-modules/humanize-ms",
+    "licenseUrl": "https://github.com/node-modules/humanize-ms/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "iconv-lite": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ashtuchkin/iconv-lite",
+    "licenseUrl": "https://github.com/ashtuchkin/iconv-lite/raw/master/LICENSE",
+    "parents": "encoding:elden-mod-manager"
+  },
+  "ieee754": {
+    "licenses": "BSD-3-Clause",
+    "repository": "https://github.com/feross/ieee754",
+    "licenseUrl": "https://github.com/feross/ieee754/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "ignore": {
+    "licenses": "MIT",
+    "repository": "https://github.com/kaelzhang/node-ignore",
+    "licenseUrl": "https://github.com/kaelzhang/node-ignore/raw/master/LICENSE-MIT",
+    "parents": "@typescript-eslint/eslint-plugin:elden-mod-manager"
+  },
+  "imurmurhash": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jensyt/imurmurhash-js",
+    "licenseUrl": "https://github.com/jensyt/imurmurhash-js",
+    "parents": "elden-mod-manager"
+  },
+  "indent-string": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/indent-string",
+    "licenseUrl": "https://github.com/sindresorhus/indent-string/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "infer-owner": {
+    "licenses": "ISC",
+    "repository": "https://github.com/npm/infer-owner",
+    "licenseUrl": "https://github.com/npm/infer-owner/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "inflight": {
+    "licenses": "ISC",
+    "repository": "https://github.com/npm/inflight",
+    "licenseUrl": "https://github.com/npm/inflight/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "inherits": {
+    "licenses": "ISC",
+    "repository": "https://github.com/isaacs/inherits",
+    "licenseUrl": "https://github.com/isaacs/inherits/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "ini": {
+    "licenses": "ISC",
+    "repository": "https://github.com/npm/ini",
+    "licenseUrl": "https://github.com/npm/ini/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "inline-style-parser": {
+    "licenses": "MIT",
+    "repository": "https://github.com/remarkablemark/inline-style-parser",
+    "licenseUrl": "https://github.com/remarkablemark/inline-style-parser/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "interpret": {
+    "licenses": "MIT",
+    "repository": "https://github.com/gulpjs/interpret",
+    "licenseUrl": "https://github.com/gulpjs/interpret/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "ip-address": {
+    "licenses": "MIT",
+    "repository": "https://github.com/beaugunderson/ip-address",
+    "licenseUrl": "https://github.com/beaugunderson/ip-address/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "is-arrayish": {
+    "licenses": "MIT",
+    "repository": "https://github.com/qix-/node-is-arrayish",
+    "licenseUrl": "https://github.com/qix-/node-is-arrayish/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "is-callable": {
+    "licenses": "MIT",
+    "repository": "https://github.com/inspect-js/is-callable",
+    "licenseUrl": "https://github.com/inspect-js/is-callable/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "is-core-module": {
+    "licenses": "MIT",
+    "repository": "https://github.com/inspect-js/is-core-module",
+    "licenseUrl": "https://github.com/inspect-js/is-core-module/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "is-extglob": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jonschlinkert/is-extglob",
+    "licenseUrl": "https://github.com/jonschlinkert/is-extglob/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "is-fullwidth-code-point": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/is-fullwidth-code-point",
+    "licenseUrl": "https://github.com/sindresorhus/is-fullwidth-code-point/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "is-glob": {
+    "licenses": "MIT",
+    "repository": "https://github.com/micromatch/is-glob",
+    "licenseUrl": "https://github.com/micromatch/is-glob/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "is-interactive": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/is-interactive",
+    "licenseUrl": "https://github.com/sindresorhus/is-interactive/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "is-lambda": {
+    "licenses": "MIT",
+    "repository": "https://github.com/watson/is-lambda",
+    "licenseUrl": "https://github.com/watson/is-lambda/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "is-natural-number": {
+    "licenses": "MIT",
+    "repository": "https://github.com/shinnn/is-natural-number.js",
+    "licenseUrl": "https://github.com/shinnn/is-natural-number.js/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "is-number": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jonschlinkert/is-number",
+    "licenseUrl": "https://github.com/jonschlinkert/is-number/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "is-stream": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/is-stream",
+    "licenseUrl": "https://github.com/sindresorhus/is-stream/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "is-typed-array": {
+    "licenses": "MIT",
+    "repository": "https://github.com/inspect-js/is-typed-array",
+    "licenseUrl": "https://github.com/inspect-js/is-typed-array/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "is-unicode-supported": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/is-unicode-supported",
+    "licenseUrl": "https://github.com/sindresorhus/is-unicode-supported/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "is-url": {
+    "licenses": "MIT",
+    "repository": "https://github.com/segmentio/is-url",
+    "licenseUrl": "https://github.com/segmentio/is-url/raw/master/LICENSE-MIT",
+    "parents": "elden-mod-manager"
+  },
+  "isarray": {
+    "licenses": "MIT",
+    "repository": "https://github.com/juliangruber/isarray",
+    "licenseUrl": "https://github.com/juliangruber/isarray/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "isbinaryfile": {
+    "licenses": "MIT",
+    "repository": "https://github.com/gjtorikian/isBinaryFile",
+    "licenseUrl": "https://github.com/gjtorikian/isBinaryFile/raw/master/LICENSE.txt",
+    "parents": "elden-mod-manager"
+  },
+  "isexe": {
+    "licenses": "ISC",
+    "repository": "https://github.com/isaacs/isexe",
+    "licenseUrl": "https://github.com/isaacs/isexe/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "jackspeak": {
+    "licenses": "BlueOak-1.0.0",
+    "repository": "https://github.com/isaacs/jackspeak",
+    "licenseUrl": "https://github.com/isaacs/jackspeak/raw/master/LICENSE.md",
+    "parents": "elden-mod-manager"
+  },
+  "jest-worker": {
+    "licenses": "MIT",
+    "repository": "https://github.com/facebook/jest",
+    "licenseUrl": "https://github.com/facebook/jest/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "jiti": {
+    "licenses": "MIT",
+    "repository": "https://github.com/unjs/jiti",
+    "licenseUrl": "https://github.com/unjs/jiti/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "jju": {
+    "licenses": "MIT",
+    "repository": "https://github.com/rlidwka/jju",
+    "licenseUrl": "https://github.com/rlidwka/jju/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "jquery-extend": {
+    "licenses": "MIT",
+    "repository": "https://github.com/dnukem/node-jquery-extend",
+    "licenseUrl": "https://github.com/dnukem/node-jquery-extend/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "js-tokens": {
+    "licenses": "MIT",
+    "repository": "https://github.com/lydell/js-tokens",
+    "licenseUrl": "https://github.com/lydell/js-tokens/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "json-buffer": {
+    "licenses": "MIT",
+    "repository": "https://github.com/dominictarr/json-buffer",
+    "licenseUrl": "https://github.com/dominictarr/json-buffer/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "json-parse-helpfulerror": {
+    "licenses": "MIT",
+    "repository": "https://github.com/smikes/json-parse-helpfulerror",
+    "licenseUrl": "https://github.com/smikes/json-parse-helpfulerror/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "json-schema-traverse": {
+    "licenses": "MIT",
+    "repository": "https://github.com/epoberezkin/json-schema-traverse",
+    "licenseUrl": "https://github.com/epoberezkin/json-schema-traverse/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "json-schema-typed": {
+    "licenses": "BSD-2-Clause",
+    "repository": "https://github.com/RemyRylan/json-schema-typed",
+    "licenseUrl": "https://github.com/RemyRylan/json-schema-typed/raw/master/LICENSE.md",
+    "parents": "elden-mod-manager"
+  },
+  "json-stable-stringify-without-jsonify": {
+    "licenses": "MIT",
+    "repository": "https://github.com/samn/json-stable-stringify",
+    "licenseUrl": "https://github.com/samn/json-stable-stringify/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "json-stringify-safe": {
+    "licenses": "ISC",
+    "repository": "https://github.com/isaacs/json-stringify-safe",
+    "licenseUrl": "https://github.com/isaacs/json-stringify-safe/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "jsonfile": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jprichardson/node-jsonfile",
+    "licenseUrl": "https://github.com/jprichardson/node-jsonfile/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "junk": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/junk",
+    "licenseUrl": "https://github.com/sindresorhus/junk/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "keyv": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jaredwray/keyv",
+    "licenseUrl": "https://github.com/jaredwray/keyv",
+    "parents": "elden-mod-manager"
+  },
+  "klona": {
+    "licenses": "MIT",
+    "repository": "https://github.com/lukeed/klona",
+    "licenseUrl": "https://github.com/lukeed/klona/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "kuler": {
+    "licenses": "MIT",
+    "repository": "https://github.com/3rd-Eden/kuler",
+    "licenseUrl": "https://github.com/3rd-Eden/kuler/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "lazystream": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jpommerening/node-lazystream",
+    "licenseUrl": "https://github.com/jpommerening/node-lazystream/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "levn": {
+    "licenses": "MIT",
+    "repository": "https://github.com/gkz/levn",
+    "licenseUrl": "https://github.com/gkz/levn/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "license-checker": {
+    "licenses": "BSD-3-Clause",
+    "repository": "http://github.com/davglass/license-checker",
+    "licenseUrl": "http://github.com/davglass/license-checker/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "lightningcss-linux-x64-gnu": {
+    "licenses": "MPL-2.0",
+    "repository": "https://github.com/parcel-bundler/lightningcss",
+    "licenseUrl": "https://github.com/parcel-bundler/lightningcss/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "lightningcss": {
+    "licenses": "MPL-2.0",
+    "repository": "https://github.com/parcel-bundler/lightningcss",
+    "licenseUrl": "https://github.com/parcel-bundler/lightningcss/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "listr2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/listr2/listr2",
+    "licenseUrl": "https://github.com/listr2/listr2/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "load-json-file": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/load-json-file",
+    "licenseUrl": "https://github.com/sindresorhus/load-json-file/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "loader-runner": {
+    "licenses": "MIT",
+    "repository": "https://github.com/webpack/loader-runner",
+    "licenseUrl": "https://github.com/webpack/loader-runner/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "locate-path": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/locate-path",
+    "licenseUrl": "https://github.com/sindresorhus/locate-path/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "lodash.get": {
+    "licenses": "MIT",
+    "repository": "https://github.com/lodash/lodash",
+    "licenseUrl": "https://github.com/lodash/lodash/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "lodash": {
+    "licenses": "MIT",
+    "repository": "https://github.com/lodash/lodash",
+    "licenseUrl": "https://github.com/lodash/lodash/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "log-symbols": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/log-symbols",
+    "licenseUrl": "https://github.com/sindresorhus/log-symbols/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "log-update": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/log-update",
+    "licenseUrl": "https://github.com/sindresorhus/log-update/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "logform": {
+    "licenses": "MIT",
+    "repository": "https://github.com/winstonjs/logform",
+    "licenseUrl": "https://github.com/winstonjs/logform/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "loose-envify": {
+    "licenses": "MIT",
+    "repository": "https://github.com/zertosh/loose-envify",
+    "licenseUrl": "https://github.com/zertosh/loose-envify/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "lowercase-keys": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/lowercase-keys",
+    "licenseUrl": "https://github.com/sindresorhus/lowercase-keys/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "lru-cache": {
+    "licenses": "ISC",
+    "repository": "https://github.com/isaacs/node-lru-cache",
+    "licenseUrl": "https://github.com/isaacs/node-lru-cache/raw/master/LICENSE",
+    "parents": "cacache:elden-mod-manager"
+  },
+  "make-dir": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/make-dir",
+    "licenseUrl": "https://github.com/sindresorhus/make-dir/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "make-error": {
+    "licenses": "ISC",
+    "repository": "https://github.com/JsCommunity/make-error",
+    "licenseUrl": "https://github.com/JsCommunity/make-error/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "make-fetch-happen": {
+    "licenses": "ISC",
+    "repository": "https://github.com/npm/make-fetch-happen",
+    "licenseUrl": "https://github.com/npm/make-fetch-happen/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "map-age-cleaner": {
+    "licenses": "MIT",
+    "repository": "https://github.com/SamVerschueren/map-age-cleaner",
+    "licenseUrl": "https://github.com/SamVerschueren/map-age-cleaner/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "matcher": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/matcher",
+    "licenseUrl": "https://github.com/sindresorhus/matcher/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "math-intrinsics": {
+    "licenses": "MIT",
+    "repository": "https://github.com/es-shims/math-intrinsics",
+    "licenseUrl": "https://github.com/es-shims/math-intrinsics/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "mem": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/mem",
+    "licenseUrl": "https://github.com/sindresorhus/mem/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "merge-stream": {
+    "licenses": "MIT",
+    "repository": "https://github.com/grncdr/merge-stream",
+    "licenseUrl": "https://github.com/grncdr/merge-stream/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "merge2": {
+    "licenses": "MIT",
+    "repository": "https://github.com/teambition/merge2",
+    "licenseUrl": "https://github.com/teambition/merge2/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
   "micromatch": {
     "licenses": "MIT",
     "repository": "https://github.com/micromatch/micromatch",
     "licenseUrl": "https://github.com/micromatch/micromatch/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "mime-db": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jshttp/mime-db",
+    "licenseUrl": "https://github.com/jshttp/mime-db/raw/master/LICENSE",
+    "parents": "webpack:elden-mod-manager"
+  },
+  "mime-types": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jshttp/mime-types",
+    "licenseUrl": "https://github.com/jshttp/mime-types/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "mimic-fn": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/mimic-fn",
+    "licenseUrl": "https://github.com/sindresorhus/mimic-fn/raw/master/license",
+    "parents": "onetime:elden-mod-manager"
+  },
+  "mimic-function": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/mimic-function",
+    "licenseUrl": "https://github.com/sindresorhus/mimic-function/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "mimic-response": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/mimic-response",
+    "licenseUrl": "https://github.com/sindresorhus/mimic-response/raw/master/license",
+    "parents": "decompress-response:elden-mod-manager"
+  },
+  "minimatch": {
+    "licenses": "ISC",
+    "repository": "https://github.com/isaacs/minimatch",
+    "licenseUrl": "https://github.com/isaacs/minimatch/raw/master/LICENSE",
+    "parents": "archiver-utils:elden-mod-manager"
+  },
+  "minimist": {
+    "licenses": "MIT",
+    "repository": "https://github.com/minimistjs/minimist",
+    "licenseUrl": "https://github.com/minimistjs/minimist/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "minipass-collect": {
+    "licenses": "ISC",
+    "parents": "elden-mod-manager"
+  },
+  "minipass-fetch": {
+    "licenses": "MIT",
+    "repository": "https://github.com/npm/minipass-fetch",
+    "licenseUrl": "https://github.com/npm/minipass-fetch/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "minipass-flush": {
+    "licenses": "BlueOak-1.0.0",
+    "repository": "https://github.com/isaacs/minipass-flush",
+    "licenseUrl": "https://github.com/isaacs/minipass-flush/raw/master/LICENSE.md",
+    "parents": "elden-mod-manager"
+  },
+  "minipass-pipeline": {
+    "licenses": "ISC",
+    "parents": "elden-mod-manager"
+  },
+  "minipass-sized": {
+    "licenses": "ISC",
+    "repository": "https://github.com/isaacs/minipass-sized",
+    "licenseUrl": "https://github.com/isaacs/minipass-sized/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "minipass": {
+    "licenses": "BlueOak-1.0.0",
+    "repository": "https://github.com/isaacs/minipass",
+    "licenseUrl": "https://github.com/isaacs/minipass/raw/master/LICENSE.md",
+    "parents": "archiver-utils:elden-mod-manager"
+  },
+  "minizlib": {
+    "licenses": "MIT",
+    "repository": "https://github.com/isaacs/minizlib",
+    "licenseUrl": "https://github.com/isaacs/minizlib/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "mkdirp": {
+    "licenses": "MIT",
+    "repository": "https://github.com/isaacs/node-mkdirp",
+    "licenseUrl": "https://github.com/isaacs/node-mkdirp/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "moment": {
+    "licenses": "MIT",
+    "repository": "https://github.com/moment/moment",
+    "licenseUrl": "https://github.com/moment/moment/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "ms": {
+    "licenses": "MIT",
+    "repository": "https://github.com/vercel/ms",
+    "licenseUrl": "https://github.com/vercel/ms/raw/master/license.md",
+    "parents": "elden-mod-manager"
+  },
+  "mute-stream": {
+    "licenses": "ISC",
+    "repository": "https://github.com/npm/mute-stream",
+    "licenseUrl": "https://github.com/npm/mute-stream/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "nanoid": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ai/nanoid",
+    "licenseUrl": "https://github.com/ai/nanoid/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "natives": {
+    "licenses": "ISC",
+    "repository": "https://github.com/addaleax/natives",
+    "licenseUrl": "https://github.com/addaleax/natives/raw/master/LICENSE.md",
+    "parents": "elden-mod-manager"
+  },
+  "natural-compare": {
+    "licenses": "MIT",
+    "repository": "https://github.com/litejs/natural-compare-lite",
+    "licenseUrl": "https://github.com/litejs/natural-compare-lite",
+    "parents": "elden-mod-manager"
+  },
+  "negotiator": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jshttp/negotiator",
+    "licenseUrl": "https://github.com/jshttp/negotiator/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "neo-async": {
+    "licenses": "MIT",
+    "repository": "https://github.com/suguru03/neo-async",
+    "licenseUrl": "https://github.com/suguru03/neo-async/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "nice-try": {
+    "licenses": "MIT",
+    "repository": "https://github.com/electerious/nice-try",
+    "licenseUrl": "https://github.com/electerious/nice-try/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "node-abi": {
+    "licenses": "MIT",
+    "repository": "https://github.com/electron/node-abi",
+    "licenseUrl": "https://github.com/electron/node-abi/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "node-api-version": {
+    "licenses": "MIT",
+    "repository": "https://github.com/timfish/node-api-version",
+    "licenseUrl": "https://github.com/timfish/node-api-version",
+    "parents": "elden-mod-manager"
+  },
+  "node-fetch": {
+    "licenses": "MIT",
+    "repository": "https://github.com/bitinn/node-fetch",
+    "licenseUrl": "https://github.com/bitinn/node-fetch/raw/master/LICENSE.md",
+    "parents": "elden-mod-manager"
+  },
+  "node-releases": {
+    "licenses": "MIT",
+    "repository": "https://github.com/chicoxyzzy/node-releases",
+    "licenseUrl": "https://github.com/chicoxyzzy/node-releases/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "nopt-defaults": {
+    "licenses": "BSD-3-Clause",
+    "repository": "https://github.com/btmills/nopt-defaults",
+    "licenseUrl": "https://github.com/btmills/nopt-defaults/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "nopt-usage": {
+    "licenses": "MIT",
+    "parents": "elden-mod-manager"
+  },
+  "nopt": {
+    "licenses": "ISC",
+    "repository": "https://github.com/npm/nopt",
+    "licenseUrl": "https://github.com/npm/nopt/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "normalize-package-data": {
+    "licenses": "BSD-2-Clause",
+    "repository": "https://github.com/npm/normalize-package-data",
+    "licenseUrl": "https://github.com/npm/normalize-package-data/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "normalize-path": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jonschlinkert/normalize-path",
+    "licenseUrl": "https://github.com/jonschlinkert/normalize-path/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "normalize-url": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/normalize-url",
+    "licenseUrl": "https://github.com/sindresorhus/normalize-url/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "npm-license-crawler": {
+    "licenses": "BSD-3-Clause",
+    "repository": "http://github.com/mwittig/npm-license-crawler",
+    "licenseUrl": "http://github.com/mwittig/npm-license-crawler/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "npm-run-path": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/npm-run-path",
+    "licenseUrl": "https://github.com/sindresorhus/npm-run-path/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "object-assign": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/object-assign",
+    "licenseUrl": "https://github.com/sindresorhus/object-assign/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "object-hash": {
+    "licenses": "MIT",
+    "repository": "https://github.com/puleos/object-hash",
+    "licenseUrl": "https://github.com/puleos/object-hash/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "object-keys": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ljharb/object-keys",
+    "licenseUrl": "https://github.com/ljharb/object-keys/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "once": {
+    "licenses": "ISC",
+    "repository": "https://github.com/isaacs/once",
+    "licenseUrl": "https://github.com/isaacs/once/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "one-time": {
+    "licenses": "MIT",
+    "repository": "https://github.com/3rd-Eden/one-time",
+    "licenseUrl": "https://github.com/3rd-Eden/one-time/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "onetime": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/onetime",
+    "licenseUrl": "https://github.com/sindresorhus/onetime/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "optionator": {
+    "licenses": "MIT",
+    "repository": "https://github.com/gkz/optionator",
+    "licenseUrl": "https://github.com/gkz/optionator/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "ora": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/ora",
+    "licenseUrl": "https://github.com/sindresorhus/ora/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "os-tmpdir": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/os-tmpdir",
+    "licenseUrl": "https://github.com/sindresorhus/os-tmpdir/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "p-cancelable": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/p-cancelable",
+    "licenseUrl": "https://github.com/sindresorhus/p-cancelable/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "p-defer": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/p-defer",
+    "licenseUrl": "https://github.com/sindresorhus/p-defer/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "p-finally": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/p-finally",
+    "licenseUrl": "https://github.com/sindresorhus/p-finally/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "p-is-promise": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/p-is-promise",
+    "licenseUrl": "https://github.com/sindresorhus/p-is-promise/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "p-limit": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/p-limit",
+    "licenseUrl": "https://github.com/sindresorhus/p-limit/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "p-locate": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/p-locate",
+    "licenseUrl": "https://github.com/sindresorhus/p-locate/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "p-map": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/p-map",
+    "licenseUrl": "https://github.com/sindresorhus/p-map/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "p-try": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/p-try",
+    "licenseUrl": "https://github.com/sindresorhus/p-try/raw/master/license",
+    "parents": "read-pkg-up:elden-mod-manager"
+  },
+  "package-json-from-dist": {
+    "licenses": "BlueOak-1.0.0",
+    "repository": "https://github.com/isaacs/package-json-from-dist",
+    "licenseUrl": "https://github.com/isaacs/package-json-from-dist/raw/master/LICENSE.md",
+    "parents": "elden-mod-manager"
+  },
+  "parse-author": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jonschlinkert/parse-author",
+    "licenseUrl": "https://github.com/jonschlinkert/parse-author/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "parse-json": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/parse-json",
+    "licenseUrl": "https://github.com/sindresorhus/parse-json/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "path-exists": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/path-exists",
+    "licenseUrl": "https://github.com/sindresorhus/path-exists/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "path-is-absolute": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/path-is-absolute",
+    "licenseUrl": "https://github.com/sindresorhus/path-is-absolute/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "path-key": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/path-key",
+    "licenseUrl": "https://github.com/sindresorhus/path-key/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "path-parse": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jbgutierrez/path-parse",
+    "licenseUrl": "https://github.com/jbgutierrez/path-parse/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "path-scurry": {
+    "licenses": "BlueOak-1.0.0",
+    "repository": "https://github.com/isaacs/path-scurry",
+    "licenseUrl": "https://github.com/isaacs/path-scurry/raw/master/LICENSE.md",
+    "parents": "elden-mod-manager"
+  },
+  "path-type": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/path-type",
+    "licenseUrl": "https://github.com/sindresorhus/path-type/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "pe-library": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jet2jet/pe-library-js",
+    "licenseUrl": "https://github.com/jet2jet/pe-library-js/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "pend": {
+    "licenses": "MIT",
+    "repository": "https://github.com/andrewrk/node-pend",
+    "licenseUrl": "https://github.com/andrewrk/node-pend/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "picocolors": {
+    "licenses": "ISC",
+    "repository": "https://github.com/alexeyraspopov/picocolors",
+    "licenseUrl": "https://github.com/alexeyraspopov/picocolors/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "picomatch": {
+    "licenses": "MIT",
+    "repository": "https://github.com/micromatch/picomatch",
+    "licenseUrl": "https://github.com/micromatch/picomatch/raw/master/LICENSE",
+    "parents": "tinyglobby:elden-mod-manager"
+  },
+  "pify": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/pify",
+    "licenseUrl": "https://github.com/sindresorhus/pify/raw/master/license",
+    "parents": "make-dir:elden-mod-manager"
+  },
+  "pinkie-promise": {
+    "licenses": "MIT",
+    "repository": "https://github.com/floatdrop/pinkie-promise",
+    "licenseUrl": "https://github.com/floatdrop/pinkie-promise/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "pinkie": {
+    "licenses": "MIT",
+    "repository": "https://github.com/floatdrop/pinkie",
+    "licenseUrl": "https://github.com/floatdrop/pinkie/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "plist": {
+    "licenses": "MIT",
+    "repository": "https://github.com/TooTallNate/node-plist",
+    "licenseUrl": "https://github.com/TooTallNate/node-plist/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "possible-typed-array-names": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ljharb/possible-typed-array-names",
+    "licenseUrl": "https://github.com/ljharb/possible-typed-array-names/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "postcss": {
+    "licenses": "MIT",
+    "repository": "https://github.com/postcss/postcss",
+    "licenseUrl": "https://github.com/postcss/postcss/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "postject": {
+    "licenses": "MIT",
+    "repository": "https://github.com/nodejs/postject",
+    "licenseUrl": "https://github.com/nodejs/postject/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "prelude-ls": {
+    "licenses": "MIT",
+    "repository": "https://github.com/gkz/prelude-ls",
+    "licenseUrl": "https://github.com/gkz/prelude-ls/raw/master/LICENSE",
     "parents": "elden-mod-manager"
   },
   "prettier": {
@@ -341,10 +3311,706 @@
     "licenseUrl": "https://github.com/prettier/prettier/raw/master/LICENSE",
     "parents": "elden-mod-manager"
   },
+  "proc-log": {
+    "licenses": "ISC",
+    "repository": "https://github.com/npm/proc-log",
+    "licenseUrl": "https://github.com/npm/proc-log/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "process-nextick-args": {
+    "licenses": "MIT",
+    "repository": "https://github.com/calvinmetcalf/process-nextick-args",
+    "licenseUrl": "https://github.com/calvinmetcalf/process-nextick-args/raw/master/license.md",
+    "parents": "elden-mod-manager"
+  },
+  "process": {
+    "licenses": "MIT",
+    "repository": "https://github.com/shtylman/node-process",
+    "licenseUrl": "https://github.com/shtylman/node-process/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "progress": {
+    "licenses": "MIT",
+    "repository": "https://github.com/visionmedia/node-progress",
+    "licenseUrl": "https://github.com/visionmedia/node-progress/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "promise-inflight": {
+    "licenses": "ISC",
+    "repository": "https://github.com/iarna/promise-inflight",
+    "licenseUrl": "https://github.com/iarna/promise-inflight/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "promise-retry": {
+    "licenses": "MIT",
+    "repository": "https://github.com/IndigoUnited/node-promise-retry",
+    "licenseUrl": "https://github.com/IndigoUnited/node-promise-retry/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "prop-types": {
+    "licenses": "MIT",
+    "repository": "https://github.com/facebook/prop-types",
+    "licenseUrl": "https://github.com/facebook/prop-types/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "pump": {
+    "licenses": "MIT",
+    "repository": "https://github.com/mafintosh/pump",
+    "licenseUrl": "https://github.com/mafintosh/pump/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "punycode": {
+    "licenses": "MIT",
+    "repository": "https://github.com/mathiasbynens/punycode.js",
+    "licenseUrl": "https://github.com/mathiasbynens/punycode.js/raw/master/LICENSE-MIT.txt",
+    "parents": "elden-mod-manager"
+  },
+  "queue-microtask": {
+    "licenses": "MIT",
+    "repository": "https://github.com/feross/queue-microtask",
+    "licenseUrl": "https://github.com/feross/queue-microtask/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "quick-lru": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/quick-lru",
+    "licenseUrl": "https://github.com/sindresorhus/quick-lru/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "react-dom": {
+    "licenses": "MIT",
+    "repository": "https://github.com/facebook/react",
+    "licenseUrl": "https://github.com/facebook/react/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "react-is": {
+    "licenses": "MIT",
+    "repository": "https://github.com/facebook/react",
+    "licenseUrl": "https://github.com/facebook/react/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "react-number-format": {
+    "licenses": "MIT",
+    "repository": "https://github.com/s-yadav/react-number-format",
+    "licenseUrl": "https://github.com/s-yadav/react-number-format/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "react-property": {
+    "licenses": "MIT",
+    "repository": "https://github.com/remarkablemark/react-dom-core",
+    "licenseUrl": "https://github.com/remarkablemark/react-dom-core",
+    "parents": "elden-mod-manager"
+  },
+  "react-remove-scroll-bar": {
+    "licenses": "MIT",
+    "repository": "https://github.com/theKashey/react-remove-scroll-bar",
+    "licenseUrl": "https://github.com/theKashey/react-remove-scroll-bar",
+    "parents": "elden-mod-manager"
+  },
+  "react-remove-scroll": {
+    "licenses": "MIT",
+    "repository": "https://github.com/theKashey/react-remove-scroll",
+    "licenseUrl": "https://github.com/theKashey/react-remove-scroll/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "react-router-dom": {
+    "licenses": "MIT",
+    "repository": "https://github.com/remix-run/react-router",
+    "licenseUrl": "https://github.com/remix-run/react-router/raw/master/LICENSE.md",
+    "parents": "elden-mod-manager"
+  },
+  "react-router": {
+    "licenses": "MIT",
+    "repository": "https://github.com/remix-run/react-router",
+    "licenseUrl": "https://github.com/remix-run/react-router/raw/master/LICENSE.md",
+    "parents": "elden-mod-manager"
+  },
+  "react-style-singleton": {
+    "licenses": "MIT",
+    "repository": "https://github.com/theKashey/react-style-singleton",
+    "licenseUrl": "https://github.com/theKashey/react-style-singleton/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "react-transition-group": {
+    "licenses": "BSD-3-Clause",
+    "repository": "https://github.com/reactjs/react-transition-group",
+    "licenseUrl": "https://github.com/reactjs/react-transition-group/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "react": {
+    "licenses": "MIT",
+    "repository": "https://github.com/facebook/react",
+    "licenseUrl": "https://github.com/facebook/react/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "read-binary-file-arch": {
+    "licenses": "MIT",
+    "repository": "https://github.com/samuelmaddock/read-binary-file-arch",
+    "licenseUrl": "https://github.com/samuelmaddock/read-binary-file-arch",
+    "parents": "elden-mod-manager"
+  },
+  "read-installed": {
+    "licenses": "ISC",
+    "repository": "https://github.com/isaacs/read-installed",
+    "licenseUrl": "https://github.com/isaacs/read-installed/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "read-package-json": {
+    "licenses": "ISC",
+    "repository": "https://github.com/isaacs/read-package-json",
+    "licenseUrl": "https://github.com/isaacs/read-package-json/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "read-pkg-up": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/read-pkg-up",
+    "licenseUrl": "https://github.com/sindresorhus/read-pkg-up/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "read-pkg": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/read-pkg",
+    "licenseUrl": "https://github.com/sindresorhus/read-pkg/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "readable-stream": {
+    "licenses": "MIT",
+    "repository": "https://github.com/nodejs/readable-stream",
+    "licenseUrl": "https://github.com/nodejs/readable-stream/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "readdir-glob": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/Yqnn/node-readdir-glob",
+    "licenseUrl": "https://github.com/Yqnn/node-readdir-glob/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "readdir-scoped-modules": {
+    "licenses": "ISC",
+    "repository": "https://github.com/npm/readdir-scoped-modules",
+    "licenseUrl": "https://github.com/npm/readdir-scoped-modules/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "rechoir": {
+    "licenses": "MIT",
+    "repository": "https://github.com/gulpjs/rechoir",
+    "licenseUrl": "https://github.com/gulpjs/rechoir/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "require-directory": {
+    "licenses": "MIT",
+    "repository": "https://github.com/troygoode/node-require-directory",
+    "licenseUrl": "https://github.com/troygoode/node-require-directory/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "require-from-string": {
+    "licenses": "MIT",
+    "repository": "https://github.com/floatdrop/require-from-string",
+    "licenseUrl": "https://github.com/floatdrop/require-from-string/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "resedit": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jet2jet/resedit-js",
+    "licenseUrl": "https://github.com/jet2jet/resedit-js/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "resolve-alpn": {
+    "licenses": "MIT",
+    "repository": "https://github.com/szmarczak/resolve-alpn",
+    "licenseUrl": "https://github.com/szmarczak/resolve-alpn/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "resolve": {
+    "licenses": "MIT",
+    "repository": "ssh://github.com/browserify/resolve",
+    "licenseUrl": "ssh://github.com/browserify/resolve/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "responselike": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/responselike",
+    "licenseUrl": "https://github.com/sindresorhus/responselike/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "restore-cursor": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/restore-cursor",
+    "licenseUrl": "https://github.com/sindresorhus/restore-cursor/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "retry": {
+    "licenses": "MIT",
+    "repository": "https://github.com/tim-kos/node-retry",
+    "licenseUrl": "https://github.com/tim-kos/node-retry/raw/master/License",
+    "parents": "elden-mod-manager"
+  },
+  "reusify": {
+    "licenses": "MIT",
+    "repository": "https://github.com/mcollina/reusify",
+    "licenseUrl": "https://github.com/mcollina/reusify/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "rfdc": {
+    "licenses": "MIT",
+    "repository": "https://github.com/davidmarkclements/rfdc",
+    "licenseUrl": "https://github.com/davidmarkclements/rfdc/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "rimraf": {
+    "licenses": "ISC",
+    "repository": "https://github.com/isaacs/rimraf",
+    "licenseUrl": "https://github.com/isaacs/rimraf/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "roarr": {
+    "licenses": "BSD-3-Clause",
+    "repository": "https://github.com/gajus/roarr",
+    "licenseUrl": "https://github.com/gajus/roarr/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "rolldown": {
+    "licenses": "MIT",
+    "repository": "https://github.com/rolldown/rolldown",
+    "licenseUrl": "https://github.com/rolldown/rolldown/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "run-parallel": {
+    "licenses": "MIT",
+    "repository": "https://github.com/feross/run-parallel",
+    "licenseUrl": "https://github.com/feross/run-parallel/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "safe-buffer": {
+    "licenses": "MIT",
+    "repository": "https://github.com/feross/safe-buffer",
+    "licenseUrl": "https://github.com/feross/safe-buffer/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "safe-stable-stringify": {
+    "licenses": "MIT",
+    "repository": "https://github.com/BridgeAR/safe-stable-stringify",
+    "licenseUrl": "https://github.com/BridgeAR/safe-stable-stringify/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "safer-buffer": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ChALkeR/safer-buffer",
+    "licenseUrl": "https://github.com/ChALkeR/safer-buffer/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "scheduler": {
+    "licenses": "MIT",
+    "repository": "https://github.com/facebook/react",
+    "licenseUrl": "https://github.com/facebook/react/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "schema-utils": {
+    "licenses": "MIT",
+    "repository": "https://github.com/webpack/schema-utils",
+    "licenseUrl": "https://github.com/webpack/schema-utils/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "seek-bzip": {
+    "licenses": "MIT",
+    "repository": "https://github.com/cscott/seek-bzip",
+    "licenseUrl": "https://github.com/cscott/seek-bzip/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "semver-compare": {
+    "licenses": "MIT",
+    "repository": "https://github.com/substack/semver-compare",
+    "licenseUrl": "https://github.com/substack/semver-compare/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "semver": {
+    "licenses": "ISC",
+    "repository": "https://github.com/npm/node-semver",
+    "licenseUrl": "https://github.com/npm/node-semver/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "serialize-error": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/serialize-error",
+    "licenseUrl": "https://github.com/sindresorhus/serialize-error/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "set-cookie-parser": {
+    "licenses": "MIT",
+    "repository": "https://github.com/nfriedly/set-cookie-parser",
+    "licenseUrl": "https://github.com/nfriedly/set-cookie-parser/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "set-function-length": {
+    "licenses": "MIT",
+    "repository": "https://github.com/ljharb/set-function-length",
+    "licenseUrl": "https://github.com/ljharb/set-function-length/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "shebang-command": {
+    "licenses": "MIT",
+    "repository": "https://github.com/kevva/shebang-command",
+    "licenseUrl": "https://github.com/kevva/shebang-command/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "shebang-regex": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/shebang-regex",
+    "licenseUrl": "https://github.com/sindresorhus/shebang-regex/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "signal-exit": {
+    "licenses": "ISC",
+    "repository": "https://github.com/tapjs/signal-exit",
+    "licenseUrl": "https://github.com/tapjs/signal-exit/raw/master/LICENSE.txt",
+    "parents": "elden-mod-manager"
+  },
+  "slice-ansi": {
+    "licenses": "MIT",
+    "repository": "https://github.com/chalk/slice-ansi",
+    "licenseUrl": "https://github.com/chalk/slice-ansi/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "slide": {
+    "licenses": "ISC",
+    "repository": "https://github.com/isaacs/slide-flow-control",
+    "licenseUrl": "https://github.com/isaacs/slide-flow-control/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "smart-buffer": {
+    "licenses": "MIT",
+    "repository": "https://github.com/JoshGlazebrook/smart-buffer",
+    "licenseUrl": "https://github.com/JoshGlazebrook/smart-buffer/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "socks-proxy-agent": {
+    "licenses": "MIT",
+    "repository": "https://github.com/TooTallNate/node-socks-proxy-agent",
+    "licenseUrl": "https://github.com/TooTallNate/node-socks-proxy-agent",
+    "parents": "elden-mod-manager"
+  },
+  "socks": {
+    "licenses": "MIT",
+    "repository": "https://github.com/JoshGlazebrook/socks",
+    "licenseUrl": "https://github.com/JoshGlazebrook/socks/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "source-map-js": {
+    "licenses": "BSD-3-Clause",
+    "repository": "https://github.com/7rulnik/source-map-js",
+    "licenseUrl": "https://github.com/7rulnik/source-map-js/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "source-map-support": {
+    "licenses": "MIT",
+    "repository": "https://github.com/evanw/node-source-map-support",
+    "licenseUrl": "https://github.com/evanw/node-source-map-support/raw/master/LICENSE.md",
+    "parents": "elden-mod-manager"
+  },
+  "source-map": {
+    "licenses": "BSD-3-Clause",
+    "repository": "http://github.com/mozilla/source-map",
+    "licenseUrl": "http://github.com/mozilla/source-map/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "spdx-correct": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/jslicense/spdx-correct.js",
+    "licenseUrl": "https://github.com/jslicense/spdx-correct.js/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "spdx-exceptions": {
+    "licenses": "CC-BY-3.0",
+    "repository": "https://github.com/kemitchell/spdx-exceptions.json",
+    "licenseUrl": "https://github.com/kemitchell/spdx-exceptions.json",
+    "parents": "elden-mod-manager"
+  },
+  "spdx-expression-parse": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jslicense/spdx-expression-parse.js",
+    "licenseUrl": "https://github.com/jslicense/spdx-expression-parse.js/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "spdx-license-ids": {
+    "licenses": "CC0-1.0",
+    "repository": "https://github.com/jslicense/spdx-license-ids",
+    "licenseUrl": "https://github.com/jslicense/spdx-license-ids",
+    "parents": "elden-mod-manager"
+  },
+  "sprintf-js": {
+    "licenses": "BSD-3-Clause",
+    "repository": "https://github.com/alexei/sprintf.js",
+    "licenseUrl": "https://github.com/alexei/sprintf.js/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "ssri": {
+    "licenses": "ISC",
+    "repository": "https://github.com/npm/ssri",
+    "licenseUrl": "https://github.com/npm/ssri/raw/master/LICENSE.md",
+    "parents": "elden-mod-manager"
+  },
+  "stack-trace": {
+    "licenses": "MIT",
+    "repository": "https://github.com/felixge/node-stack-trace",
+    "licenseUrl": "https://github.com/felixge/node-stack-trace/raw/master/License",
+    "parents": "elden-mod-manager"
+  },
+  "streamx": {
+    "licenses": "MIT",
+    "repository": "https://github.com/mafintosh/streamx",
+    "licenseUrl": "https://github.com/mafintosh/streamx/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "string-width": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/string-width",
+    "licenseUrl": "https://github.com/sindresorhus/string-width/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "string_decoder": {
+    "licenses": "MIT",
+    "repository": "https://github.com/nodejs/string_decoder",
+    "licenseUrl": "https://github.com/nodejs/string_decoder/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "strip-ansi": {
+    "licenses": "MIT",
+    "repository": "https://github.com/chalk/strip-ansi",
+    "licenseUrl": "https://github.com/chalk/strip-ansi/raw/master/license",
+    "parents": "string-width:elden-mod-manager"
+  },
+  "strip-bom": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/strip-bom",
+    "licenseUrl": "https://github.com/sindresorhus/strip-bom/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "strip-dirs": {
+    "licenses": "MIT",
+    "repository": "https://github.com/shinnn/node-strip-dirs",
+    "licenseUrl": "https://github.com/shinnn/node-strip-dirs/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "strip-eof": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/strip-eof",
+    "licenseUrl": "https://github.com/sindresorhus/strip-eof/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "strip-outer": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/strip-outer",
+    "licenseUrl": "https://github.com/sindresorhus/strip-outer/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "stubborn-fs": {
+    "licenses": "MIT",
+    "repository": "github:fabiospampinato/stubborn-fs",
+    "licenseUrl": "github:fabiospampinato/stubborn-fs",
+    "parents": "elden-mod-manager"
+  },
+  "stubborn-utils": {
+    "licenses": "MIT",
+    "repository": "github:fabiospampinato/stubborn-utils",
+    "licenseUrl": "github:fabiospampinato/stubborn-utils",
+    "parents": "elden-mod-manager"
+  },
+  "style-to-js": {
+    "licenses": "MIT",
+    "repository": "https://github.com/remarkablemark/style-to-js",
+    "licenseUrl": "https://github.com/remarkablemark/style-to-js/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "style-to-object": {
+    "licenses": "MIT",
+    "repository": "https://github.com/remarkablemark/style-to-object",
+    "licenseUrl": "https://github.com/remarkablemark/style-to-object/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "sumchecker": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/malept/sumchecker",
+    "licenseUrl": "https://github.com/malept/sumchecker/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "supports-color": {
+    "licenses": "MIT",
+    "repository": "https://github.com/chalk/supports-color",
+    "licenseUrl": "https://github.com/chalk/supports-color/raw/master/license",
+    "parents": "jest-worker:elden-mod-manager"
+  },
+  "supports-preserve-symlinks-flag": {
+    "licenses": "MIT",
+    "repository": "https://github.com/inspect-js/node-supports-preserve-symlinks-flag",
+    "licenseUrl": "https://github.com/inspect-js/node-supports-preserve-symlinks-flag/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "tabbable": {
+    "licenses": "MIT",
+    "repository": "https://github.com/focus-trap/tabbable",
+    "licenseUrl": "https://github.com/focus-trap/tabbable/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "tagged-tag": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/tagged-tag",
+    "licenseUrl": "https://github.com/sindresorhus/tagged-tag/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "tapable": {
+    "licenses": "MIT",
+    "repository": "http://github.com/webpack/tapable",
+    "licenseUrl": "http://github.com/webpack/tapable/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "tar-stream": {
+    "licenses": "MIT",
+    "repository": "https://github.com/mafintosh/tar-stream",
+    "licenseUrl": "https://github.com/mafintosh/tar-stream/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "tar": {
+    "licenses": "ISC",
+    "repository": "https://github.com/isaacs/node-tar",
+    "licenseUrl": "https://github.com/isaacs/node-tar/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "teex": {
+    "licenses": "MIT",
+    "repository": "https://github.com/mafintosh/teex",
+    "licenseUrl": "https://github.com/mafintosh/teex/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "temp": {
+    "licenses": "MIT",
+    "repository": "https://github.com/bruce/node-temp",
+    "licenseUrl": "https://github.com/bruce/node-temp/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "terser-webpack-plugin": {
+    "licenses": "MIT",
+    "repository": "https://github.com/webpack/terser-webpack-plugin",
+    "licenseUrl": "https://github.com/webpack/terser-webpack-plugin/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "terser": {
+    "licenses": "BSD-2-Clause",
+    "repository": "https://github.com/terser/terser",
+    "licenseUrl": "https://github.com/terser/terser/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "text-decoder": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/holepunchto/text-decoder",
+    "licenseUrl": "https://github.com/holepunchto/text-decoder/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "text-hex": {
+    "licenses": "MIT",
+    "repository": "https://github.com/3rd-Eden/text-hex",
+    "licenseUrl": "https://github.com/3rd-Eden/text-hex/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "through": {
+    "licenses": "MIT",
+    "repository": "https://github.com/dominictarr/through",
+    "licenseUrl": "https://github.com/dominictarr/through/raw/master/LICENSE.APACHE2",
+    "parents": "elden-mod-manager"
+  },
+  "tiny-each-async": {
+    "licenses": "MIT",
+    "repository": "https://github.com/alessioalex/tiny-each-async",
+    "licenseUrl": "https://github.com/alessioalex/tiny-each-async",
+    "parents": "elden-mod-manager"
+  },
+  "tinyglobby": {
+    "licenses": "MIT",
+    "repository": "https://github.com/SuperchupuDev/tinyglobby",
+    "licenseUrl": "https://github.com/SuperchupuDev/tinyglobby/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "tmp-promise": {
+    "licenses": "MIT",
+    "repository": "https://github.com/benjamingr/tmp-promise",
+    "licenseUrl": "https://github.com/benjamingr/tmp-promise",
+    "parents": "elden-mod-manager"
+  },
+  "tmp": {
+    "licenses": "MIT",
+    "repository": "https://github.com/raszi/node-tmp",
+    "licenseUrl": "https://github.com/raszi/node-tmp/raw/master/LICENSE",
+    "parents": "tmp-promise:elden-mod-manager"
+  },
+  "to-buffer": {
+    "licenses": "MIT",
+    "repository": "https://github.com/browserify/to-buffer",
+    "licenseUrl": "https://github.com/browserify/to-buffer/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "to-regex-range": {
+    "licenses": "MIT",
+    "repository": "https://github.com/micromatch/to-regex-range",
+    "licenseUrl": "https://github.com/micromatch/to-regex-range/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "tr46": {
+    "licenses": "MIT",
+    "repository": "https://github.com/Sebmaster/tr46.js",
+    "licenseUrl": "https://github.com/Sebmaster/tr46.js",
+    "parents": "elden-mod-manager"
+  },
+  "treeify": {
+    "licenses": "MIT",
+    "repository": "https://github.com/notatestuser/treeify",
+    "licenseUrl": "https://github.com/notatestuser/treeify/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "trim-repeated": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/trim-repeated",
+    "licenseUrl": "https://github.com/sindresorhus/trim-repeated/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "triple-beam": {
+    "licenses": "MIT",
+    "repository": "https://github.com/winstonjs/triple-beam",
+    "licenseUrl": "https://github.com/winstonjs/triple-beam/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "ts-api-utils": {
+    "licenses": "MIT",
+    "repository": "https://github.com/JoshuaKGoldberg/ts-api-utils",
+    "licenseUrl": "https://github.com/JoshuaKGoldberg/ts-api-utils/raw/master/LICENSE.md",
+    "parents": "elden-mod-manager"
+  },
   "ts-node": {
     "licenses": "MIT",
     "repository": "https://github.com/TypeStrong/ts-node",
     "licenseUrl": "https://github.com/TypeStrong/ts-node/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "tslib": {
+    "licenses": "0BSD",
+    "repository": "https://github.com/Microsoft/tslib",
+    "licenseUrl": "https://github.com/Microsoft/tslib/raw/master/LICENSE.txt",
+    "parents": "elden-mod-manager"
+  },
+  "type-check": {
+    "licenses": "MIT",
+    "repository": "https://github.com/gkz/type-check",
+    "licenseUrl": "https://github.com/gkz/type-check/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "type-fest": {
+    "licenses": "(MIT OR CC0-1.0)",
+    "repository": "https://github.com/sindresorhus/type-fest",
+    "licenseUrl": "https://github.com/sindresorhus/type-fest/raw/master/license-cc0",
+    "parents": "elden-mod-manager"
+  },
+  "typed-array-buffer": {
+    "licenses": "MIT",
+    "repository": "https://github.com/inspect-js/typed-array-buffer",
+    "licenseUrl": "https://github.com/inspect-js/typed-array-buffer/raw/master/LICENSE",
     "parents": "elden-mod-manager"
   },
   "typescript-eslint": {
@@ -359,10 +4025,274 @@
     "licenseUrl": "https://github.com/microsoft/TypeScript/raw/master/LICENSE.txt",
     "parents": "elden-mod-manager"
   },
+  "uint8array-extras": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/uint8array-extras",
+    "licenseUrl": "https://github.com/sindresorhus/uint8array-extras/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "unbzip2-stream": {
+    "licenses": "MIT",
+    "repository": "https://github.com/regular/unbzip2-stream",
+    "licenseUrl": "https://github.com/regular/unbzip2-stream/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "undici-types": {
+    "licenses": "MIT",
+    "repository": "https://github.com/nodejs/undici",
+    "licenseUrl": "https://github.com/nodejs/undici/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "unique-filename": {
+    "licenses": "ISC",
+    "repository": "https://github.com/npm/unique-filename",
+    "licenseUrl": "https://github.com/npm/unique-filename/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "unique-slug": {
+    "licenses": "ISC",
+    "repository": "https://github.com/npm/unique-slug",
+    "licenseUrl": "https://github.com/npm/unique-slug/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "universal-user-agent": {
+    "licenses": "ISC",
+    "repository": "https://github.com/gr2m/universal-user-agent",
+    "licenseUrl": "https://github.com/gr2m/universal-user-agent/raw/master/LICENSE.md",
+    "parents": "elden-mod-manager"
+  },
+  "universalify": {
+    "licenses": "MIT",
+    "repository": "https://github.com/RyanZim/universalify",
+    "licenseUrl": "https://github.com/RyanZim/universalify/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "update-browserslist-db": {
+    "licenses": "MIT",
+    "repository": "https://github.com/browserslist/update-db",
+    "licenseUrl": "https://github.com/browserslist/update-db/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "update-electron-app": {
+    "licenses": "MIT",
+    "repository": "https://github.com/electron/update-electron-app",
+    "licenseUrl": "https://github.com/electron/update-electron-app/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "uri-js": {
+    "licenses": "BSD-2-Clause",
+    "repository": "http://github.com/garycourt/uri-js",
+    "licenseUrl": "http://github.com/garycourt/uri-js/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "use-callback-ref": {
+    "licenses": "MIT",
+    "repository": "https://github.com/theKashey/use-callback-ref/",
+    "licenseUrl": "https://github.com/theKashey/use-callback-ref//raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "use-sidecar": {
+    "licenses": "MIT",
+    "repository": "https://github.com/theKashey/use-sidecar",
+    "licenseUrl": "https://github.com/theKashey/use-sidecar/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "username": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/username",
+    "licenseUrl": "https://github.com/sindresorhus/username/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "util-deprecate": {
+    "licenses": "MIT",
+    "repository": "https://github.com/TooTallNate/util-deprecate",
+    "licenseUrl": "https://github.com/TooTallNate/util-deprecate/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "util-extend": {
+    "licenses": "MIT",
+    "repository": "https://github.com/isaacs/util-extend",
+    "licenseUrl": "https://github.com/isaacs/util-extend/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "v8-compile-cache-lib": {
+    "licenses": "MIT",
+    "repository": "https://github.com/cspotcode/v8-compile-cache-lib",
+    "licenseUrl": "https://github.com/cspotcode/v8-compile-cache-lib/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "validate-npm-package-license": {
+    "licenses": "Apache-2.0",
+    "repository": "https://github.com/kemitchell/validate-npm-package-license.js",
+    "licenseUrl": "https://github.com/kemitchell/validate-npm-package-license.js/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "vdf-parser": {
+    "licenses": "MIT",
+    "repository": "https://github.com/p0358/vdf-parser",
+    "licenseUrl": "https://github.com/p0358/vdf-parser/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
   "vite": {
     "licenses": "MIT",
     "repository": "https://github.com/vitejs/vite",
     "licenseUrl": "https://github.com/vitejs/vite/raw/master/LICENSE.md",
+    "parents": "elden-mod-manager"
+  },
+  "watchpack": {
+    "licenses": "MIT",
+    "repository": "https://github.com/webpack/watchpack",
+    "licenseUrl": "https://github.com/webpack/watchpack/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "wcwidth": {
+    "licenses": "MIT",
+    "repository": "https://github.com/timoxley/wcwidth",
+    "licenseUrl": "https://github.com/timoxley/wcwidth/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "webidl-conversions": {
+    "licenses": "BSD-2-Clause",
+    "repository": "https://github.com/jsdom/webidl-conversions",
+    "licenseUrl": "https://github.com/jsdom/webidl-conversions/raw/master/LICENSE.md",
+    "parents": "elden-mod-manager"
+  },
+  "webpack-sources": {
+    "licenses": "MIT",
+    "repository": "https://github.com/webpack/webpack-sources",
+    "licenseUrl": "https://github.com/webpack/webpack-sources/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "webpack": {
+    "licenses": "MIT",
+    "repository": "https://github.com/webpack/webpack",
+    "licenseUrl": "https://github.com/webpack/webpack/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "whatwg-url": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jsdom/whatwg-url",
+    "licenseUrl": "https://github.com/jsdom/whatwg-url/raw/master/LICENSE.txt",
+    "parents": "elden-mod-manager"
+  },
+  "when-exit": {
+    "licenses": "MIT",
+    "repository": "github:fabiospampinato/when-exit",
+    "licenseUrl": "github:fabiospampinato/when-exit",
+    "parents": "elden-mod-manager"
+  },
+  "which-typed-array": {
+    "licenses": "MIT",
+    "repository": "https://github.com/inspect-js/which-typed-array",
+    "licenseUrl": "https://github.com/inspect-js/which-typed-array/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "which": {
+    "licenses": "ISC",
+    "repository": "https://github.com/isaacs/node-which",
+    "licenseUrl": "https://github.com/isaacs/node-which/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "winston-daily-rotate-file": {
+    "licenses": "MIT",
+    "repository": "https://github.com/winstonjs/winston-daily-rotate-file",
+    "licenseUrl": "https://github.com/winstonjs/winston-daily-rotate-file/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "winston-transport": {
+    "licenses": "MIT",
+    "repository": "https://github.com/winstonjs/winston-transport",
+    "licenseUrl": "https://github.com/winstonjs/winston-transport/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "winston": {
+    "licenses": "MIT",
+    "repository": "https://github.com/winstonjs/winston",
+    "licenseUrl": "https://github.com/winstonjs/winston/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "word-wrap": {
+    "licenses": "MIT",
+    "repository": "https://github.com/jonschlinkert/word-wrap",
+    "licenseUrl": "https://github.com/jonschlinkert/word-wrap/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "wrap-ansi": {
+    "licenses": "MIT",
+    "repository": "https://github.com/chalk/wrap-ansi",
+    "licenseUrl": "https://github.com/chalk/wrap-ansi/raw/master/license",
+    "parents": "@isaacs/cliui:elden-mod-manager"
+  },
+  "wrappy": {
+    "licenses": "ISC",
+    "repository": "https://github.com/npm/wrappy",
+    "licenseUrl": "https://github.com/npm/wrappy/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "xmlbuilder": {
+    "licenses": "MIT",
+    "repository": "https://github.com/oozcitak/xmlbuilder-js",
+    "licenseUrl": "https://github.com/oozcitak/xmlbuilder-js/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "xtend": {
+    "licenses": "MIT",
+    "repository": "https://github.com/Raynos/xtend",
+    "licenseUrl": "https://github.com/Raynos/xtend/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "y18n": {
+    "licenses": "ISC",
+    "repository": "https://github.com/yargs/y18n",
+    "licenseUrl": "https://github.com/yargs/y18n/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "yallist": {
+    "licenses": "ISC",
+    "repository": "https://github.com/isaacs/yallist",
+    "licenseUrl": "https://github.com/isaacs/yallist/raw/master/LICENSE",
+    "parents": "minipass:elden-mod-manager"
+  },
+  "yargs-parser": {
+    "licenses": "ISC",
+    "repository": "https://github.com/yargs/yargs-parser",
+    "licenseUrl": "https://github.com/yargs/yargs-parser/raw/master/LICENSE.txt",
+    "parents": "elden-mod-manager"
+  },
+  "yargs": {
+    "licenses": "MIT",
+    "repository": "https://github.com/yargs/yargs",
+    "licenseUrl": "https://github.com/yargs/yargs/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "yauzl": {
+    "licenses": "MIT",
+    "repository": "https://github.com/thejoshwolfe/yauzl",
+    "licenseUrl": "https://github.com/thejoshwolfe/yauzl/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "yn": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/yn",
+    "licenseUrl": "https://github.com/sindresorhus/yn/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "yocto-queue": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/yocto-queue",
+    "licenseUrl": "https://github.com/sindresorhus/yocto-queue/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "yoctocolors-cjs": {
+    "licenses": "MIT",
+    "repository": "https://github.com/sindresorhus/yoctocolors",
+    "licenseUrl": "https://github.com/sindresorhus/yoctocolors/raw/master/license",
+    "parents": "elden-mod-manager"
+  },
+  "zip-stream": {
+    "licenses": "MIT",
+    "repository": "https://github.com/archiverjs/node-zip-stream",
+    "licenseUrl": "https://github.com/archiverjs/node-zip-stream/raw/master/LICENSE",
     "parents": "elden-mod-manager"
   }
 }
