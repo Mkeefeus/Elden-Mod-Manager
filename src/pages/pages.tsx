@@ -1,3 +1,4 @@
+import React from 'react';
 import Home from './Home';
 import Mods from './Mods';
 import About from './About';
@@ -6,7 +7,7 @@ import Settings from './Settings';
 export type Page = {
   displayName: string;
   route: string;
-  element: () => JSX.Element;
+  element: () => React.JSX.Element;
 };
 
 export const pages: Page[] = [
