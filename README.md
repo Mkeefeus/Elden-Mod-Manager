@@ -2,18 +2,19 @@
 
 ## Description
 
-Elden Mod Manager is a GUI for ModEngine2, which aims to simplify the process of installing, enabling, and configuring mods for Elden Ring.
+Elden Mod Manager is a GUI for me3, which aims to simplify the process of installing, enabling, and configuring mods for Elden Ring.
 
 ## Features
 
 - Installing mods to a managed folder separate from your Elden Ring install directory
 - Easy configuration of load order and disabled mods
+- Easy switching between mod profiles, allowing you to have different sets of mods for different playthroughs or characters
 - Built-in launching of the game both modded and unmodded with a single click
-- Support for Standard and DLL mods
+- Support for File and DLL mods
 
 ## Installation
 
-To install, either use the installer from the release or extract the Zip release to a directory of your choosing.  Upon the first launch, you will be prompted to select your install locations for ModEngine2. When you first go to the Mods tab, you will be prompted to select an install location for your Mods. I recommend using the defaults for both but feel free to change them. You can add desktop shortcuts for both EMM and launching ER modded from the Tools menu (The setup exe adds these automatically). 
+To install, either use the installer from the release or extract the Zip release to a directory of your choosing.  Upon the first launch, you will be prompted to select your install locations for me3. When you first go to the Mods tab, you will be prompted to select an install location for your Mods. I recommend using the defaults for both but feel free to change them. You can add desktop shortcuts for both EMM and launching ER modded from the Tools menu (The setup exe adds these automatically). 
 
 ## Usage
 
@@ -26,9 +27,9 @@ To add a mod, navigate to the Mods tab and select Add Mod from Zip if the mod is
 
 ## Special Thanks
 
-Special thanks to soulsmods and its contributors for creating ModEngine2. Without their work, this project would do nothing.
+Special thanks to garyttiereny and all other contributors for creating and maintaining me3. Without their work, this project would do nothing.
 
-- https://github.com/soulsmods/ModEngine2
+- https://github.com/garyttiereny/me3
 
 ## Bug Reports
 
@@ -38,15 +39,11 @@ To report a bug or issue, go to Help > Bug Report, or https://github.com/Mkeefeu
 
 Do I need Elden Mod Loader?
 
-- No. Instead of using Elden Mod Loder to load DLL mods, EMM uses ModEngine2 to load them. Any apps that say they require Elden Mod Loader should still work fine.
+- No. Instead of using Elden Mod Loder to load DLL mods, EMM uses me3 to load them. Any apps that say they require Elden Mod Loader should still work fine.
 
 How do I install Seamless Co-Op?
 
 - Seamless co-op also requires you to configure some settings. Once you have imported the mod, select "Mods folder" from the Go menu, then find your seamless co-op folder, and open the ini file (as of v1.7.8 this is called ersc_settings.ini). You may also need to copy the crashpad and locale folders to your game directory. Copy those folders from the same location as the ini file. From there, select "Elden Ring folder" from the Go menu, and create a folder titled "SeemlessCoop" if it is not already created. Paste the Locales and Crashpad folders into the SeemelessCoop folder.
-
-"Could not find signature" Error
-
-- Some of Techiew's mods have a compatibility issue with ME2 where they try to load a little too quickly, causing this error. Nordgaren and Gixxpunk created a fix for these mods, which I have repackaged for easy import here https://github.com/Mkeefeus/EldenRingMods/releases. Download the zip file for the mod you want to install and use Add Mod from Zip to import.
 
 What if I don't have the game on Steam?
 
