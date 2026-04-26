@@ -1,5 +1,11 @@
 export type Dict<T> = { [key: string]: T };
 
+export interface LogEntry {
+  level: string;
+  message: string;
+  hideDisplay?: boolean;
+}
+
 export type Mod = {
   uuid: string;
   enabled: boolean;

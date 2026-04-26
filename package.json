@@ -69,6 +69,7 @@
     "debug": "^4.4.3",
     "decompress": "^4.2.1",
     "dotenv": "^17.4.2",
+    "electron-log": "^5.4.3",
     "electron-squirrel-startup": "^1.0.1",
     "electron-store": "^11.0.2",
     "he": "^1.2.0",
@@ -78,9 +79,6 @@
     "react-dom": "^19.2.5",
     "react-router-dom": "^7.14.2",
     "update-electron-app": "^3.1.2",
-    "vdf-parser": "^1.2.1",
-    "winston": "^3.19.0",
-    "winston-daily-rotate-file": "^5.0.0",
-    "winston-transport": "^4.9.0"
+    "vdf-parser": "^1.2.1"
   }
 }

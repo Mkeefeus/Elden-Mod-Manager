@@ -17,6 +17,11 @@ export default defineConfig((env) => {
       rollupOptions: {
         external,
       },
+      // Fix CJS→ESM interop for packages like winston that use circular deps
+      // and prototype inheritance patterns that break under Rollup's default transform.
+      commonjsOptions: {
+        transformMixedEsModules: true,
+      },
     },
     plugins: [pluginHotRestart('restart')],
     define,

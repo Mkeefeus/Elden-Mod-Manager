@@ -20,12 +20,11 @@ import {
   saveProfiles,
   setActiveProfileId,
 } from './db/api';
-import { AddModFormValues, BrowseType, Mod } from 'types';
+import { AddModFormValues, BrowseType, Mod, LogEntry } from 'types';
 import { existsSync } from 'fs';
 import { join } from 'path';
 import { CreateModPathFromName, errToString } from '../utils/utilities';
 import { handleLog, logger } from '../utils/mainLogger';
-import { LogEntry } from 'winston';
 import { launchEldenRingModded, promptME3Install, updateME3Path, detectME3 } from './me3';
 import { launchEldenRing } from './steam';
 import { browse, extractModZip } from './fileSystem';

@@ -1,13 +1,36 @@
 import { builtinModules } from 'node:module';
 import type { AddressInfo } from 'node:net';
-import type { ConfigEnv, Plugin, UserConfig } from 'vite';
+import type { ConfigEnv, Plugin, UserConfig, ViteDevServer } from 'vite';
 import pkg from './package.json';
+
+declare global {
+  namespace NodeJS {
+    interface Process {
+      viteDevServers: Record<string, ViteDevServer>;
+    }
+  }
+}
 
 export const builtins = ['electron', ...builtinModules.map((m) => [m, `node:${m}`]).flat()];
 
+// The Vite plugin packages only the Vite build output — there are no node_modules
+// in the asar. All main-process deps must be bundled by Vite.
+// List every dep that should be bundled (i.e. NOT marked as external).
+const bundledDeps = new Set([
+  'electron-log',
+  'vdf-parser',
+  'archiver',
+  'decompress',
+  'debug',
+  'update-electron-app',
+  'electron-store',
+]);
+
 export const external = [
   ...builtins,
-  ...Object.keys('dependencies' in pkg ? (pkg.dependencies as Record<string, unknown>) : {}),
+  ...Object.keys('dependencies' in pkg ? (pkg.dependencies as Record<string, unknown>) : {}).filter(
+    (dep) => !bundledDeps.has(dep),
+  ),
 ];
 
 export function getBuildConfig(env: ConfigEnv<'build'>): UserConfig {
@@ -85,7 +108,7 @@ export function pluginHotRestart(command: 'reload' | 'restart'): Plugin {
     name: '@electron-forge/plugin-vite:hot-restart',
     closeBundle() {
       if (command === 'reload') {
-        for (const server of Object.values(process.viteDevServers)) {
+        for (const server of Object.values(process.viteDevServers) as ViteDevServer[]) {
           // Preload scripts hot reload.
           server.ws.send({ type: 'full-reload' });
         }
