@@ -6,6 +6,11 @@ export interface LogEntry {
   hideDisplay?: boolean;
 }
 
+export interface LatestRelease {
+  version: string;
+  url: string;
+}
+
 export type Mod = {
   uuid: string;
   enabled: boolean;

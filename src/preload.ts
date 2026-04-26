@@ -1,7 +1,7 @@
 // See the Electron documentation for details on how to use preload scripts:
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 import { contextBridge, ipcRenderer } from 'electron';
-import { Mod, AddModFormValues, BrowseType, ModProfile, LogEntry } from 'types';
+import { Mod, AddModFormValues, BrowseType, ModProfile, LogEntry, LatestRelease } from 'types';
 
 interface IElectronAPI {
   // Renderer to main
@@ -36,6 +36,7 @@ interface IElectronAPI {
   deleteProfile: (uuid: string) => void;
   renameProfile: (uuid: string, name: string) => void;
   updateProfile: (uuid: string) => Promise<void>;
+  getLatestVersion: () => Promise<LatestRelease | null>;
   // Main to renderer
   notify: (callback: (log: LogEntry) => void) => void;
   promptME3Install: (callback: () => void) => void;
@@ -82,6 +83,7 @@ const electronAPI: IElectronAPI = {
   deleteProfile: (uuid) => ipcRenderer.send('delete-profile', uuid),
   renameProfile: (uuid, name) => ipcRenderer.send('rename-profile', uuid, name),
   updateProfile: (uuid) => ipcRenderer.invoke('update-profile', uuid),
+  getLatestVersion: () => ipcRenderer.invoke('get-latest-version'),
   // Main to renderer
   notify: (callback) => ipcRenderer.on('notify', (_event, value) => callback(value as LogEntry)),
   promptME3Install: (callback) => ipcRenderer.on('prompt-me3-install', callback),

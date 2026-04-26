@@ -147,6 +147,26 @@ app
     ipcMain.on('rename-profile', (_, uuid: string, name: string) => handleRenameProfile(uuid, name));
     ipcMain.handle('update-profile', (_, uuid: string) => handleUpdateProfile(uuid));
 
+    // Version check — returns { version, url } if a newer release exists, otherwise null
+    ipcMain.handle('get-latest-version', async () => {
+      try {
+        const res = await fetch('https://api.github.com/repos/Mkeefeus/Elden-Mod-Manager/releases/latest', {
+          headers: { 'User-Agent': 'Elden-Mod-Manager' },
+        });
+        const data = (await res.json()) as { tag_name: string; html_url: string };
+        const latest = data.tag_name.replace(/^v/, '');
+        const current = app.getVersion();
+        const isNewer = latest.split('.').map(Number).reduce((acc, n, i) => {
+          if (acc !== 0) return acc;
+          return n - (current.split('.').map(Number)[i] ?? 0);
+        }, 0) > 0;
+        return isNewer ? { version: latest, url: data.html_url } : null;
+      } catch (err) {
+        debug(`Version check failed: ${errToString(err)}`);
+        return null;
+      }
+    });
+
     // Startup: check if ME3 is available; prompt user if not found
     const storedPath = getModEnginePath();
     const me3Available = (storedPath && existsSync(storedPath)) || (() => {
