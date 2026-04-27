@@ -11,8 +11,9 @@ import { ME3_PROFILE_FILENAME } from './constants';
 const { debug, error } = logger;
 
 const generateMe3ProfileString = (mods: Mod[], savefile: string, startOnline: boolean): string => {
-  const nativeMods = mods.filter((m) => !!m.dllFile);
-  const packageMods = mods.filter((m) => !m.dllFile);
+  const nativeMods = mods.filter((m) => !!m.dllFile && m.enabled);
+  const packageMods = mods.filter((m) => !m.dllFile && m.enabled);
+  debug(`Generating ME3 profile: ${nativeMods.length} native mod(s), ${packageMods.length} package mod(s), savefile="${savefile}", startOnline=${startOnline}`);
 
   const sortLoadOrder = (list: Mod[]) => {
     const first = list.filter((m) => m.loadFirst);
@@ -57,6 +58,7 @@ const generateMe3ProfileString = (mods: Mod[], savefile: string, startOnline: bo
   if (natives.length > 0) profile.natives = natives;
   if (packages.length > 0) profile.packages = packages;
 
+  debug('ME3 profile string generated');
   return JSON.stringify(profile, null, 2);
 };
 
@@ -79,16 +81,22 @@ export const writeMe3Profile = (mods: Mod[], savefile?: string, startOnline?: bo
 };
 
 const unsubMods = store.onDidChange('mods', (mods) => {
-  if (!mods) return;
+  debug('Mods changed, regenerating ME3 profile');
+  if (!mods) {
+    debug('Mods value is empty, skipping profile write');
+    return;
+  }
   writeMe3Profile(mods);
 });
 
 const unsubProfiles = store.onDidChange('profiles', () => {
+  debug('Profiles changed, regenerating ME3 profile');
   const mods = store.get('mods');
   writeMe3Profile(mods);
 });
 
 app.on('before-quit', () => {
+  debug('App quitting, unsubscribing ME3 profile watchers');
   unsubMods();
   unsubProfiles();
 });

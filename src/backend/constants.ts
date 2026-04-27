@@ -16,7 +16,7 @@ export const MOD_SUBFOLDERS = [
   'sfx',
 ];
 
-export const ME3_PROFILE_FILENAME = 'eldenring-mods.me3';
+export const ME3_PROFILE_FILENAME = 'eldenring-mods.json';
 
 export const ME3_DEFAULT_WIN_PATH = join(
   process.env.LOCALAPPDATA || '',
