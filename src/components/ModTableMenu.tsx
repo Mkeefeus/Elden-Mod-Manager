@@ -4,7 +4,6 @@ import { Button, Center, Menu, Table } from '@mantine/core';
 import { Mod } from 'types';
 import { useModal } from '../providers/ModalProvider';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
-import LoadDepsModal from './LoadDepsModal';
 import { useMods } from '../providers/ModsProvider';
 
 type ModTableMenuProps = {
@@ -13,7 +12,7 @@ type ModTableMenuProps = {
 
 const ModTableMenu = ({ mod }: ModTableMenuProps) => {
   const { loadMods } = useMods();
-  const { showModal, hideModal } = useModal();
+  const { showModal } = useModal();
 
   const handleDelete = () => {
     showModal({
@@ -24,13 +23,6 @@ const ModTableMenu = ({ mod }: ModTableMenuProps) => {
 
   const handleOpenExe = () => {
     window.electronAPI.launchModExe(mod);
-  };
-
-  const handleEditDeps = () => {
-    showModal({
-      title: 'Edit load dependencies',
-      content: <LoadDepsModal mod={mod} hideModal={hideModal} />,
-    });
   };
 
   return (
@@ -44,7 +36,6 @@ const ModTableMenu = ({ mod }: ModTableMenuProps) => {
           </Center>
         </Menu.Target>
         <Menu.Dropdown>
-          <Menu.Item onClick={handleEditDeps}>Edit load dependencies</Menu.Item>
           {mod.exe && (
             <Menu.Item color="blue" onClick={() => handleOpenExe()}>
               Open Exe

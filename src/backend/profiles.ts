@@ -3,16 +3,13 @@ import { ModProfile } from 'types';
 import { logger } from '../utils/mainLogger';
 import { errToString } from '../utils/utilities';
 import {
+  getActiveProfile,
   getActiveProfileId,
   getProfiles,
-  getSavefile,
-  getStartOnline,
   loadMods,
   saveProfiles,
   saveMods,
   setActiveProfileId,
-  setSavefile,
-  setStartOnline,
 } from './db/api';
 
 const { debug } = logger;
@@ -25,8 +22,10 @@ export const handleCreateProfile = (name: string): ModProfile => {
       name,
       createdAt: Date.now(),
       mods: loadMods(),
-      savefile: getSavefile(),
-      startOnline: getStartOnline(),
+      savefile: getActiveProfile()?.savefile ?? '',
+      startOnline: getActiveProfile()?.startOnline ?? false,
+      disableArxan: getActiveProfile()?.disableArxan ?? false,
+      noMemPatch: getActiveProfile()?.noMemPatch ?? false,
     };
     const profiles = getProfiles();
     profiles.push(profile);
@@ -62,8 +61,6 @@ export const handleApplyProfile = (uuid: string) => {
     });
 
     saveMods(updatedMods);
-    setSavefile(profile.savefile);
-    setStartOnline(profile.startOnline);
     setActiveProfileId(uuid);
     debug(`Profile applied: ${uuid}`);
   } catch (err) {
@@ -82,8 +79,10 @@ export const handleUpdateProfile = (uuid: string) => {
     profiles[index] = {
       ...profiles[index],
       mods: loadMods(),
-      savefile: getSavefile(),
-      startOnline: getStartOnline(),
+      savefile: getActiveProfile()?.savefile ?? '',
+      startOnline: getActiveProfile()?.startOnline ?? false,
+      disableArxan: getActiveProfile()?.disableArxan ?? false,
+      noMemPatch: getActiveProfile()?.noMemPatch ?? false,
     };
     saveProfiles(profiles);
     debug(`Profile updated: ${uuid}`);

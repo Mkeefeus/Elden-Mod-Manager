@@ -33,6 +33,11 @@ const AddMod = ({ close, fromZip, namesInUse, loadMods }: AddModProps) => {
       exePath: '',
       dllPath: '',
       loadEarly: false,
+      optional: false,
+      finalizer: '',
+      initializerType: 'none',
+      initializerDelayMs: 0,
+      initializerFunction: '',
     },
 
     validate: {
@@ -59,6 +64,21 @@ const AddMod = ({ close, fromZip, namesInUse, loadMods }: AddModProps) => {
     setShowSubmitLoader(false);
     form.reset();
     close();
+  };
+
+  const scanPathAndAutoFill = async (path: string) => {
+    const [dll, exe] = await Promise.all([
+      window.electronAPI.scanDir(path, 'dll'),
+      window.electronAPI.scanDir(path, 'exe'),
+    ]);
+    if (dll && !exe) {
+      form.setFieldValue('isDll', true);
+      form.setFieldValue('dllPath', dll);
+    }
+    if (exe) {
+      form.setFieldValue('hasExe', true);
+      form.setFieldValue('exePath', exe);
+    }
   };
 
   const extractZip = async () => {
@@ -101,6 +121,7 @@ const AddMod = ({ close, fromZip, namesInUse, loadMods }: AddModProps) => {
                 tempPath = await extractZip();
                 if (!tempPath) return;
                 form.setFieldValue('path', tempPath);
+                await scanPathAndAutoFill(tempPath);
               } else {
                 // step 2, select folder to copy
                 const pathToCopy = await window.electronAPI.browse(
@@ -116,6 +137,7 @@ const AddMod = ({ close, fromZip, namesInUse, loadMods }: AddModProps) => {
                   return;
                 }
                 form.setFieldValue('path', pathToCopy);
+                await scanPathAndAutoFill(pathToCopy);
               }
             })();
           }}

@@ -10,10 +10,11 @@ export type DBSchema = {
   modFolderPath: string;
   firstRun: boolean;
   promptedModsFolder: boolean;
-  savefile: string;
-  startOnline: boolean;
   profiles: ModProfile[];
   activeProfileId: string;
+  noBootBoost: boolean;
+  showLogos: boolean;
+  skipSteamInit: boolean;
 };
 
 const schema: Schema<DBSchema> = {
@@ -27,9 +28,33 @@ const schema: Schema<DBSchema> = {
         name: { type: 'string' },
         installDate: { type: 'number' },
         dllFile: { type: 'string' },
+        exe: { type: 'string' },
         loadEarly: { type: 'boolean' },
-        loadBefore: { type: 'array', items: { type: 'string' } },
-        loadAfter: { type: 'array', items: { type: 'string' } },
+        loadFirst: { type: 'boolean' },
+        loadLast: { type: 'boolean' },
+        optional: { type: 'boolean' },
+        finalizer: { type: 'string' },
+        initializer: { type: 'object' },
+        loadBefore: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              id: { type: 'string' },
+              optional: { type: 'boolean' },
+            },
+          },
+        },
+        loadAfter: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              id: { type: 'string' },
+              optional: { type: 'boolean' },
+            },
+          },
+        },
       },
       required: ['uuid', 'enabled', 'name', 'installDate'],
     },
@@ -55,14 +80,6 @@ const schema: Schema<DBSchema> = {
     type: 'boolean',
     default: false,
   },
-  savefile: {
-    type: 'string',
-    default: '',
-  },
-  startOnline: {
-    type: 'boolean',
-    default: false,
-  },
   profiles: {
     type: 'array',
     items: {
@@ -74,14 +91,28 @@ const schema: Schema<DBSchema> = {
         mods: { type: 'array' },
         savefile: { type: 'string' },
         startOnline: { type: 'boolean' },
+        disableArxan: { type: 'boolean' },
+        noMemPatch: { type: 'boolean' },
       },
-      required: ['uuid', 'name', 'createdAt', 'mods', 'savefile', 'startOnline'],
+      required: ['uuid', 'name', 'createdAt', 'mods', 'savefile', 'startOnline', 'disableArxan', 'noMemPatch'],
     },
     default: [],
   },
   activeProfileId: {
     type: 'string',
     default: '',
+  },
+  noBootBoost: {
+    type: 'boolean',
+    default: false,
+  },
+  showLogos: {
+    type: 'boolean',
+    default: false,
+  },
+  skipSteamInit: {
+    type: 'boolean',
+    default: false,
   },
 };
 

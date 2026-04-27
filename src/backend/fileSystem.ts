@@ -54,7 +54,7 @@ export const extractModZip = async (zipPath: string) => {
   }
   try {
     debug(`Extracting zip to temp directory: ${tempPath} from ${zipPath}`);
-    await decompress(zipPath, tempPath);
+    await decompress(zipPath, tempPath, { filter: (file) => !file.path.endsWith('/') });
   } catch (err) {
     const msg = `An error occured while extracting zip: ${errToString(err)}`;
     error(msg);
@@ -89,4 +89,23 @@ export const extractModZip = async (zipPath: string) => {
   tempPath = join(tempPath, validPath);
 
   return tempPath;
+};
+
+export const scanDirForFile = (dirPath: string, extension: string): string | undefined => {
+  debug(`Scanning directory for .${extension} files: ${dirPath}`);
+  try {
+    const entries = readdirSync(dirPath, { withFileTypes: true });
+    const matches = entries
+      .filter((e) => e.isFile() && e.name.toLowerCase().endsWith(`.${extension.toLowerCase()}`))
+      .map((e) => e.name);
+    if (matches.length === 1) {
+      debug(`Found exactly one .${extension} file: ${matches[0]}`);
+      return matches[0];
+    }
+    debug(`Found ${matches.length} .${extension} files — skipping auto-fill`);
+    return undefined;
+  } catch (err) {
+    error(`Failed to scan directory ${dirPath}: ${errToString(err)}`);
+    return undefined;
+  }
 };

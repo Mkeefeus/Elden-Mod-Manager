@@ -11,6 +11,15 @@ export interface LatestRelease {
   url: string;
 }
 
+export type NativeInitializerCondition =
+  | { delay: { ms: number } }
+  | { function: string };
+
+export type Dependent = {
+  id: string;
+  optional: boolean;
+};
+
 export type Mod = {
   uuid: string;
   enabled: boolean;
@@ -19,8 +28,13 @@ export type Mod = {
   dllFile?: string;
   exe?: string;
   loadEarly?: boolean;
-  loadBefore?: string[];
-  loadAfter?: string[];
+  loadFirst?: boolean;
+  loadLast?: boolean;
+  loadBefore?: Dependent[];
+  loadAfter?: Dependent[];
+  optional?: boolean;
+  finalizer?: string;
+  initializer?: NativeInitializerCondition;
 };
 
 export type AddModFormValues = {
@@ -32,6 +46,11 @@ export type AddModFormValues = {
   exePath: string;
   dllPath: string;
   loadEarly: boolean;
+  optional: boolean;
+  finalizer: string;
+  initializerType: 'none' | 'delay' | 'function';
+  initializerDelayMs: number;
+  initializerFunction: string;
 };
 
 export type NewsComponentProps = {
@@ -53,6 +72,8 @@ export type ModProfile = {
   mods: Mod[];
   savefile: string;
   startOnline: boolean;
+  disableArxan: boolean;
+  noMemPatch: boolean;
 };
 
 export type Dependency = {

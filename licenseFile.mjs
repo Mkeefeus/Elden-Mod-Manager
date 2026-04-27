@@ -6,7 +6,7 @@ const licenses = {
   me3: {
     licenses: 'Apache-2.0',
     repository: 'https://github.com/garyttierney/me3',
-    licenseURL: 'https://raw.githubusercontent.com/garyttierney/me3/refs/heads/main/LICENSE-APACHE',
+    licenseUrl: 'https://github.com/garyttierney/me3/blob/main/LICENSE-APACHE',
     parents: 'elden-mod-manager',
   },
   ...allLicenses,

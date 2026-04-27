@@ -7,6 +7,7 @@ import { useModal } from '../providers/ModalProvider';
 import PromptModsFolderModal from '../components/PromptModsFolderModal';
 import { useMods } from '../providers/ModsProvider';
 import ProfileSelector from '../components/ProfileSelector';
+import LoadOrderModal from '../components/LoadOrderModal';
 
 const Mods = () => {
   const location = useLocation();
@@ -14,19 +15,20 @@ const Mods = () => {
   const { mods, loadMods } = useMods();
   const [startOnline, setStartOnlineState] = useState<boolean>(false);
   const [savefile, setSavefileState] = useState<string>('');
+  const [useCustomSavefile, setUseCustomSavefile] = useState<boolean>(false);
+  const [disableArxan, setDisableArxanState] = useState<boolean>(false);
+  const [noMemPatch, setNoMemPatchState] = useState<boolean>(false);
   const [advancedOpen, setAdvancedOpen] = useState<boolean>(false);
 
-  const refreshStartOnline = () => {
-    void window.electronAPI.getStartOnline().then(setStartOnlineState);
-  };
-
-  const refreshSavefile = () => {
-    void window.electronAPI.getSavefile().then(setSavefileState);
-  };
-
   const refreshProfileSettings = () => {
-    refreshStartOnline();
-    refreshSavefile();
+    void window.electronAPI.getActiveProfile().then((profile) => {
+      if (!profile) return;
+      setStartOnlineState(profile.startOnline);
+      setSavefileState(profile.savefile);
+      setUseCustomSavefile(!!profile.savefile);
+      setDisableArxanState(profile.disableArxan);
+      setNoMemPatchState(profile.noMemPatch);
+    });
   };
 
   useEffect(() => {
@@ -35,16 +37,41 @@ const Mods = () => {
 
   const handleStartOnlineChange = (value: boolean) => {
     setStartOnlineState(value);
-    window.electronAPI.setStartOnline(value);
+    window.electronAPI.updateActiveProfileSettings({ startOnline: value });
+  };
+
+  const handleCustomSavefileToggle = (enabled: boolean) => {
+    setUseCustomSavefile(enabled);
+    if (!enabled) {
+      setSavefileState('');
+      window.electronAPI.updateActiveProfileSettings({ savefile: '' });
+    }
   };
 
   const handleSavefileChange = (value: string) => {
     setSavefileState(value);
-    window.electronAPI.setSavefile(value);
+    window.electronAPI.updateActiveProfileSettings({ savefile: value });
+  };
+
+  const handleDisableArxanChange = (value: boolean) => {
+    setDisableArxanState(value);
+    window.electronAPI.updateActiveProfileSettings({ disableArxan: value });
+  };
+
+  const handleNoMemPatchChange = (value: boolean) => {
+    setNoMemPatchState(value);
+    window.electronAPI.updateActiveProfileSettings({ noMemPatch: value });
   };
 
   const handleModalClose = () => {
     hideModal();
+  };
+
+  const showLoadOrderModal = () => {
+    showModal({
+      title: 'Load Order',
+      content: <LoadOrderModal hideModal={hideModal} />,
+    });
   };
 
   const showAddModModal = (fromZip: boolean) => {
@@ -102,14 +129,12 @@ const Mods = () => {
             <Button variant="outline" onClick={() => showAddModModal(false)}>
               Add Mod from Folder
             </Button>
+            <Button variant="outline" onClick={showLoadOrderModal}>
+              Load Order
+            </Button>
           </Group>
           <Group gap="sm">
             <ProfileSelector onApply={refreshProfileSettings} />
-            <Switch
-              label="Start Online"
-              checked={startOnline}
-              onChange={(e) => handleStartOnlineChange(e.currentTarget.checked)}
-            />
           </Group>
         </Group>
 
@@ -125,20 +150,45 @@ const Mods = () => {
             size="xs"
             onClick={() => setAdvancedOpen((o) => !o)}
           >
-            {advancedOpen ? '▲ Hide Advanced' : '▼ Advanced'}
+            {advancedOpen ? '▲ Hide Advanced' : '▼ Show Advanced'}
           </Button>
         </Group>
 
         <Collapse expanded={advancedOpen}>
           <Stack gap="xs" pt="xs">
             <Text size="sm" fw={500} c="dimmed">Advanced Settings</Text>
-            <TextInput
-              label="Custom Save File (optional)"
-              description="Override the default save file name, e.g. MyModdedSave.sl2"
-              placeholder="Leave blank to use the default save"
-              value={savefile}
-              onChange={(e) => handleSavefileChange(e.currentTarget.value)}
-              style={{ maxWidth: 400 }}
+            <Switch
+              label="Custom Save File Name"
+              description="Override the default save file name (default: off)"
+              checked={useCustomSavefile}
+              onChange={(e) => handleCustomSavefileToggle(e.currentTarget.checked)}
+            />
+            {useCustomSavefile && (
+              <TextInput
+                description="Override the default save file name, e.g. MyModdedSave.sl2"
+                placeholder="Leave blank to use the default save"
+                value={savefile}
+                onChange={(e) => handleSavefileChange(e.currentTarget.value)}
+                style={{ maxWidth: 400 }}
+              />
+            )}
+            <Switch
+              label="Start Online"
+              description="Launch the game in online mode (default: off)"
+              checked={startOnline}
+              onChange={(e) => handleStartOnlineChange(e.currentTarget.checked)}
+            />
+            <Switch
+              label="Disable Arxan"
+              description="Neutralize Arxan/GuardIT code protection (default: off)"
+              checked={disableArxan}
+              onChange={(e) => handleDisableArxanChange(e.currentTarget.checked)}
+            />
+            <Switch
+              label="Skip Memory Patch"
+              description="Do not increase memory limits — may affect game stability (default: off)"
+              checked={noMemPatch}
+              onChange={(e) => handleNoMemPatchChange(e.currentTarget.checked)}
             />
           </Stack>
         </Collapse>

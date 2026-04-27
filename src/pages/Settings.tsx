@@ -1,4 +1,4 @@
-import { TextInput, Button, Stack, Group } from '@mantine/core';
+import { TextInput, Button, Stack, Group, Switch, Divider, Text } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import { sendLog } from '../utils/rendererLogger';
 
@@ -8,12 +8,19 @@ const BUTTON_STYLE = { flex: 1 };
 const Settings = () => {
   const [me3Path, setMe3Path] = useState<string>('');
   const [modsPath, setModsPath] = useState<string>('');
+  const [noBootBoost, setNoBootBoost] = useState<boolean>(false);
+  const [showLogos, setShowLogos] = useState<boolean>(false);
+  const [skipSteamInit, setSkipSteamInit] = useState<boolean>(false);
 
   const getPaths = async () => {
     const me3Path = await window.electronAPI.getME3Path();
     const modsPath = await window.electronAPI.getModsPath();
     setMe3Path(me3Path);
     setModsPath(modsPath);
+    const launcher = await window.electronAPI.getLauncherSettings();
+    setNoBootBoost(launcher.noBootBoost);
+    setShowLogos(launcher.showLogos);
+    setSkipSteamInit(launcher.skipSteamInit);
   };
 
   useEffect(() => {
@@ -71,6 +78,35 @@ const Settings = () => {
           Browse
         </Button>
       </Group>
+      <Divider mt="sm" />
+      <Text size="sm" fw={500} c="dimmed">Launcher Settings</Text>
+      <Switch
+        label="Disable Boot Boost"
+        description="Don't cache decrypted BHD files — increases startup time (default: off)"
+        checked={noBootBoost}
+        onChange={(e) => {
+          setNoBootBoost(e.currentTarget.checked);
+          window.electronAPI.updateLauncherSettings({ noBootBoost: e.currentTarget.checked });
+        }}
+      />
+      <Switch
+        label="Show Intro Logos"
+        description="Show game intro logos on launch (default: off)"
+        checked={showLogos}
+        onChange={(e) => {
+          setShowLogos(e.currentTarget.checked);
+          window.electronAPI.updateLauncherSettings({ showLogos: e.currentTarget.checked });
+        }}
+      />
+      <Switch
+        label="Skip Steam Init"
+        description="Skip initializing Steam within the launcher (default: off)"
+        checked={skipSteamInit}
+        onChange={(e) => {
+          setSkipSteamInit(e.currentTarget.checked);
+          window.electronAPI.updateLauncherSettings({ skipSteamInit: e.currentTarget.checked });
+        }}
+      />
     </Stack>
   );
 };

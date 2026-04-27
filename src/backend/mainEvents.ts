@@ -5,20 +5,20 @@ import {
   getModEnginePath,
   getModsFolder,
   getPromptedModsFolder,
-  getSavefile,
-  getStartOnline,
+  getActiveProfile,
+  updateActiveProfile,
   isFirstRun,
   loadMods,
   saveMods,
   setModEnginePath,
   clearPromptedModsFolder,
   setModsFolder,
-  setSavefile,
-  setStartOnline,
   getProfiles,
   getActiveProfileId,
   saveProfiles,
   setActiveProfileId,
+  getLauncherSettings,
+  setLauncherSettings,
 } from './db/api';
 import { AddModFormValues, BrowseType, Mod, LogEntry } from 'types';
 import { existsSync } from 'fs';
@@ -27,7 +27,7 @@ import { CreateModPathFromName, errToString } from '../utils/utilities';
 import { handleLog, logger } from '../utils/mainLogger';
 import { launchEldenRingModded, promptME3Install, updateME3Path, detectME3 } from './me3';
 import { launchEldenRing } from './steam';
-import { browse, extractModZip } from './fileSystem';
+import { browse, extractModZip, scanDirForFile } from './fileSystem';
 import { handleAddMod, handleDeleteMod, updateModsFolder } from './mods';
 import {
   handleCreateProfile,
@@ -57,6 +57,10 @@ app
 
     ipcMain.handle('extract-zip', async (_, zipPath: string) => {
       return await extractModZip(zipPath);
+    });
+
+    ipcMain.handle('scan-dir', (_, dirPath: string, extension: string) => {
+      return scanDirForFile(dirPath, extension);
     });
 
     ipcMain.handle('add-mod', (_, formData: AddModFormValues) => {
@@ -118,20 +122,20 @@ app
       updateModsFolder(path);
     });
 
-    ipcMain.handle('get-savefile', () => {
-      return getSavefile();
+    ipcMain.handle('get-active-profile', () => {
+      return getActiveProfile();
     });
 
-    ipcMain.on('set-savefile', (_, value: string) => {
-      setSavefile(value);
+    ipcMain.on('update-active-profile-settings', (_, fields: { savefile?: string; startOnline?: boolean; disableArxan?: boolean; noMemPatch?: boolean }) => {
+      updateActiveProfile(fields);
     });
 
-    ipcMain.handle('get-start-online', () => {
-      return getStartOnline();
+    ipcMain.handle('get-launcher-settings', () => {
+      return getLauncherSettings();
     });
 
-    ipcMain.on('set-start-online', (_, value: boolean) => {
-      setStartOnline(value);
+    ipcMain.on('update-launcher-settings', (_, fields: { noBootBoost?: boolean; showLogos?: boolean; skipSteamInit?: boolean }) => {
+      setLauncherSettings(fields);
     });
 
     ipcMain.handle('detect-me3', () => {
@@ -195,6 +199,8 @@ app
         mods: [],
         savefile: '',
         startOnline: false,
+        disableArxan: false,
+        noMemPatch: false,
       };
       saveProfiles([defaultProfile]);
       setActiveProfileId(defaultProfile.uuid);

@@ -2,7 +2,7 @@ import { execSync, spawn } from 'child_process';
 import { existsSync } from 'fs';
 import { join } from 'path';
 import { logger } from '../utils/mainLogger';
-import { getModEnginePath, getProfilesFolder, setModEnginePath } from './db/api';
+import { getModEnginePath, getProfilesFolder, setModEnginePath, getActiveProfile, getLauncherSettings } from './db/api';
 import { errToString } from '../utils/utilities';
 import { getMainWindow } from '../main';
 import { ME3_PROFILE_FILENAME, ME3_DEFAULT_WIN_PATH, ME3_DEFAULT_LINUX_PATH } from './constants';
@@ -76,8 +76,16 @@ export const launchEldenRingModded = () => {
   try {
     const me3Exe = getME3Executable();
     const profilePath = join(getProfilesFolder(), ME3_PROFILE_FILENAME);
-    debug(`Running: ${me3Exe} launch -p "${profilePath}"`);
-    const proc = spawn(me3Exe, ['launch', '-p', profilePath], {
+    const args = ['launch', '-p', profilePath];
+    const activeProfile = getActiveProfile();
+    if (activeProfile?.disableArxan) args.push('--disable-arxan');
+    if (activeProfile?.noMemPatch) args.push('--no-mem-patch');
+    const launcherSettings = getLauncherSettings();
+    if (launcherSettings.noBootBoost) args.push('--no-boot-boost');
+    if (launcherSettings.showLogos) args.push('--show-logos');
+    if (launcherSettings.skipSteamInit) args.push('--skip-steam-init');
+    debug(`Running: ${me3Exe} ${args.join(' ')}`);
+    const proc = spawn(me3Exe, args, {
       detached: true,
       stdio: 'ignore',
     });

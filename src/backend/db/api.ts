@@ -1,18 +1,31 @@
 import { errToString } from '../../utils/utilities';
 import { logger } from '../../utils/mainLogger';
 import store from './init';
-import { Mod, ModProfile } from 'types';
+import { Dependent, Mod, ModProfile } from 'types';
 import { join } from 'path';
 import { app } from 'electron';
 
 const { debug, error } = logger;
 
+const migrateDeps = (deps: unknown[] | undefined): Dependent[] | undefined => {
+  if (!deps || deps.length === 0) return undefined;
+  return deps.map((d) => {
+    if (typeof d === 'string') return { id: d, optional: false };
+    return d as Dependent;
+  });
+};
+
 export const loadMods = () => {
   debug('Loading mods from DB');
   try {
     const mods = store.get('mods');
+    const migrated = mods.map((mod) => ({
+      ...mod,
+      loadBefore: migrateDeps(mod.loadBefore as unknown as unknown[]),
+      loadAfter: migrateDeps(mod.loadAfter as unknown as unknown[]),
+    }));
     debug(`Mods loaded from DB`);
-    return mods;
+    return migrated;
   } catch (err) {
     const msg = `An error occured while loading mods: ${errToString(err)}`;
     error(msg);
@@ -177,58 +190,6 @@ export const clearPromptedModsFolder = () => {
   }
 };
 
-export const getSavefile = () => {
-  debug('Getting savefile');
-  try {
-    const savefile = store.get('savefile');
-    debug(`Savefile: ${savefile}`);
-    return savefile;
-  } catch (err) {
-    const msg = `An error occured while getting savefile: ${errToString(err)}`;
-    error(msg);
-    throw new Error(msg, { cause: err });
-  }
-};
-
-export const setSavefile = (savefile: string) => {
-  debug(`Setting savefile: ${savefile}`);
-  try {
-    store.set('savefile', savefile);
-    debug('Savefile set');
-    return true;
-  } catch (err) {
-    const msg = `An error occured while setting savefile: ${errToString(err)}`;
-    error(msg);
-    throw new Error(msg, { cause: err });
-  }
-};
-
-export const getStartOnline = () => {
-  debug('Getting startOnline');
-  try {
-    const startOnline = store.get('startOnline');
-    debug(`StartOnline: ${startOnline}`);
-    return startOnline;
-  } catch (err) {
-    const msg = `An error occured while getting startOnline: ${errToString(err)}`;
-    error(msg);
-    throw new Error(msg, { cause: err });
-  }
-};
-
-export const setStartOnline = (startOnline: boolean) => {
-  debug(`Setting startOnline: ${startOnline}`);
-  try {
-    store.set('startOnline', startOnline);
-    debug('StartOnline set');
-    return true;
-  } catch (err) {
-    const msg = `An error occured while setting startOnline: ${errToString(err)}`;
-    error(msg);
-    throw new Error(msg, { cause: err });
-  }
-};
-
 export const getProfiles = (): ModProfile[] => {
   debug('Getting profiles');
   try {
@@ -277,4 +238,40 @@ export const setActiveProfileId = (id: string) => {
 
 export const getProfilesFolder = () => {
   return join(app.getPath('userData'), 'profiles');
+};
+
+export const getLauncherSettings = () => ({
+  noBootBoost: store.get('noBootBoost'),
+  showLogos: store.get('showLogos'),
+  skipSteamInit: store.get('skipSteamInit'),
+});
+
+export const setLauncherSettings = (fields: { noBootBoost?: boolean; showLogos?: boolean; skipSteamInit?: boolean }) => {
+  debug(`Updating launcher settings: ${JSON.stringify(fields)}`);
+  if (fields.noBootBoost !== undefined) store.set('noBootBoost', fields.noBootBoost);
+  if (fields.showLogos !== undefined) store.set('showLogos', fields.showLogos);
+  if (fields.skipSteamInit !== undefined) store.set('skipSteamInit', fields.skipSteamInit);
+};
+
+export const getActiveProfile = (): ModProfile | undefined => {
+  const profiles = getProfiles();
+  const activeId = getActiveProfileId();
+  return profiles.find((p) => p.uuid === activeId);
+};
+
+export const updateActiveProfile = (fields: Partial<Pick<ModProfile, 'savefile' | 'startOnline' | 'disableArxan' | 'noMemPatch'>>) => {
+  debug(`Updating active profile fields: ${JSON.stringify(fields)}`);
+  try {
+    const profiles = getProfiles();
+    const activeId = getActiveProfileId();
+    const index = profiles.findIndex((p) => p.uuid === activeId);
+    if (index === -1) throw new Error('No active profile found');
+    profiles[index] = { ...profiles[index], ...fields };
+    store.set('profiles', profiles);
+    return true;
+  } catch (err) {
+    const msg = `An error occured while updating active profile: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg, { cause: err });
+  }
 };

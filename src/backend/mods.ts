@@ -2,7 +2,7 @@ import { randomUUID } from 'crypto';
 import { readdirSync, existsSync, cpSync, rmSync, renameSync } from 'fs';
 import { extname, join } from 'path';
 import { errToString, CreateModPathFromName } from '../utils/utilities';
-import { AddModFormValues, Mod } from 'types';
+import { AddModFormValues, Mod, NativeInitializerCondition } from 'types';
 import { logger } from '../utils/mainLogger';
 import { getModsFolder, loadMods, saveMods, setModsFolder } from './db/api';
 import { MOD_SUBFOLDERS } from './constants';
@@ -64,14 +64,29 @@ const validateMod = (path: string, isDll: boolean, hasExe: boolean) => {
 export const handleAddMod = (formData: AddModFormValues) => {
   const mods = loadMods();
   const uuid = genUUID();
+  const dllFileName = formData.dllPath ? formData.dllPath.split(/[/\\]/).pop() : undefined;
+  const exeFileName = formData.exePath ? formData.exePath.split(/[/\\]/).pop() : undefined;
+
+  let initializer: NativeInitializerCondition | undefined;
+  if (dllFileName) {
+    if (formData.initializerType === 'delay') {
+      initializer = { delay: { ms: formData.initializerDelayMs } };
+    } else if (formData.initializerType === 'function' && formData.initializerFunction) {
+      initializer = { function: formData.initializerFunction };
+    }
+  }
+
   const newMod: Mod = {
     uuid: uuid,
     enabled: false,
     name: formData.modName,
     installDate: Date.now(),
-    dllFile: formData.dllPath !== '' ? formData.dllPath : undefined,
-    exe: formData.exePath !== '' ? formData.exePath : undefined,
+    dllFile: dllFileName || undefined,
+    exe: exeFileName || undefined,
     loadEarly: formData.loadEarly ? true : undefined,
+    optional: dllFileName && formData.optional ? true : undefined,
+    finalizer: dllFileName && formData.finalizer ? formData.finalizer : undefined,
+    initializer,
   };
   debug(`Adding new mod: ${JSON.stringify(newMod)}`);
 
@@ -142,7 +157,7 @@ export const handleDeleteMod = (mod: Mod) => {
   try {
     if (!existsSync(installPath)) {
       foundPath = false;
-      warning('Mod path not found, removing from DB only', { hideDisplay: true });
+      warning('Mod path not found, removing from DB only');
     }
   } catch (err) {
     const msg = `An error occured while checking mod path: ${errToString(err)}`;

@@ -15,6 +15,7 @@ interface IElectronAPI {
   launchModExe: (mod: Mod) => void;
   log: (log: LogEntry) => void;
   extractZip: (zipPath: string) => Promise<string>;
+  scanDir: (dirPath: string, extension: string) => Promise<string | undefined>;
   setME3Path: (path: string) => void;
   getME3Path: () => Promise<string>;
   getModsPath: () => Promise<string>;
@@ -24,10 +25,10 @@ interface IElectronAPI {
   clearPromptedModsFolder: () => void;
   updateModsFolder: (path: string) => void;
   updateME3Path: (path: string) => void;
-  getSavefile: () => Promise<string>;
-  setSavefile: (value: string) => void;
-  getStartOnline: () => Promise<boolean>;
-  setStartOnline: (value: boolean) => void;
+  getActiveProfile: () => Promise<ModProfile>;
+  updateActiveProfileSettings: (fields: { savefile?: string; startOnline?: boolean; disableArxan?: boolean; noMemPatch?: boolean }) => void;
+  getLauncherSettings: () => Promise<{ noBootBoost: boolean; showLogos: boolean; skipSteamInit: boolean }>;
+  updateLauncherSettings: (fields: { noBootBoost?: boolean; showLogos?: boolean; skipSteamInit?: boolean }) => void;
   // Profiles
   loadProfiles: () => Promise<ModProfile[]>;
   getActiveProfileId: () => Promise<string>;
@@ -62,6 +63,7 @@ const electronAPI: IElectronAPI = {
   launchModExe: (...args) => ipcRenderer.send('launch-mod-exe', ...args),
   log: (...args) => ipcRenderer.send('log', ...args),
   extractZip: (...args) => ipcRenderer.invoke('extract-zip', ...args),
+  scanDir: (...args) => ipcRenderer.invoke('scan-dir', ...args),
   setME3Path: (path) => ipcRenderer.send('set-me3-path', path),
   getME3Path: () => ipcRenderer.invoke('get-me3-path'),
   getModsPath: () => ipcRenderer.invoke('get-mods-path'),
@@ -71,10 +73,10 @@ const electronAPI: IElectronAPI = {
   clearPromptedModsFolder: () => ipcRenderer.send('clear-prompted-mods-folder'),
   updateModsFolder: (path) => ipcRenderer.send('update-mods-folder', path),
   updateME3Path: (path) => ipcRenderer.send('update-me3-path', path),
-  getSavefile: () => ipcRenderer.invoke('get-savefile'),
-  setSavefile: (value) => ipcRenderer.send('set-savefile', value),
-  getStartOnline: () => ipcRenderer.invoke('get-start-online'),
-  setStartOnline: (value) => ipcRenderer.send('set-start-online', value),
+  getActiveProfile: () => ipcRenderer.invoke('get-active-profile'),
+  updateActiveProfileSettings: (fields) => ipcRenderer.send('update-active-profile-settings', fields),
+  getLauncherSettings: () => ipcRenderer.invoke('get-launcher-settings'),
+  updateLauncherSettings: (fields) => ipcRenderer.send('update-launcher-settings', fields),
   // Profiles
   loadProfiles: () => ipcRenderer.invoke('load-profiles'),
   getActiveProfileId: () => ipcRenderer.invoke('get-active-profile-id'),
