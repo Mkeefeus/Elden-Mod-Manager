@@ -3,8 +3,8 @@ import { CreateModPathFromName, errToString } from '../utils/utilities';
 import store from './db/init';
 import { logger } from '../utils/mainLogger';
 import { writeFileSync, mkdirSync } from 'fs';
-import { join } from 'path';
-import { getProfilesFolder, getActiveProfile } from './db/api';
+import path from 'path';
+import { getProfilesFolder, getActiveProfile, getModsFolder } from './db/api';
 import { app } from 'electron';
 import { ME3_PROFILE_FILENAME } from './constants';
 
@@ -22,9 +22,9 @@ const generateMe3ProfileString = (mods: Mod[], savefile: string, startOnline: bo
   };
 
   const natives = sortLoadOrder(nativeMods).map((mod) => {
-    const modPath = CreateModPathFromName(mod.name);
+    const modPath = path.join(getModsFolder(), CreateModPathFromName(mod.name), mod.dllFile!);
     const entry: Record<string, unknown> = {
-      path: `${modPath}/${mod.dllFile}`,
+      path: modPath,
       enabled: mod.enabled,
     };
     if (mod.loadEarly) entry.load_early = true;
@@ -37,7 +37,7 @@ const generateMe3ProfileString = (mods: Mod[], savefile: string, startOnline: bo
   });
 
   const packages = sortLoadOrder(packageMods).map((mod) => {
-    const modPath = CreateModPathFromName(mod.name);
+    const modPath = path.join(getModsFolder(), CreateModPathFromName(mod.name));
     const entry: Record<string, unknown> = {
       id: mod.uuid,
       path: `${modPath}/`,
@@ -66,7 +66,7 @@ export const writeMe3Profile = (mods: Mod[], savefile?: string, startOnline?: bo
     const sf = savefile !== undefined ? savefile : (activeProfile?.savefile ?? '');
     const so = startOnline !== undefined ? startOnline : (activeProfile?.startOnline ?? false);
     const profileString = generateMe3ProfileString(mods, sf, so);
-    const profilePath = join(getProfilesFolder(), ME3_PROFILE_FILENAME);
+    const profilePath = path.join(getProfilesFolder(), ME3_PROFILE_FILENAME);
     debug(`Writing ME3 profile to: ${profilePath}`);
     mkdirSync(getProfilesFolder(), { recursive: true });
     writeFileSync(profilePath, profileString);
