@@ -1,5 +1,5 @@
 import { OpenDialogOptions, app, dialog } from 'electron';
-import { existsSync, readdirSync } from 'fs';
+import { existsSync, readdirSync, readFileSync, writeFileSync } from 'fs';
 import { join, normalize, sep } from 'path';
 import { logger } from '../utils/mainLogger';
 import { errToString } from '../utils/utilities';
@@ -91,8 +91,7 @@ export const extractModZip = async (zipPath: string) => {
   return tempPath;
 };
 
-export const scanDirForFile = (dirPath: string, extension: string): string | undefined => {
-  debug(`Scanning directory for .${extension} files: ${dirPath}`);
+export const scanDirForFile = (dirPath: string, extension: string): string | undefined => {  debug(`Scanning directory for .${extension} files: ${dirPath}`);
   try {
     const entries = readdirSync(dirPath, { withFileTypes: true });
     const matches = entries
@@ -107,5 +106,41 @@ export const scanDirForFile = (dirPath: string, extension: string): string | und
   } catch (err) {
     error(`Failed to scan directory ${dirPath}: ${errToString(err)}`);
     return undefined;
+  }
+};
+
+export const listIniFiles = (dirPath: string): string[] => {
+  debug(`Listing INI files in: ${dirPath}`);
+  try {
+    if (!existsSync(dirPath)) return [];
+    const entries = readdirSync(dirPath, { withFileTypes: true });
+    return entries
+      .filter((e) => e.isFile() && e.name.toLowerCase().endsWith('.ini'))
+      .map((e) => e.name);
+  } catch (err) {
+    error(`Failed to list INI files in ${dirPath}: ${errToString(err)}`);
+    return [];
+  }
+};
+
+export const readIniFile = (filePath: string): string => {
+  debug(`Reading INI file: ${filePath}`);
+  try {
+    return readFileSync(filePath, 'utf-8');
+  } catch (err) {
+    const msg = `Failed to read INI file ${filePath}: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg, { cause: err });
+  }
+};
+
+export const writeIniFile = (filePath: string, content: string): void => {
+  debug(`Writing INI file: ${filePath}`);
+  try {
+    writeFileSync(filePath, content, 'utf-8');
+  } catch (err) {
+    const msg = `Failed to write INI file ${filePath}: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg, { cause: err });
   }
 };

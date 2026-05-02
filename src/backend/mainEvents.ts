@@ -22,12 +22,12 @@ import {
 } from './db/api';
 import { AddModFormValues, BrowseType, Mod, LogEntry } from 'types';
 import { existsSync } from 'fs';
-import { join } from 'path';
+import { join, normalize, sep } from 'path';
 import { CreateModPathFromName, errToString } from '../utils/utilities';
 import { handleLog, logger } from '../utils/mainLogger';
 import { launchEldenRingModded, promptME3Install, updateME3Path, detectME3 } from './me3';
 import { launchEldenRing } from './steam';
-import { browse, extractModZip, scanDirForFile } from './fileSystem';
+import { browse, extractModZip, scanDirForFile, listIniFiles, readIniFile, writeIniFile } from './fileSystem';
 import { handleAddMod, handleDeleteMod, updateModsFolder } from './mods';
 import {
   handleCreateProfile,
@@ -84,6 +84,11 @@ app
         error(msg);
         throw new Error(msg, { cause: err });
       }
+    });
+
+    ipcMain.on('open-mod-folder', (_, mod: Mod) => {
+      debug(`Opening mod folder: ${mod.name}`);
+      void shell.openPath(join(getModsFolder(), CreateModPathFromName(mod.name)));
     });
 
     ipcMain.on('log', (_, log: LogEntry) => {
@@ -150,6 +155,32 @@ app
     ipcMain.on('delete-profile', (_, uuid: string) => handleDeleteProfile(uuid));
     ipcMain.on('rename-profile', (_, uuid: string, name: string) => handleRenameProfile(uuid, name));
     ipcMain.handle('update-profile', (_, uuid: string) => handleUpdateProfile(uuid));
+
+    // INI file editor
+    ipcMain.handle('list-ini-files', (_, modName: string) => {
+      const modDir = join(getModsFolder(), CreateModPathFromName(modName));
+      return listIniFiles(modDir);
+    });
+
+    ipcMain.handle('read-ini-file', (_, modName: string, filename: string) => {
+      const modDir = join(getModsFolder(), CreateModPathFromName(modName));
+      const filePath = join(modDir, filename);
+      // Prevent path traversal
+      if (!filePath.startsWith(normalize(modDir) + sep)) {
+        throw new Error('Invalid filename');
+      }
+      return readIniFile(filePath);
+    });
+
+    ipcMain.handle('write-ini-file', (_, modName: string, filename: string, content: string) => {
+      const modDir = join(getModsFolder(), CreateModPathFromName(modName));
+      const filePath = join(modDir, filename);
+      // Prevent path traversal
+      if (!filePath.startsWith(normalize(modDir) + sep)) {
+        throw new Error('Invalid filename');
+      }
+      return writeIniFile(filePath, content);
+    });
 
     // Version check — returns { version, url } if a newer release exists, otherwise null
     ipcMain.handle('get-latest-version', async () => {

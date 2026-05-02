@@ -13,6 +13,7 @@ interface IElectronAPI {
   deleteMod: (mod: Mod) => Promise<void>;
   launchGame: (modded: boolean) => void;
   launchModExe: (mod: Mod) => void;
+  openModFolder: (mod: Mod) => void;
   log: (log: LogEntry) => void;
   extractZip: (zipPath: string) => Promise<string>;
   scanDir: (dirPath: string, extension: string) => Promise<string | undefined>;
@@ -38,6 +39,9 @@ interface IElectronAPI {
   renameProfile: (uuid: string, name: string) => void;
   updateProfile: (uuid: string) => Promise<void>;
   getLatestVersion: () => Promise<LatestRelease | null>;
+  listIniFiles: (modName: string) => Promise<string[]>;
+  readIniFile: (modName: string, filename: string) => Promise<string>;
+  writeIniFile: (modName: string, filename: string, content: string) => Promise<void>;
   // Main to renderer
   notify: (callback: (log: LogEntry) => void) => void;
   promptME3Install: (callback: () => void) => void;
@@ -61,6 +65,7 @@ const electronAPI: IElectronAPI = {
   launchGame: (...args) => ipcRenderer.send('launch-game', ...args),
   deleteMod: (...args) => ipcRenderer.invoke('delete-mod', ...args),
   launchModExe: (...args) => ipcRenderer.send('launch-mod-exe', ...args),
+  openModFolder: (mod) => ipcRenderer.send('open-mod-folder', mod),
   log: (...args) => ipcRenderer.send('log', ...args),
   extractZip: (...args) => ipcRenderer.invoke('extract-zip', ...args),
   scanDir: (...args) => ipcRenderer.invoke('scan-dir', ...args),
@@ -86,6 +91,9 @@ const electronAPI: IElectronAPI = {
   renameProfile: (uuid, name) => ipcRenderer.send('rename-profile', uuid, name),
   updateProfile: (uuid) => ipcRenderer.invoke('update-profile', uuid),
   getLatestVersion: () => ipcRenderer.invoke('get-latest-version'),
+  listIniFiles: (modName) => ipcRenderer.invoke('list-ini-files', modName),
+  readIniFile: (modName, filename) => ipcRenderer.invoke('read-ini-file', modName, filename),
+  writeIniFile: (modName, filename, content) => ipcRenderer.invoke('write-ini-file', modName, filename, content),
   // Main to renderer
   notify: (callback) => ipcRenderer.on('notify', (_event, value) => callback(value as LogEntry)),
   promptME3Install: (callback) => ipcRenderer.on('prompt-me3-install', callback),

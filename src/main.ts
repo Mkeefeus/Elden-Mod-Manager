@@ -24,8 +24,8 @@ Menu.setApplicationMenu(menu);
 const createWindow = () => {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    minWidth: 1152,
-    minHeight: 648,
+    minWidth: 1280,
+    minHeight: 720,
     webPreferences: { preload: path.join(__dirname, 'preload.js') },
     icon: 'public/256x256.png',
   });
