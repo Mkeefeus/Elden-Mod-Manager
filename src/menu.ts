@@ -23,17 +23,18 @@ const createAppDesktopShortcut = () => {
       ? path.join(process.resourcesPath, '256x256.png')
       : path.join(app.getAppPath(), 'public', '256x256.png');
 
-    const desktopEntry = [
-      '[Desktop Entry]',
-      'Version=1.0',
-      'Type=Application',
-      'Name=Elden Mod Manager',
-      'Comment=A mod manager for Elden Ring',
-      `Exec=${INSTALL_DIR}`,
-      `Icon=${iconPath}`,
-      'Terminal=false',
-      'Categories=Game;Utility;',
-    ].join('\n') + '\n';
+    const desktopEntry =
+      [
+        '[Desktop Entry]',
+        'Version=1.0',
+        'Type=Application',
+        'Name=Elden Mod Manager',
+        'Comment=A mod manager for Elden Ring',
+        `Exec=${INSTALL_DIR}`,
+        `Icon=${iconPath}`,
+        'Terminal=false',
+        'Categories=Game;Utility;',
+      ].join('\n') + '\n';
 
     const desktopFilePath = path.join(app.getPath('desktop'), 'elden-mod-manager.desktop');
     const appDir = path.join(app.getPath('home'), '.local', 'share', 'applications');
@@ -147,7 +148,6 @@ const handleCollectLogs = () => {
   void archive.finalize();
   debug('Logs collected');
 };
-
 
 export const template: MenuItemConstructorOptions[] = [
   {

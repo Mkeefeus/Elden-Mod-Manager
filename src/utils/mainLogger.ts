@@ -54,4 +54,3 @@ export const handleLog = (entry: LogEntry) => {
   else log.info(message);
   notifyGui(level, message, hideDisplay);
 };
-

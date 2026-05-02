@@ -131,17 +131,23 @@ app
       return getActiveProfile();
     });
 
-    ipcMain.on('update-active-profile-settings', (_, fields: { savefile?: string; startOnline?: boolean; disableArxan?: boolean; noMemPatch?: boolean }) => {
-      updateActiveProfile(fields);
-    });
+    ipcMain.on(
+      'update-active-profile-settings',
+      (_, fields: { savefile?: string; startOnline?: boolean; disableArxan?: boolean; noMemPatch?: boolean }) => {
+        updateActiveProfile(fields);
+      }
+    );
 
     ipcMain.handle('get-launcher-settings', () => {
       return getLauncherSettings();
     });
 
-    ipcMain.on('update-launcher-settings', (_, fields: { noBootBoost?: boolean; showLogos?: boolean; skipSteamInit?: boolean }) => {
-      setLauncherSettings(fields);
-    });
+    ipcMain.on(
+      'update-launcher-settings',
+      (_, fields: { noBootBoost?: boolean; showLogos?: boolean; skipSteamInit?: boolean }) => {
+        setLauncherSettings(fields);
+      }
+    );
 
     ipcMain.handle('detect-me3', () => {
       return detectME3();
@@ -191,10 +197,14 @@ app
         const data = (await res.json()) as { tag_name: string; html_url: string };
         const latest = data.tag_name.replace(/^v/, '');
         const current = app.getVersion();
-        const isNewer = latest.split('.').map(Number).reduce((acc, n, i) => {
-          if (acc !== 0) return acc;
-          return n - (current.split('.').map(Number)[i] ?? 0);
-        }, 0) > 0;
+        const isNewer =
+          latest
+            .split('.')
+            .map(Number)
+            .reduce((acc, n, i) => {
+              if (acc !== 0) return acc;
+              return n - (current.split('.').map(Number)[i] ?? 0);
+            }, 0) > 0;
         return isNewer ? { version: latest, url: data.html_url } : null;
       } catch (err) {
         debug(`Version check failed: ${errToString(err)}`);
@@ -204,14 +214,16 @@ app
 
     // Startup: check if ME3 is available; prompt user if not found
     const storedPath = getModEnginePath();
-    const me3Available = (storedPath && existsSync(storedPath)) || (() => {
-      const detected = detectME3();
-      if (detected) {
-        setModEnginePath(detected);
-        return true;
-      }
-      return false;
-    })();
+    const me3Available =
+      (storedPath && existsSync(storedPath)) ||
+      (() => {
+        const detected = detectME3();
+        if (detected) {
+          setModEnginePath(detected);
+          return true;
+        }
+        return false;
+      })();
     if (!me3Available) {
       const window = getMainWindow();
       if (window) {

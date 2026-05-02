@@ -17,9 +17,7 @@ const getBrowseFilters = (type: BrowseType) => {
     case 'dll':
       return [{ name: 'Dynamic Link Libraries', extensions: ['dll'] }];
     case 'exe':
-      return process.platform === 'linux'
-        ? undefined
-        : [{ name: 'Executable Files', extensions: ['exe'] }];
+      return process.platform === 'linux' ? undefined : [{ name: 'Executable Files', extensions: ['exe'] }];
     case 'binary':
       return undefined;
     default:
@@ -91,7 +89,8 @@ export const extractModZip = async (zipPath: string) => {
   return tempPath;
 };
 
-export const scanDirForFile = (dirPath: string, extension: string): string | undefined => {  debug(`Scanning directory for .${extension} files: ${dirPath}`);
+export const scanDirForFile = (dirPath: string, extension: string): string | undefined => {
+  debug(`Scanning directory for .${extension} files: ${dirPath}`);
   try {
     const entries = readdirSync(dirPath, { withFileTypes: true });
     const matches = entries
@@ -114,9 +113,7 @@ export const listIniFiles = (dirPath: string): string[] => {
   try {
     if (!existsSync(dirPath)) return [];
     const entries = readdirSync(dirPath, { withFileTypes: true });
-    return entries
-      .filter((e) => e.isFile() && e.name.toLowerCase().endsWith('.ini'))
-      .map((e) => e.name);
+    return entries.filter((e) => e.isFile() && e.name.toLowerCase().endsWith('.ini')).map((e) => e.name);
   } catch (err) {
     error(`Failed to list INI files in ${dirPath}: ${errToString(err)}`);
     return [];

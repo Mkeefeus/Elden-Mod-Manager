@@ -115,32 +115,32 @@ const AddMod = ({ close, fromZip, namesInUse, loadMods }: AddModProps) => {
             style={{ flex: '1' }}
             onClick={() => {
               void (async () => {
-              // step 1, exctract zip to temp folder if required
-              let tempPath: string | undefined;
-              if (fromZip && !form.isDirty('path')) {
-                tempPath = await extractZip();
-                if (!tempPath) return;
-                form.setFieldValue('path', tempPath);
-                await scanPathAndAutoFill(tempPath);
-              } else {
-                // step 2, select folder to copy
-                const pathToCopy = await window.electronAPI.browse(
-                  'directory',
-                  'Select mod folder',
-                  form.isDirty('path') ? form.getValues()['path'] : undefined
-                );
-                if (!pathToCopy) {
-                  sendLog({
-                    level: 'info',
-                    message: 'No folder selected',
-                  });
-                  return;
+                // step 1, exctract zip to temp folder if required
+                let tempPath: string | undefined;
+                if (fromZip && !form.isDirty('path')) {
+                  tempPath = await extractZip();
+                  if (!tempPath) return;
+                  form.setFieldValue('path', tempPath);
+                  await scanPathAndAutoFill(tempPath);
+                } else {
+                  // step 2, select folder to copy
+                  const pathToCopy = await window.electronAPI.browse(
+                    'directory',
+                    'Select mod folder',
+                    form.isDirty('path') ? form.getValues()['path'] : undefined
+                  );
+                  if (!pathToCopy) {
+                    sendLog({
+                      level: 'info',
+                      message: 'No folder selected',
+                    });
+                    return;
+                  }
+                  form.setFieldValue('path', pathToCopy);
+                  await scanPathAndAutoFill(pathToCopy);
                 }
-                form.setFieldValue('path', pathToCopy);
-                await scanPathAndAutoFill(pathToCopy);
-              }
-            })();
-          }}
+              })();
+            }}
           >
             Browse
           </Button>

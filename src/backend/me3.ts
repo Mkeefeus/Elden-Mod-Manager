@@ -66,9 +66,7 @@ export const getME3Executable = (): string => {
     return detected;
   }
 
-  throw new Error(
-    'ME3 executable not found. Please install ME3 or set the path manually in Settings.'
-  );
+  throw new Error('ME3 executable not found. Please install ME3 or set the path manually in Settings.');
 };
 
 export const launchEldenRingModded = () => {

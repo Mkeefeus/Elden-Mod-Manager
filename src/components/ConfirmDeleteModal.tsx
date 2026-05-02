@@ -35,7 +35,14 @@ const ConfirmDeleteModal = ({ mod, loadMods }: ConfirmDeleteModalProps) => {
       <Space h="md" />
       <Group justify="space-evenly" grow>
         <Button onClick={cleanupModal}>Cancel</Button>
-        <Button onClick={() => { void handleDelete(); }} color="red" variant="filled" loading={spinner}>
+        <Button
+          onClick={() => {
+            void handleDelete();
+          }}
+          color="red"
+          variant="filled"
+          loading={spinner}
+        >
           Delete
         </Button>
       </Group>

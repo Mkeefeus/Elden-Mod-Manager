@@ -34,10 +34,10 @@ const getSteamInstallDir = (): string | null => {
   if (process.platform === 'win32') {
     // Steam doesn't add itself to PATH, but always writes its install location to the registry
     try {
-      const result = execSync(
-        'reg query "HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Valve\\Steam" /v InstallPath',
-        { encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'] }
-      );
+      const result = execSync('reg query "HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Valve\\Steam" /v InstallPath', {
+        encoding: 'utf8',
+        stdio: ['pipe', 'pipe', 'pipe'],
+      });
       const match = result.match(/InstallPath\s+REG_SZ\s+(.+)/);
       if (match && match[1]) {
         const steamDir = match[1].trim();

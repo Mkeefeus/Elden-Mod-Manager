@@ -246,7 +246,11 @@ export const getLauncherSettings = () => ({
   skipSteamInit: store.get('skipSteamInit'),
 });
 
-export const setLauncherSettings = (fields: { noBootBoost?: boolean; showLogos?: boolean; skipSteamInit?: boolean }) => {
+export const setLauncherSettings = (fields: {
+  noBootBoost?: boolean;
+  showLogos?: boolean;
+  skipSteamInit?: boolean;
+}) => {
   debug(`Updating launcher settings: ${JSON.stringify(fields)}`);
   if (fields.noBootBoost !== undefined) store.set('noBootBoost', fields.noBootBoost);
   if (fields.showLogos !== undefined) store.set('showLogos', fields.showLogos);
@@ -259,7 +263,9 @@ export const getActiveProfile = (): ModProfile | undefined => {
   return profiles.find((p) => p.uuid === activeId);
 };
 
-export const updateActiveProfile = (fields: Partial<Pick<ModProfile, 'savefile' | 'startOnline' | 'disableArxan' | 'noMemPatch'>>) => {
+export const updateActiveProfile = (
+  fields: Partial<Pick<ModProfile, 'savefile' | 'startOnline' | 'disableArxan' | 'noMemPatch'>>
+) => {
   debug(`Updating active profile fields: ${JSON.stringify(fields)}`);
   try {
     const profiles = getProfiles();

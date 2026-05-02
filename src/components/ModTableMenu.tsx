@@ -29,7 +29,14 @@ const ModTableMenu = ({ mod }: ModTableMenuProps) => {
   const handleDelete = () => {
     showModal({
       title: 'Delete mod',
-      content: <ConfirmDeleteModal mod={mod} loadMods={() => { void loadMods(); }} />,
+      content: (
+        <ConfirmDeleteModal
+          mod={mod}
+          loadMods={() => {
+            void loadMods();
+          }}
+        />
+      ),
     });
   };
 
@@ -67,24 +74,14 @@ const ModTableMenu = ({ mod }: ModTableMenuProps) => {
           </Center>
         </Menu.Target>
         <Menu.Dropdown>
-          {mod.dllFile && (
-            <Menu.Item onClick={handleEditProperties}>
-              Edit Properties
-            </Menu.Item>
-          )}
-          {hasIniFiles && (
-            <Menu.Item onClick={handleEditIniFiles}>
-              Edit INI Files
-            </Menu.Item>
-          )}
+          {mod.dllFile && <Menu.Item onClick={handleEditProperties}>Edit Properties</Menu.Item>}
+          {hasIniFiles && <Menu.Item onClick={handleEditIniFiles}>Edit INI Files</Menu.Item>}
           {mod.exe && (
             <Menu.Item color="blue" onClick={() => handleOpenExe()}>
               Open Exe
             </Menu.Item>
           )}
-          <Menu.Item onClick={handleOpenFolder}>
-            Open Folder
-          </Menu.Item>
+          <Menu.Item onClick={handleOpenFolder}>Open Folder</Menu.Item>
           <Menu.Item color="red" onClick={handleDelete}>
             Delete Mod
           </Menu.Item>

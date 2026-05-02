@@ -75,7 +75,11 @@ const EditNativeModModal = ({ mod, close }: EditNativeModModalProps) => {
   };
 
   return (
-    <form onSubmit={form.onSubmit((values) => { void handleSubmit(values); })}>
+    <form
+      onSubmit={form.onSubmit((values) => {
+        void handleSubmit(values);
+      })}
+    >
       <Stack gap="sm">
         <Checkbox
           label="Load early"

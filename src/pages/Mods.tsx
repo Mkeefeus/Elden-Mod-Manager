@@ -82,7 +82,9 @@ const Mods = () => {
           close={handleModalClose}
           fromZip={fromZip}
           namesInUse={mods.map((mod) => mod.name.toLowerCase())}
-          loadMods={() => { void loadMods(); }}
+          loadMods={() => {
+            void loadMods();
+          }}
         />
       ),
     });
@@ -145,18 +147,16 @@ const Mods = () => {
 
         {/* Row 3: Advanced settings toggle */}
         <Group gap="xs">
-          <Button
-            variant="subtle"
-            size="xs"
-            onClick={() => setAdvancedOpen((o) => !o)}
-          >
+          <Button variant="subtle" size="xs" onClick={() => setAdvancedOpen((o) => !o)}>
             {advancedOpen ? '▲ Hide Advanced' : '▼ Show Advanced'}
           </Button>
         </Group>
 
         <Collapse expanded={advancedOpen}>
           <Stack gap="xs" pt="xs">
-            <Text size="sm" fw={500} c="dimmed">Advanced Settings</Text>
+            <Text size="sm" fw={500} c="dimmed">
+              Advanced Settings
+            </Text>
             <Switch
               label="Custom Save File Name"
               description="Override the default save file name (default: off)"

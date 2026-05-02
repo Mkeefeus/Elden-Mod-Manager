@@ -13,10 +13,7 @@ const ProfileSelector = ({ onApply }: { onApply?: () => void }) => {
   const [activeId, setActiveId] = useState<string>('');
 
   const refreshProfiles = async () => {
-    const [ps, id] = await Promise.all([
-      window.electronAPI.loadProfiles(),
-      window.electronAPI.getActiveProfileId(),
-    ]);
+    const [ps, id] = await Promise.all([window.electronAPI.loadProfiles(), window.electronAPI.getActiveProfileId()]);
     setProfiles(ps);
     setActiveId(id);
   };
@@ -36,7 +33,14 @@ const ProfileSelector = ({ onApply }: { onApply?: () => void }) => {
   const handleNew = () => {
     showModal({
       title: 'New Profile',
-      content: <NewProfileModal onConfirm={(name) => { void handleCreate(name); }} onCancel={hideModal} />,
+      content: (
+        <NewProfileModal
+          onConfirm={(name) => {
+            void handleCreate(name);
+          }}
+          onCancel={hideModal}
+        />
+      ),
     });
   };
 
@@ -80,7 +84,9 @@ const ProfileSelector = ({ onApply }: { onApply?: () => void }) => {
         placeholder="No profile"
         data={selectData}
         value={activeId || null}
-        onChange={(v) => { void handleProfileChange(v); }}
+        onChange={(v) => {
+          void handleProfileChange(v);
+        }}
         clearable
         style={{ minWidth: 180 }}
       />
@@ -90,7 +96,13 @@ const ProfileSelector = ({ onApply }: { onApply?: () => void }) => {
         </ActionIcon>
       </Tooltip>
       <Tooltip label="Save current state to profile">
-        <ActionIcon variant="outline" disabled={!activeId} onClick={() => { void handleSave(); }}>
+        <ActionIcon
+          variant="outline"
+          disabled={!activeId}
+          onClick={() => {
+            void handleSave();
+          }}
+        >
           <FontAwesomeIcon icon={faFloppyDisk} />
         </ActionIcon>
       </Tooltip>
@@ -124,8 +136,12 @@ const NewProfileModal = ({ onConfirm, onCancel }: NewProfileModalProps) => {
         autoFocus
       />
       <Group justify="flex-end" mt="sm">
-        <Button variant="outline" onClick={onCancel}>Cancel</Button>
-        <Button disabled={!name.trim()} onClick={() => onConfirm(name.trim())}>Create</Button>
+        <Button variant="outline" onClick={onCancel}>
+          Cancel
+        </Button>
+        <Button disabled={!name.trim()} onClick={() => onConfirm(name.trim())}>
+          Create
+        </Button>
       </Group>
     </Stack>
   );
@@ -139,10 +155,16 @@ interface DeleteProfileModalProps {
 
 const DeleteProfileModal = ({ name, onConfirm, onCancel }: DeleteProfileModalProps) => (
   <Stack>
-    <Text>Are you sure you want to delete the profile <strong>{name}</strong>? This cannot be undone.</Text>
+    <Text>
+      Are you sure you want to delete the profile <strong>{name}</strong>? This cannot be undone.
+    </Text>
     <Group justify="flex-end" mt="sm">
-      <Button variant="outline" onClick={onCancel}>Cancel</Button>
-      <Button color="red" onClick={onConfirm}>Delete</Button>
+      <Button variant="outline" onClick={onCancel}>
+        Cancel
+      </Button>
+      <Button color="red" onClick={onConfirm}>
+        Delete
+      </Button>
     </Group>
   </Stack>
 );

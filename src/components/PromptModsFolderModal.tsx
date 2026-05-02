@@ -39,7 +39,12 @@ const PromptModsFolderModal = ({ hideModal }: PromptModsFolderModalProps) => {
         <Button loading>Button</Button>
       ) : (
         <Group justify="space-evenly">
-          <Button style={{ flex: 1 }} onClick={() => { void handleSelectModFolder(); }}>
+          <Button
+            style={{ flex: 1 }}
+            onClick={() => {
+              void handleSelectModFolder();
+            }}
+          >
             Browse
           </Button>
           <HoverCard>

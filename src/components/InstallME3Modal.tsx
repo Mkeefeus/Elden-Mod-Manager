@@ -17,8 +17,7 @@ const InstallME3Modal = ({ hideModal }: InstallME3ModalProps) => {
     if (!detected) {
       sendLog({
         level: 'error',
-        message:
-          'ME3 could not be found automatically. Please install it or browse to me3.exe manually.',
+        message: 'ME3 could not be found automatically. Please install it or browse to me3.exe manually.',
       });
       setLoading(false);
       return;
@@ -54,28 +53,39 @@ const InstallME3Modal = ({ hideModal }: InstallME3ModalProps) => {
     <Stack>
       <Group gap="xs" align="center">
         <FontAwesomeIcon icon={faTriangleExclamation} color="var(--mantine-color-gold-4)" size="lg" />
-        <Text fz="lg" fw={600}>ModEngine3 (me3) is required to use the mod manager.</Text>
+        <Text fz="lg" fw={600}>
+          ModEngine3 (me3) is required to use the mod manager.
+        </Text>
       </Group>
       <Text fz="sm">
         me3 is the successor to ModEngine2. Download and install it from the{' '}
-        <Anchor
-          href="https://github.com/garyttierney/me3/releases/latest"
-          target="_blank"
-          c="gold.4"
-        >
+        <Anchor href="https://github.com/garyttierney/me3/releases/latest" target="_blank" c="gold.4">
           me3 GitHub releases page
         </Anchor>
         , then return here.
       </Text>
       <Text fz="sm">
-        Once installed, click <strong>Auto-detect</strong> to find it automatically, or{' '}
-        <strong>Browse</strong> to locate <code>me3.exe</code> manually.
+        Once installed, click <strong>Auto-detect</strong> to find it automatically, or <strong>Browse</strong> to
+        locate <code>me3.exe</code> manually.
       </Text>
       <Group justify="space-evenly" mt="sm">
-        <Button style={{ flex: 1 }} loading={loading} onClick={() => { void handleAutoDetect(); }}>
+        <Button
+          style={{ flex: 1 }}
+          loading={loading}
+          onClick={() => {
+            void handleAutoDetect();
+          }}
+        >
           Auto-detect
         </Button>
-        <Button style={{ flex: 1 }} loading={loading} variant="outline" onClick={() => { void handleBrowse(); }}>
+        <Button
+          style={{ flex: 1 }}
+          loading={loading}
+          variant="outline"
+          onClick={() => {
+            void handleBrowse();
+          }}
+        >
           Browse
         </Button>
       </Group>

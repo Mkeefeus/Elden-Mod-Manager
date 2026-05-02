@@ -11,9 +11,7 @@ export interface LatestRelease {
   url: string;
 }
 
-export type NativeInitializerCondition =
-  | { delay: { ms: number } }
-  | { function: string };
+export type NativeInitializerCondition = { delay: { ms: number } } | { function: string };
 
 export type Dependent = {
   id: string;
@@ -89,4 +87,4 @@ export type WindowState = {
   x: number;
   y: number;
   displayId: number;
-}
+};

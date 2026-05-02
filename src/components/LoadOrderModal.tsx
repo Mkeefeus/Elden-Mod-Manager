@@ -1,15 +1,4 @@
-import {
-  ActionIcon,
-  Badge,
-  Button,
-  Collapse,
-  Divider,
-  Group,
-  MultiSelect,
-  Stack,
-  Text,
-  Tooltip,
-} from '@mantine/core';
+import { ActionIcon, Badge, Button, Collapse, Divider, Group, MultiSelect, Stack, Text, Tooltip } from '@mantine/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAnglesDown, faAnglesUp, faChevronDown, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { useState } from 'react';
@@ -41,9 +30,7 @@ interface AdvancedDepsPanelProps {
 }
 
 const AdvancedDepsPanel = ({ mod, peers, state, onChange }: AdvancedDepsPanelProps) => {
-  const options = peers
-    .filter((p) => p.uuid !== mod.uuid)
-    .map((p) => ({ value: getModSortId(p), label: p.name }));
+  const options = peers.filter((p) => p.uuid !== mod.uuid).map((p) => ({ value: getModSortId(p), label: p.name }));
 
   const requiredBefore = (state.loadBefore ?? []).filter((d) => !d.optional).map((d) => d.id);
   const optionalBefore = (state.loadBefore ?? []).filter((d) => d.optional).map((d) => d.id);
@@ -55,14 +42,10 @@ const AdvancedDepsPanel = ({ mod, peers, state, onChange }: AdvancedDepsPanelPro
     ...optional.map((id) => ({ id, optional: true })),
   ];
 
-  const setRequiredBefore = (ids: string[]) =>
-    onChange({ loadBefore: buildDeps(ids, optionalBefore) });
-  const setOptionalBefore = (ids: string[]) =>
-    onChange({ loadBefore: buildDeps(requiredBefore, ids) });
-  const setRequiredAfter = (ids: string[]) =>
-    onChange({ loadAfter: buildDeps(ids, optionalAfter) });
-  const setOptionalAfter = (ids: string[]) =>
-    onChange({ loadAfter: buildDeps(requiredAfter, ids) });
+  const setRequiredBefore = (ids: string[]) => onChange({ loadBefore: buildDeps(ids, optionalBefore) });
+  const setOptionalBefore = (ids: string[]) => onChange({ loadBefore: buildDeps(requiredBefore, ids) });
+  const setRequiredAfter = (ids: string[]) => onChange({ loadAfter: buildDeps(ids, optionalAfter) });
+  const setOptionalAfter = (ids: string[]) => onChange({ loadAfter: buildDeps(requiredAfter, ids) });
 
   if (options.length === 0) {
     return (
@@ -74,7 +57,9 @@ const AdvancedDepsPanel = ({ mod, peers, state, onChange }: AdvancedDepsPanelPro
 
   return (
     <Stack gap="xs" mt="xs" pl="xs" style={{ borderLeft: '2px solid var(--mantine-color-default-border)' }}>
-      <Text size="xs" fw={600} c="dimmed" tt="uppercase">Load before</Text>
+      <Text size="xs" fw={600} c="dimmed" tt="uppercase">
+        Load before
+      </Text>
       <MultiSelect
         size="xs"
         label="Required"
@@ -96,7 +81,9 @@ const AdvancedDepsPanel = ({ mod, peers, state, onChange }: AdvancedDepsPanelPro
         clearable
       />
       <Divider />
-      <Text size="xs" fw={600} c="dimmed" tt="uppercase">Load after</Text>
+      <Text size="xs" fw={600} c="dimmed" tt="uppercase">
+        Load after
+      </Text>
       <MultiSelect
         size="xs"
         label="Required"
@@ -143,14 +130,13 @@ const ModOrderRow = ({ mod, peers, state, onChange, onSetFirst, onSetLast, start
     <Stack gap={4}>
       <Group justify="space-between" wrap="nowrap">
         <Group gap="xs" wrap="nowrap" style={{ flex: 1, minWidth: 0 }}>
-          <Text
-            size="sm"
-            style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
-          >
+          <Text size="sm" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {mod.name}
           </Text>
           {depCount > 0 && (
-            <Badge size="xs" variant="light">{depCount} dep{depCount !== 1 ? 's' : ''}</Badge>
+            <Badge size="xs" variant="light">
+              {depCount} dep{depCount !== 1 ? 's' : ''}
+            </Badge>
           )}
         </Group>
         <Group gap={4} wrap="nowrap">
@@ -224,7 +210,9 @@ const ModGroupSection = ({
 
   return (
     <Stack gap="xs">
-      <Text size="sm" fw={600} c="dimmed" tt="uppercase">{title}</Text>
+      <Text size="sm" fw={600} c="dimmed" tt="uppercase">
+        {title}
+      </Text>
       {mods.map((mod) => (
         <ModOrderRow
           key={mod.uuid}
@@ -282,11 +270,7 @@ const LoadOrderModal = ({ hideModal, focusedModUuid }: LoadOrderModalProps) => {
 
   // ── Load First/Last helpers ─────────────────────────────────────────────────
 
-  const applyExclusiveFlag = (
-    uuid: string,
-    flag: 'loadFirst' | 'loadLast',
-    group: Mod[],
-  ) => {
+  const applyExclusiveFlag = (uuid: string, flag: 'loadFirst' | 'loadLast', group: Mod[]) => {
     const current = states.get(uuid)!;
     const opposite = flag === 'loadFirst' ? 'loadLast' : 'loadFirst';
     // Toggle off if already set
@@ -338,9 +322,13 @@ const LoadOrderModal = ({ hideModal, focusedModUuid }: LoadOrderModalProps) => {
   if (mods.length === 0) {
     return (
       <Stack>
-        <Text size="sm" c="dimmed">No mods installed. Add mods first.</Text>
+        <Text size="sm" c="dimmed">
+          No mods installed. Add mods first.
+        </Text>
         <Group justify="flex-end">
-          <Button variant="outline" onClick={hideModal}>Close</Button>
+          <Button variant="outline" onClick={hideModal}>
+            Close
+          </Button>
         </Group>
       </Stack>
     );
@@ -349,9 +337,9 @@ const LoadOrderModal = ({ hideModal, focusedModUuid }: LoadOrderModalProps) => {
   return (
     <Stack gap="md">
       <Text size="sm" c="dimmed">
-        Use <FontAwesomeIcon icon={faAnglesUp} /> / <FontAwesomeIcon icon={faAnglesDown} /> to pin a mod to load first or last within its group.
-        Use <FontAwesomeIcon icon={faChevronRight} /> for fine-grained ordering against specific mods.
-        DLL mods and package mods are ordered independently.
+        Use <FontAwesomeIcon icon={faAnglesUp} /> / <FontAwesomeIcon icon={faAnglesDown} /> to pin a mod to load first
+        or last within its group. Use <FontAwesomeIcon icon={faChevronRight} /> for fine-grained ordering against
+        specific mods. DLL mods and package mods are ordered independently.
       </Text>
 
       <ModGroupSection
@@ -379,7 +367,9 @@ const LoadOrderModal = ({ hideModal, focusedModUuid }: LoadOrderModalProps) => {
       />
 
       <Group justify="flex-end" mt="sm">
-        <Button variant="outline" onClick={hideModal}>Cancel</Button>
+        <Button variant="outline" onClick={hideModal}>
+          Cancel
+        </Button>
         <Button onClick={handleSave}>Save</Button>
       </Group>
     </Stack>

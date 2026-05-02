@@ -29,7 +29,7 @@ const bundledDeps = new Set([
 export const external = [
   ...builtins,
   ...Object.keys('dependencies' in pkg ? (pkg.dependencies as Record<string, unknown>) : {}).filter(
-    (dep) => !bundledDeps.has(dep),
+    (dep) => !bundledDeps.has(dep)
   ),
 ];
 

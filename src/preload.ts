@@ -27,7 +27,12 @@ interface IElectronAPI {
   updateModsFolder: (path: string) => void;
   updateME3Path: (path: string) => void;
   getActiveProfile: () => Promise<ModProfile>;
-  updateActiveProfileSettings: (fields: { savefile?: string; startOnline?: boolean; disableArxan?: boolean; noMemPatch?: boolean }) => void;
+  updateActiveProfileSettings: (fields: {
+    savefile?: string;
+    startOnline?: boolean;
+    disableArxan?: boolean;
+    noMemPatch?: boolean;
+  }) => void;
   getLauncherSettings: () => Promise<{ noBootBoost: boolean; showLogos: boolean; skipSteamInit: boolean }>;
   updateLauncherSettings: (fields: { noBootBoost?: boolean; showLogos?: boolean; skipSteamInit?: boolean }) => void;
   // Profiles

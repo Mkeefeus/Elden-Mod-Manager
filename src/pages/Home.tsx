@@ -19,11 +19,11 @@ import { errToString } from '../utils/utilities';
 import { decode } from 'he';
 
 const quickActions: { label: string; variant: string }[] = [
-    { label: 'Play', variant: 'filled' },
-    { label: 'Play Vanilla', variant: 'light' },
-    { label: 'Add a Mod (Zip)', variant: 'outline' },
-    { label: 'Add a Mod (Folder)', variant: 'outline' },
-  ];
+  { label: 'Play', variant: 'filled' },
+  { label: 'Play Vanilla', variant: 'light' },
+  { label: 'Add a Mod (Zip)', variant: 'outline' },
+  { label: 'Add a Mod (Folder)', variant: 'outline' },
+];
 
 interface Author {
   name: string;

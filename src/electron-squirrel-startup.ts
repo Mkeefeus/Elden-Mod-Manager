@@ -1,7 +1,7 @@
 import path from 'path';
-import {spawn} from 'child_process';
+import { spawn } from 'child_process';
 import _debug from 'debug';
-import {app} from 'electron';
+import { app } from 'electron';
 
 //Copied from https://github.com/mongodb-js/electron-squirrel-startup/blob/master/index.js due to missing ESM support
 

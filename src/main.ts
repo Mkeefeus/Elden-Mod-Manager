@@ -72,7 +72,13 @@ const createWindow = () => {
       setWindowState({ ...savedState, width: winBounds.width, height: winBounds.height });
     } else {
       const display = screen.getDisplayMatching(winBounds);
-      setWindowState({ width: winBounds.width, height: winBounds.height, x: winBounds.x, y: winBounds.y, displayId: display.id });
+      setWindowState({
+        width: winBounds.width,
+        height: winBounds.height,
+        x: winBounds.x,
+        y: winBounds.y,
+        displayId: display.id,
+      });
     }
   };
 

@@ -75,7 +75,8 @@ const IniEditorModal = ({ mod, close }: IniEditorModalProps) => {
         <Tabs.List>
           {files.map((f) => (
             <Tabs.Tab key={f} value={f}>
-              {f}{dirty[f] ? ' *' : ''}
+              {f}
+              {dirty[f] ? ' *' : ''}
             </Tabs.Tab>
           ))}
         </Tabs.List>
@@ -94,7 +95,9 @@ const IniEditorModal = ({ mod, close }: IniEditorModalProps) => {
                 <Button
                   variant="light"
                   disabled={!dirty[f]}
-                  onClick={() => { void handleSave(f); }}
+                  onClick={() => {
+                    void handleSave(f);
+                  }}
                 >
                   Save
                 </Button>
@@ -107,7 +110,12 @@ const IniEditorModal = ({ mod, close }: IniEditorModalProps) => {
         <Button variant="subtle" color="gray" onClick={close}>
           Close
         </Button>
-        <Button disabled={allClean} onClick={() => { void handleSaveAll(); }}>
+        <Button
+          disabled={allClean}
+          onClick={() => {
+            void handleSaveAll();
+          }}
+        >
           Save All
         </Button>
       </Group>

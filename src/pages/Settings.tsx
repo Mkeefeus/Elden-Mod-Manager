@@ -62,7 +62,12 @@ const Settings = () => {
           value={modsPath}
           disabled
         />
-        <Button style={BUTTON_STYLE} onClick={() => { void handleBrowse('mods'); }}>
+        <Button
+          style={BUTTON_STYLE}
+          onClick={() => {
+            void handleBrowse('mods');
+          }}
+        >
           Browse
         </Button>
       </Group>
@@ -74,12 +79,19 @@ const Settings = () => {
           value={me3Path}
           disabled
         />
-        <Button style={BUTTON_STYLE} onClick={() => { void handleBrowseME3Exe(); }}>
+        <Button
+          style={BUTTON_STYLE}
+          onClick={() => {
+            void handleBrowseME3Exe();
+          }}
+        >
           Browse
         </Button>
       </Group>
       <Divider mt="sm" />
-      <Text size="sm" fw={500} c="dimmed">Launcher Settings</Text>
+      <Text size="sm" fw={500} c="dimmed">
+        Launcher Settings
+      </Text>
       <Switch
         label="Disable Boot Boost"
         description="Don't cache decrypted BHD files — increases startup time (default: off)"

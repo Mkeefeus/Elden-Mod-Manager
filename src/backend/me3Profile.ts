@@ -13,7 +13,9 @@ const { debug, error } = logger;
 const generateMe3ProfileString = (mods: Mod[], savefile: string, startOnline: boolean): string => {
   const nativeMods = mods.filter((m) => !!m.dllFile && m.enabled);
   const packageMods = mods.filter((m) => !m.dllFile && m.enabled);
-  debug(`Generating ME3 profile: ${nativeMods.length} native mod(s), ${packageMods.length} package mod(s), savefile="${savefile}", startOnline=${startOnline}`);
+  debug(
+    `Generating ME3 profile: ${nativeMods.length} native mod(s), ${packageMods.length} package mod(s), savefile="${savefile}", startOnline=${startOnline}`
+  );
 
   const sortLoadOrder = (list: Mod[]) => {
     const first = list.filter((m) => m.loadFirst);
