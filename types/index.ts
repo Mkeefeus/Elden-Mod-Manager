@@ -82,3 +82,11 @@ export type Dependency = {
   licenseUrl: string;
   parents: string[];
 };
+
+export type WindowState = {
+  width: number;
+  height: number;
+  x: number;
+  y: number;
+  displayId: number;
+}

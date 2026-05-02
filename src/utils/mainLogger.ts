@@ -9,8 +9,8 @@ log.transports.file.level = 'debug';
 log.transports.file.maxSize = 20 * 1024 * 1024; // 20 MB
 log.transports.file.resolvePathFn = () => path.join(app.getPath('logs'), 'EMM.log');
 
-// Console transport — info+ only
-log.transports.console.level = 'info';
+// Console transport — all levels in dev, info+ in production
+log.transports.console.level = app.isPackaged ? 'info' : 'debug';
 
 /**
  * Send a notification to the renderer window, mapping electron-log level names

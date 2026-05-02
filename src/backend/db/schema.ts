@@ -1,4 +1,4 @@
-import { Mod, ModProfile } from 'types';
+import { Mod, ModProfile, WindowState } from 'types';
 import { Schema } from 'electron-store';
 import { app } from 'electron';
 import { join } from 'path';
@@ -15,6 +15,7 @@ export type DBSchema = {
   noBootBoost: boolean;
   showLogos: boolean;
   skipSteamInit: boolean;
+  windowSate: WindowState;
 };
 
 const schema: Schema<DBSchema> = {
@@ -113,6 +114,17 @@ const schema: Schema<DBSchema> = {
   skipSteamInit: {
     type: 'boolean',
     default: false,
+  },
+  windowSate: {
+    type: 'object',
+    properties: {
+      width: { type: 'number' },
+      height: { type: 'number' },
+      x: { type: 'number' },
+      y: { type: 'number' },
+      displayId: { type: 'number' },
+    },
+    default: { width: 1280, height: 720, x: 0, y: 0, displayId: 0 },
   },
 };
 

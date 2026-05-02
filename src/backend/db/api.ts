@@ -1,7 +1,7 @@
 import { errToString } from '../../utils/utilities';
 import { logger } from '../../utils/mainLogger';
 import store from './init';
-import { Dependent, Mod, ModProfile } from 'types';
+import { Dependent, Mod, ModProfile, WindowState } from 'types';
 import { join } from 'path';
 import { app } from 'electron';
 
@@ -271,6 +271,29 @@ export const updateActiveProfile = (fields: Partial<Pick<ModProfile, 'savefile' 
     return true;
   } catch (err) {
     const msg = `An error occured while updating active profile: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg, { cause: err });
+  }
+};
+
+export const getWindowState = (): WindowState => {
+  debug('Getting window state');
+  try {
+    return store.get('windowSate');
+  } catch (err) {
+    const msg = `An error occured while getting window state: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg, { cause: err });
+  }
+};
+
+export const setWindowState = (state: WindowState) => {
+  debug(`Setting window state: ${JSON.stringify(state)}`);
+  try {
+    store.set('windowSate', state);
+    return true;
+  } catch (err) {
+    const msg = `An error occured while setting window state: ${errToString(err)}`;
     error(msg);
     throw new Error(msg, { cause: err });
   }
