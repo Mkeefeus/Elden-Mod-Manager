@@ -20,7 +20,7 @@ const bundledDeps = new Set([
   'electron-log',
   'vdf-parser',
   'archiver',
-  'decompress',
+  'node-7z',
   'debug',
   'update-electron-app',
   'electron-store',

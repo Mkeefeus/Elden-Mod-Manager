@@ -61,7 +61,7 @@ export type NewsComponentProps = {
   postDate: string;
 };
 
-export type BrowseType = 'zip' | 'dll' | 'exe' | 'binary' | 'directory';
+export type BrowseType = 'archive' | 'dll' | 'exe' | 'binary' | 'directory';
 
 export type ModProfile = {
   uuid: string;
@@ -96,4 +96,16 @@ export type NexusUser = {
   supporter: boolean;
   email: string;
   profileUrl: string;
+};
+
+export type DownloadStatus = 'downloading' | 'extracting' | 'ready' | 'error';
+
+export type DownloadState = {
+  id: string;
+  filename: string;
+  status: DownloadStatus;
+  progress: number;
+  source: 'nexus' | 'local';
+  extractedPath?: string;
+  error?: string;
 };

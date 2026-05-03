@@ -1,5 +1,6 @@
-import { app, ipcMain, shell } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain, shell } from 'electron';
 import { randomUUID } from 'crypto';
+import path from 'path';
 import {
   clearFirstRun,
   getModEnginePath,
@@ -29,7 +30,7 @@ import { CreateModPathFromName, errToString } from '../utils/utilities';
 import { handleLog, logger } from '../utils/mainLogger';
 import { launchEldenRingModded, promptME3Install, updateME3Path, detectME3 } from './me3';
 import { launchEldenRing } from './steam';
-import { browse, extractModZip, scanDirForFile, listIniFiles, readIniFile, writeIniFile } from './fileSystem';
+import { browse, extractModArchive, scanDirForFile, listIniFiles, readIniFile, writeIniFile } from './fileSystem';
 import { handleAddMod, handleDeleteMod, updateModsFolder } from './mods';
 import {
   handleCreateProfile,
@@ -41,8 +42,13 @@ import {
 import './me3Profile';
 import { getMainWindow } from '../main';
 import { validateNexusApiKey } from './nexus';
+import { getActiveDownloads, cancelDownload, dismissDownload, addLocalDownload } from './downloadManager';
 
 const { debug, error, warning } = logger;
+
+let getModsWindow: BrowserWindow | null = null;
+
+export const getGetModsWindow = () => getModsWindow;
 
 app
   .whenReady()
@@ -52,14 +58,74 @@ app
     ipcMain.on('open-external-link', (_, href: string) => {
       void shell.openExternal(href);
     });
+
+    // --- Get Mods Window ---
+    ipcMain.on('open-get-mods-window', () => {
+      if (getModsWindow && !getModsWindow.isDestroyed()) {
+        getModsWindow.focus();
+        return;
+      }
+      getModsWindow = new BrowserWindow({
+        width: 1280,
+        height: 800,
+        minWidth: 900,
+        minHeight: 600,
+        webPreferences: {
+          preload: path.join(__dirname, 'preload.js'),
+          webviewTag: true,
+        },
+        icon: 'public/256x256.png',
+      });
+
+      if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
+        void getModsWindow.loadURL(`${MAIN_WINDOW_VITE_DEV_SERVER_URL}#/get-mods`);
+      } else {
+        void getModsWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`), {
+          hash: '/get-mods',
+        });
+      }
+
+      getModsWindow.webContents.on('will-prevent-unload', (event) => {
+        const choice = dialog.showMessageBoxSync(getModsWindow!, {
+          type: 'question',
+          buttons: ['Close Anyway', 'Stay'],
+          defaultId: 1,
+          cancelId: 1,
+          title: 'Mods Pending Installation',
+          message: 'You have mods that have not been installed yet. Are you sure you want to close?',
+        });
+        if (choice === 0) {
+          event.preventDefault(); // allows the unload to proceed
+        }
+      });
+
+      getModsWindow.on('closed', () => {
+        // Dismiss all pending downloads to clean up temp files
+        for (const dl of getActiveDownloads()) {
+          void dismissDownload(dl.id);
+        }
+        getModsWindow = null;
+      });
+    });
+
+    // --- Download Manager IPC ---
+    ipcMain.handle('get-downloads', () => getActiveDownloads());
+    ipcMain.on('cancel-download', (_, id: string) => cancelDownload(id));
+    ipcMain.on('dismiss-download', (_, id: string) => {
+      void dismissDownload(id);
+    });
+    ipcMain.handle('add-local-download', (_, id: string, filename: string, extractedPath: string) =>
+      addLocalDownload(id, filename, 'local', extractedPath)
+    );
+
     ipcMain.handle('load-mods', loadMods);
     ipcMain.handle('set-mods', (_, mods: Mod[]) => saveMods(mods));
     ipcMain.handle('browse', (_, type: BrowseType, title?: string, startingDir?: string) => {
       return browse(type, title, startingDir);
     });
 
-    ipcMain.handle('extract-zip', async (_, zipPath: string) => {
-      return await extractModZip(zipPath);
+    ipcMain.handle('extract-archive', async (_, archivePath: string) => {
+      return await extractModArchive(archivePath);
     });
 
     ipcMain.handle('scan-dir', (_, dirPath: string, extension: string) => {
@@ -67,7 +133,9 @@ app
     });
 
     ipcMain.handle('add-mod', (_, formData: AddModFormValues) => {
-      return handleAddMod(formData);
+      const result = handleAddMod(formData);
+      if (result) getMainWindow()?.webContents.send('mods-changed');
+      return result;
     });
 
     ipcMain.handle('delete-mod', (_, mod: Mod) => {
@@ -94,8 +162,8 @@ app
       void shell.openPath(join(getModsFolder(), CreateModPathFromName(mod.name)));
     });
 
-    ipcMain.on('log', (_, log: LogEntry) => {
-      handleLog(log);
+    ipcMain.on('log', (event, log: LogEntry) => {
+      handleLog(log, event.sender);
     });
 
     ipcMain.on('set-me3-path', (_, path: string) => {

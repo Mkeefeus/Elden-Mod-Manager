@@ -1,7 +1,16 @@
 // See the Electron documentation for details on how to use preload scripts:
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 import { contextBridge, ipcRenderer } from 'electron';
-import { Mod, AddModFormValues, BrowseType, ModProfile, LogEntry, LatestRelease, NexusUser } from 'types';
+import {
+  Mod,
+  AddModFormValues,
+  BrowseType,
+  ModProfile,
+  LogEntry,
+  LatestRelease,
+  NexusUser,
+  DownloadState,
+} from 'types';
 
 interface IElectronAPI {
   // --- Mods ---
@@ -45,9 +54,22 @@ interface IElectronAPI {
   validateNexusApiKey: () => Promise<NexusUser | null>;
   setNexusApiKey: (key: string) => Promise<NexusUser>;
 
+  // --- Get Mods Window ---
+  openGetModsWindow: () => void;
+
+  // --- Download Manager ---
+  getDownloads: () => Promise<DownloadState[]>;
+  cancelDownload: (id: string) => void;
+  dismissDownload: (id: string) => void;
+  addLocalDownload: (id: string, filename: string, extractedPath: string) => Promise<DownloadState>;
+  onDownloadStarted: (callback: (state: DownloadState) => void) => void;
+  onDownloadProgress: (callback: (update: { id: string; progress: number; status?: string }) => void) => void;
+  onDownloadComplete: (callback: (state: DownloadState) => void) => void;
+  onDownloadError: (callback: (state: DownloadState) => void) => void;
+
   // --- File System ---
   browse: (type: BrowseType, title?: string, startingDir?: string) => Promise<string | undefined>;
-  extractZip: (zipPath: string) => Promise<string>;
+  extractArchive: (archivePath: string) => Promise<string>;
   scanDir: (dirPath: string, extension: string) => Promise<string | undefined>;
   checkModsFolderPrompt: () => Promise<boolean>;
   saveModsFolder: (path: string) => void;
@@ -63,6 +85,7 @@ interface IElectronAPI {
   // --- Main to renderer ---
   notify: (callback: (log: LogEntry) => void) => void;
   promptME3Install: (callback: () => void) => void;
+  onModsChanged: (callback: () => void) => void;
 }
 
 declare global {
@@ -108,9 +131,28 @@ const electronAPI: IElectronAPI = {
   validateNexusApiKey: () => ipcRenderer.invoke('validate-nexus-api-key'),
   setNexusApiKey: (key) => ipcRenderer.invoke('set-nexus-api-key', key),
 
+  // --- Get Mods Window ---
+  openGetModsWindow: () => ipcRenderer.send('open-get-mods-window'),
+
+  // --- Download Manager ---
+  getDownloads: () => ipcRenderer.invoke('get-downloads'),
+  cancelDownload: (id) => ipcRenderer.send('cancel-download', id),
+  dismissDownload: (id) => ipcRenderer.send('dismiss-download', id),
+  addLocalDownload: (id, filename, extractedPath) =>
+    ipcRenderer.invoke('add-local-download', id, filename, extractedPath),
+  onDownloadStarted: (callback) =>
+    ipcRenderer.on('download-started', (_event, state: DownloadState) => callback(state)),
+  onDownloadProgress: (callback) =>
+    ipcRenderer.on('download-progress', (_event, update: { id: string; progress: number; status?: string }) =>
+      callback(update)
+    ),
+  onDownloadComplete: (callback) =>
+    ipcRenderer.on('download-complete', (_event, state: DownloadState) => callback(state)),
+  onDownloadError: (callback) => ipcRenderer.on('download-error', (_event, state: DownloadState) => callback(state)),
+
   // --- File System ---
   browse: (...args) => ipcRenderer.invoke('browse', ...args),
-  extractZip: (...args) => ipcRenderer.invoke('extract-zip', ...args),
+  extractArchive: (...args) => ipcRenderer.invoke('extract-archive', ...args),
   scanDir: (...args) => ipcRenderer.invoke('scan-dir', ...args),
   checkModsFolderPrompt: () => ipcRenderer.invoke('check-mods-folder-prompt'),
   saveModsFolder: (path) => ipcRenderer.send('save-mods-folder', path),
@@ -126,6 +168,7 @@ const electronAPI: IElectronAPI = {
   // --- Main to renderer ---
   notify: (callback) => ipcRenderer.on('notify', (_event, value) => callback(value as LogEntry)),
   promptME3Install: (callback) => ipcRenderer.on('prompt-me3-install', callback),
+  onModsChanged: (callback) => ipcRenderer.on('mods-changed', callback),
 };
 
 contextBridge.exposeInMainWorld('electronAPI', electronAPI);

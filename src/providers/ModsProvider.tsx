@@ -1,4 +1,4 @@
-import { ReactNode, createContext, useContext, useMemo, useState } from 'react';
+import { ReactNode, createContext, useContext, useMemo, useState, useEffect } from 'react';
 import { sendLog } from '../utils/rendererLogger';
 import { Mod } from 'types';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -56,6 +56,12 @@ const ModsProvider = ({ children }: { children: ReactNode }) => {
   const mods = useMemo(() => sortMods(rawMods), [rawMods, sort]);
 
   const loadMods = () => queryClient.invalidateQueries({ queryKey: ['mods'] });
+
+  useEffect(() => {
+    window.electronAPI.onModsChanged(() => {
+      queryClient.invalidateQueries({ queryKey: ['mods'] }).catch(console.error);
+    });
+  }, []);
 
   const saveMods = async (newMods: Mod[]) => {
     const success = await window.electronAPI.saveMods(newMods);

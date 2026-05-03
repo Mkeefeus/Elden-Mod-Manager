@@ -1,19 +1,41 @@
 import { OpenDialogOptions, app, dialog } from 'electron';
-import { existsSync, readdirSync, readFileSync, writeFileSync } from 'fs';
+import { chmodSync, existsSync, readdirSync, readFileSync, writeFileSync } from 'fs';
 import { join, normalize, sep } from 'path';
 import { logger } from '../utils/mainLogger';
 import { errToString } from '../utils/utilities';
 import { BrowseType } from 'types';
 import { randomUUID } from 'crypto';
-import decompress from 'decompress';
+import Seven from 'node-7z';
 import { MOD_SUBFOLDERS } from './constants';
+
+// Resolve the path to the 7za binary at runtime so it works in both dev
+// (where Vite bundles the JS to .vite/build/ and __dirname is wrong for node_modules)
+// and in the packaged app (where the binary lives in process.resourcesPath).
+const get7zaPath = (): string => {
+  const platform = process.platform === 'win32' ? 'win' : process.platform === 'darwin' ? 'mac' : 'linux';
+  const ext = process.platform === 'win32' ? '7za.exe' : '7za';
+  const binRelPath = join(platform, process.arch, ext);
+  if (app.isPackaged) {
+    return join(process.resourcesPath, '7zip-bin', binRelPath);
+  }
+  return join(app.getAppPath(), 'node_modules', '7zip-bin', binRelPath);
+};
+
+// Ensure the 7-Zip binary is executable on POSIX systems
+if (process.platform !== 'win32') {
+  try {
+    chmodSync(get7zaPath(), 0o755);
+  } catch {
+    // May already be executable or in a read-only location — ignore
+  }
+}
 
 const { debug, error, warning } = logger;
 
 const getBrowseFilters = (type: BrowseType) => {
   switch (type) {
-    case 'zip':
-      return [{ name: 'Zip Files', extensions: ['zip'] }];
+    case 'archive':
+      return [{ name: 'Archive Files', extensions: ['zip', '7z', 'rar', 'tar', 'gz', 'bz2'] }];
     case 'dll':
       return [{ name: 'Dynamic Link Libraries', extensions: ['dll'] }];
     case 'exe':
@@ -44,21 +66,25 @@ export const browse = (type: BrowseType, title?: string, startingDir?: string) =
   }
 };
 
-export const extractModZip = async (zipPath: string) => {
-  debug(`Extracting zip: ${zipPath}`);
+export const extractModArchive = async (archivePath: string): Promise<string | undefined> => {
+  debug(`Extracting archive: ${archivePath}`);
   let tempPath = join(app.getPath('temp'), randomUUID());
-  if (existsSync(tempPath)) {
-    tempPath = join(app.getPath('temp'), randomUUID());
-  }
   try {
-    debug(`Extracting zip to temp directory: ${tempPath} from ${zipPath}`);
-    await decompress(zipPath, tempPath, { filter: (file) => !file.path.endsWith('/') });
+    debug(`Extracting archive to temp directory: ${tempPath} from ${archivePath}`);
+    await new Promise<void>((resolve, reject) => {
+      const stream = Seven.extractFull(archivePath, tempPath, {
+        $bin: get7zaPath(),
+        recursive: true,
+      });
+      stream.on('end', resolve);
+      stream.on('error', reject);
+    });
   } catch (err) {
-    const msg = `An error occured while extracting zip: ${errToString(err)}`;
+    const msg = `An error occured while extracting archive: ${errToString(err)}`;
     error(msg);
     throw new Error(msg, { cause: err });
   }
-  debug('Zip extracted successfully');
+  debug('Archive extracted successfully');
   const files = readdirSync(tempPath, { recursive: true });
   let validPath = '';
   let subfolder = '';

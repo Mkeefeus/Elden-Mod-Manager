@@ -2,19 +2,14 @@ import { Button, Collapse, Divider, Group, ScrollArea, Stack, Switch, Text, Text
 import ModTable from '../components/ModTable';
 import { useEffect, useState } from 'react';
 import { ModProfile } from 'types';
-import { useLocation } from 'react-router-dom';
-import AddMod from '../components/AddMod';
 import { useModal } from '../providers/ModalProvider';
 import PromptModsFolderModal from '../components/PromptModsFolderModal';
-import { useMods } from '../providers/ModsProvider';
 import ProfileSelector from '../components/ProfileSelector';
 import LoadOrderModal from '../components/LoadOrderModal';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 const Mods = () => {
-  const location = useLocation();
   const { showModal, hideModal } = useModal();
-  const { mods, loadMods } = useMods();
   const queryClient = useQueryClient();
   const [advancedOpen, setAdvancedOpen] = useState<boolean>(false);
   const [useCustomSavefile, setUseCustomSavefile] = useState<boolean>(false);
@@ -45,30 +40,10 @@ const Mods = () => {
     }
   };
 
-  const handleModalClose = () => {
-    hideModal();
-  };
-
   const showLoadOrderModal = () => {
     showModal({
       title: 'Load Order',
       content: <LoadOrderModal hideModal={hideModal} />,
-    });
-  };
-
-  const showAddModModal = (fromZip: boolean) => {
-    showModal({
-      title: 'Add Mod',
-      content: (
-        <AddMod
-          close={handleModalClose}
-          fromZip={fromZip}
-          namesInUse={mods.map((mod) => mod.name.toLowerCase())}
-          loadMods={() => {
-            void loadMods();
-          }}
-        />
-      ),
     });
   };
 
@@ -85,14 +60,6 @@ const Mods = () => {
     void checkModsFolderPrompt();
   }, []);
 
-  useEffect(() => {
-    if (location.state) {
-      const { opened, fromZip } = location.state as { opened: boolean; fromZip: boolean };
-      if (!opened) return;
-      showAddModModal(fromZip);
-    }
-  }, [location]);
-
   return (
     <Stack gap="sm" flex={1} style={{ minHeight: 0, overflow: 'hidden' }}>
       {/* Scrollable mod table — grows to fill space */}
@@ -107,11 +74,8 @@ const Mods = () => {
         {/* Row 1: Add mod actions (left) + profile controls (right) */}
         <Group gap="sm" justify="space-between">
           <Group gap="sm">
-            <Button variant="outline" onClick={() => showAddModModal(true)}>
-              Add Mod from Zip
-            </Button>
-            <Button variant="outline" onClick={() => showAddModModal(false)}>
-              Add Mod from Folder
+            <Button variant="filled" onClick={() => window.electronAPI.openGetModsWindow()}>
+              Get Mods
             </Button>
             <Button variant="outline" onClick={showLoadOrderModal}>
               Load Order

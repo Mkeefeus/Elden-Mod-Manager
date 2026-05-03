@@ -30,6 +30,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { RouterProvider, createHashRouter, RouteObject } from 'react-router-dom';
 import App from './App';
+import GetMods from './pages/GetMods';
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
 import '@fontsource/cinzel';
@@ -51,6 +52,10 @@ const browserRouter = createHashRouter([
   {
     element: <App />,
     children: childRoutes,
+  },
+  {
+    path: '/get-mods',
+    element: <GetMods />,
   },
 ]);
 

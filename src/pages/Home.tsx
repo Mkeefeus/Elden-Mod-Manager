@@ -10,7 +10,6 @@ import {
   Text,
   Paper,
 } from '@mantine/core';
-import { useNavigate } from 'react-router-dom';
 import NewsCard from '../components/NewsCard';
 import { useElementSize } from '@mantine/hooks';
 import { useQuery } from '@tanstack/react-query';
@@ -21,8 +20,6 @@ import { decode } from 'he';
 const quickActions: { label: string; variant: string }[] = [
   { label: 'Play', variant: 'filled' },
   { label: 'Play Vanilla', variant: 'light' },
-  { label: 'Add a Mod (Zip)', variant: 'outline' },
-  { label: 'Add a Mod (Folder)', variant: 'outline' },
 ];
 
 interface Author {
@@ -64,7 +61,6 @@ interface NewsData {
 }
 
 const Home = () => {
-  const navigate = useNavigate();
   const theme = useMantineTheme();
   const pageSize = useElementSize();
   const contentSize = useElementSize();
@@ -120,18 +116,11 @@ const Home = () => {
         case 1:
           window.electronAPI.launchGame(false);
           break;
-        case 2:
-          void navigate('/mods', { state: { fromZip: true, opened: true } });
-          break;
-        case 3:
-          void navigate('/mods', { state: { fromZip: false, opened: true } });
-          break;
       }
     } catch (error) {
-      window.electronAPI.log({
+      sendLog({
         level: 'error',
-        message: error instanceof Error ? error.message : (error as string),
-        label: 'Quick Action Error',
+        message: `An error occured while performing quick action: ${errToString(error)}`,
       });
     }
   };

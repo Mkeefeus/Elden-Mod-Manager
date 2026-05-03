@@ -1,6 +1,6 @@
 import path from 'path';
 import log from 'electron-log/main';
-import { app } from 'electron';
+import { app, WebContents } from 'electron';
 import { getMainWindow } from '../main';
 import { type LogEntry } from 'types';
 
@@ -45,12 +45,17 @@ export const logger = {
 /**
  * Called from mainEvents when the renderer sends a 'log' IPC message.
  * Writes to file and echoes a 'notify' event back so the renderer can show a toast.
+ * If a sender WebContents is provided, the notification goes only to that window;
+ * otherwise it falls back to the main window.
  */
-export const handleLog = (entry: LogEntry) => {
+export const handleLog = (entry: LogEntry, sender?: WebContents) => {
   const { level, message, hideDisplay } = entry;
   if (level === 'error') log.error(message);
   else if (level === 'warning' || level === 'warn') log.warn(message);
   else if (level === 'debug') log.debug(message);
   else log.info(message);
-  notifyGui(level, message, hideDisplay);
+  if (!hideDisplay && level !== 'debug') {
+    const target = sender ?? getMainWindow()?.webContents;
+    target?.send('notify', { level, message });
+  }
 };

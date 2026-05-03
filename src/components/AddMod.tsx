@@ -82,7 +82,7 @@ const AddMod = ({ close, fromZip, namesInUse, loadMods }: AddModProps) => {
   };
 
   const extractZip = async () => {
-    const zipPath = await window.electronAPI.browse('zip', 'Select zip file');
+    const zipPath = await window.electronAPI.browse('archive', 'Select zip file');
     if (!zipPath) {
       sendLog({
         level: 'info',
@@ -92,7 +92,7 @@ const AddMod = ({ close, fromZip, namesInUse, loadMods }: AddModProps) => {
     }
 
     setShowExtractLoader(true);
-    const extracted = await window.electronAPI.extractZip(zipPath);
+    const extracted = await window.electronAPI.extractArchive(zipPath);
     setShowExtractLoader(false);
     if (!extracted) {
       sendLog({

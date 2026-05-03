@@ -14,7 +14,7 @@ dotenv.config();
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
-    extraResource: ['public/256x256.png'],
+    extraResource: ['public/256x256.png', 'node_modules/7zip-bin'],
     icon: 'public/EMM-Icon.ico',
     name: 'Elden Mod Manager',
     executableName: 'elden-mod-manager',

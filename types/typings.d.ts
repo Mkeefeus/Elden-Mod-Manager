@@ -2,6 +2,7 @@ declare module '*.module.css' {
   const classes: { [key: string]: string };
   export default classes;
 }
+declare module '*.css' {}
 declare module 'create-desktop-shortcuts' {
   export interface ShortcutOptions {
     onlyCurrentOS?: boolean;
