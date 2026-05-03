@@ -1,31 +1,29 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Select, Group, ActionIcon, Tooltip, TextInput, Button, Stack, Text } from '@mantine/core';
-import { ModProfile } from 'types';
 import { useMods } from '../providers/ModsProvider';
 import { useModal } from '../providers/ModalProvider';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faFloppyDisk, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 const ProfileSelector = ({ onApply }: { onApply?: () => void }) => {
   const { loadMods } = useMods();
   const { showModal, hideModal } = useModal();
-  const [profiles, setProfiles] = useState<ModProfile[]>([]);
-  const [activeId, setActiveId] = useState<string>('');
+  const queryClient = useQueryClient();
 
-  const refreshProfiles = async () => {
-    const [ps, id] = await Promise.all([window.electronAPI.loadProfiles(), window.electronAPI.getActiveProfileId()]);
-    setProfiles(ps);
-    setActiveId(id);
-  };
-
-  useEffect(() => {
-    void refreshProfiles();
-  }, []);
+  const { data: profiles = [] } = useQuery({
+    queryKey: ['profiles'],
+    queryFn: () => window.electronAPI.loadProfiles(),
+  });
+  const { data: activeId = '' } = useQuery({
+    queryKey: ['active-profile-id'],
+    queryFn: () => window.electronAPI.getActiveProfileId(),
+  });
 
   const handleProfileChange = async (uuid: string | null) => {
     if (!uuid) return;
     await window.electronAPI.applyProfile(uuid);
-    setActiveId(uuid);
+    queryClient.setQueryData(['active-profile-id'], uuid);
     void loadMods();
     onApply?.();
   };
@@ -47,13 +45,13 @@ const ProfileSelector = ({ onApply }: { onApply?: () => void }) => {
   const handleCreate = async (name: string) => {
     hideModal();
     await window.electronAPI.createProfile(name);
-    await refreshProfiles();
+    await queryClient.invalidateQueries({ queryKey: ['profiles'] });
   };
 
   const handleSave = async () => {
     if (!activeId) return;
     await window.electronAPI.updateProfile(activeId);
-    await refreshProfiles();
+    await queryClient.invalidateQueries({ queryKey: ['profiles'] });
   };
 
   const handleDelete = () => {
@@ -66,9 +64,9 @@ const ProfileSelector = ({ onApply }: { onApply?: () => void }) => {
           name={profile?.name ?? ''}
           onConfirm={() => {
             hideModal();
-            window.electronAPI.deleteProfile(activeId);
-            setActiveId('');
-            void refreshProfiles();
+            void window.electronAPI.deleteProfile(activeId);
+            queryClient.setQueryData(['active-profile-id'], '');
+            void queryClient.invalidateQueries({ queryKey: ['profiles'] });
           }}
           onCancel={hideModal}
         />

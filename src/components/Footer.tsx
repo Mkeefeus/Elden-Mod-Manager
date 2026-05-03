@@ -3,19 +3,16 @@ import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import { faCoffee } from '@fortawesome/free-solid-svg-icons';
 import { Button, Group, Text } from '@mantine/core';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
-import { useEffect, useState } from 'react';
 import { IconArrowUpCircle } from '@tabler/icons-react';
-import type { LatestRelease } from '../../types';
+import { useQuery } from '@tanstack/react-query';
 
 const Footer = () => {
-  const [update, setUpdate] = useState<LatestRelease | null>(null);
-
-  useEffect(() => {
-    window.electronAPI
-      .getLatestVersion()
-      .then((release) => setUpdate(release))
-      .catch(() => undefined);
-  }, []);
+  const { data: update } = useQuery({
+    queryKey: ['latest-release'],
+    queryFn: () => window.electronAPI.getLatestVersion(),
+    staleTime: Infinity,
+    retry: false,
+  });
 
   const links: { icon: IconDefinition; href: string }[] = [
     {

@@ -707,6 +707,18 @@
     "licenseUrl": "https://github.com/TanStack/query/raw/master/LICENSE",
     "parents": "elden-mod-manager"
   },
+  "@tanstack/react-virtual": {
+    "licenses": "MIT",
+    "repository": "https://github.com/TanStack/virtual",
+    "licenseUrl": "https://github.com/TanStack/virtual/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
+  "@tanstack/virtual-core": {
+    "licenses": "MIT",
+    "repository": "https://github.com/TanStack/virtual",
+    "licenseUrl": "https://github.com/TanStack/virtual/raw/master/LICENSE",
+    "parents": "elden-mod-manager"
+  },
   "@tootallnate/once": {
     "licenses": "MIT",
     "repository": "https://github.com/TooTallNate/once",

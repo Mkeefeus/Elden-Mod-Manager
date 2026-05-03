@@ -16,6 +16,7 @@ export type DBSchema = {
   showLogos: boolean;
   skipSteamInit: boolean;
   windowSate: WindowState;
+  nexusApiKey?: string;
 };
 
 const schema: Schema<DBSchema> = {
@@ -125,6 +126,10 @@ const schema: Schema<DBSchema> = {
       displayId: { type: 'number' },
     },
     default: { width: 1280, height: 720, x: 0, y: 0, displayId: 0 },
+  },
+  nexusApiKey: {
+    type: 'string',
+    default: '',
   },
 };
 

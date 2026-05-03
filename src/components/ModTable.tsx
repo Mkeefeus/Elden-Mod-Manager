@@ -16,8 +16,7 @@ const ModTable = () => {
   const { mods, sort, saveMods, changeSort } = useMods();
 
   const handleCheckboxChange = (index: number) => {
-    const newMods = [...mods];
-    newMods[index].enabled = !newMods[index].enabled;
+    const newMods = mods.map((mod, i) => (i === index ? { ...mod, enabled: !mod.enabled } : mod));
     void saveMods(newMods);
   };
 

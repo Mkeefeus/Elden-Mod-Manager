@@ -1,6 +1,7 @@
 import { Button, Collapse, Divider, Group, ScrollArea, Stack, Switch, Text, TextInput } from '@mantine/core';
 import ModTable from '../components/ModTable';
 import { useEffect, useState } from 'react';
+import { ModProfile } from 'types';
 import { useLocation } from 'react-router-dom';
 import AddMod from '../components/AddMod';
 import { useModal } from '../providers/ModalProvider';
@@ -8,59 +9,40 @@ import PromptModsFolderModal from '../components/PromptModsFolderModal';
 import { useMods } from '../providers/ModsProvider';
 import ProfileSelector from '../components/ProfileSelector';
 import LoadOrderModal from '../components/LoadOrderModal';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 const Mods = () => {
   const location = useLocation();
   const { showModal, hideModal } = useModal();
   const { mods, loadMods } = useMods();
-  const [startOnline, setStartOnlineState] = useState<boolean>(false);
-  const [savefile, setSavefileState] = useState<string>('');
-  const [useCustomSavefile, setUseCustomSavefile] = useState<boolean>(false);
-  const [disableArxan, setDisableArxanState] = useState<boolean>(false);
-  const [noMemPatch, setNoMemPatchState] = useState<boolean>(false);
+  const queryClient = useQueryClient();
   const [advancedOpen, setAdvancedOpen] = useState<boolean>(false);
+  const [useCustomSavefile, setUseCustomSavefile] = useState<boolean>(false);
 
-  const refreshProfileSettings = () => {
-    void window.electronAPI.getActiveProfile().then((profile) => {
-      if (!profile) return;
-      setStartOnlineState(profile.startOnline);
-      setSavefileState(profile.savefile);
-      setUseCustomSavefile(!!profile.savefile);
-      setDisableArxanState(profile.disableArxan);
-      setNoMemPatchState(profile.noMemPatch);
-    });
-  };
+  const { data: activeProfile } = useQuery({
+    queryKey: ['active-profile'],
+    queryFn: () => window.electronAPI.getActiveProfile(),
+    staleTime: Infinity,
+  });
 
   useEffect(() => {
-    refreshProfileSettings();
-  }, []);
+    if (activeProfile?.savefile) setUseCustomSavefile(true);
+  }, [activeProfile]);
 
-  const handleStartOnlineChange = (value: boolean) => {
-    setStartOnlineState(value);
-    window.electronAPI.updateActiveProfileSettings({ startOnline: value });
+  const updateActiveProfile = (patch: Partial<ModProfile>) => {
+    queryClient.setQueryData(['active-profile'], { ...activeProfile!, ...patch });
+    window.electronAPI.updateActiveProfileSettings(patch);
   };
 
   const handleCustomSavefileToggle = (enabled: boolean) => {
     setUseCustomSavefile(enabled);
     if (!enabled) {
-      setSavefileState('');
-      window.electronAPI.updateActiveProfileSettings({ savefile: '' });
+      updateActiveProfile({ savefile: '' });
+    } else {
+      updateActiveProfile({
+        savefile: activeProfile && activeProfile.savefile ? activeProfile.savefile : 'ModdedSave.sl2',
+      });
     }
-  };
-
-  const handleSavefileChange = (value: string) => {
-    setSavefileState(value);
-    window.electronAPI.updateActiveProfileSettings({ savefile: value });
-  };
-
-  const handleDisableArxanChange = (value: boolean) => {
-    setDisableArxanState(value);
-    window.electronAPI.updateActiveProfileSettings({ disableArxan: value });
-  };
-
-  const handleNoMemPatchChange = (value: boolean) => {
-    setNoMemPatchState(value);
-    window.electronAPI.updateActiveProfileSettings({ noMemPatch: value });
   };
 
   const handleModalClose = () => {
@@ -136,7 +118,7 @@ const Mods = () => {
             </Button>
           </Group>
           <Group gap="sm">
-            <ProfileSelector onApply={refreshProfileSettings} />
+            <ProfileSelector onApply={() => void queryClient.invalidateQueries({ queryKey: ['active-profile'] })} />
           </Group>
         </Group>
 
@@ -167,28 +149,28 @@ const Mods = () => {
               <TextInput
                 description="Override the default save file name, e.g. MyModdedSave.sl2"
                 placeholder="Leave blank to use the default save"
-                value={savefile}
-                onChange={(e) => handleSavefileChange(e.currentTarget.value)}
+                value={activeProfile?.savefile ?? ''}
+                onChange={(e) => updateActiveProfile({ savefile: e.currentTarget.value })}
                 style={{ maxWidth: 400 }}
               />
             )}
             <Switch
               label="Start Online"
               description="Launch the game in online mode (default: off)"
-              checked={startOnline}
-              onChange={(e) => handleStartOnlineChange(e.currentTarget.checked)}
+              checked={activeProfile?.startOnline ?? false}
+              onChange={(e) => updateActiveProfile({ startOnline: e.currentTarget.checked })}
             />
             <Switch
               label="Disable Arxan"
               description="Neutralize Arxan/GuardIT code protection (default: off)"
-              checked={disableArxan}
-              onChange={(e) => handleDisableArxanChange(e.currentTarget.checked)}
+              checked={activeProfile?.disableArxan ?? false}
+              onChange={(e) => updateActiveProfile({ disableArxan: e.currentTarget.checked })}
             />
             <Switch
               label="Skip Memory Patch"
               description="Do not increase memory limits — may affect game stability (default: off)"
-              checked={noMemPatch}
-              onChange={(e) => handleNoMemPatchChange(e.currentTarget.checked)}
+              checked={activeProfile?.noMemPatch ?? false}
+              onChange={(e) => updateActiveProfile({ noMemPatch: e.currentTarget.checked })}
             />
           </Stack>
         </Collapse>

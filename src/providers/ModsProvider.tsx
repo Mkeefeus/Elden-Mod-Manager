@@ -1,7 +1,7 @@
-import { ReactNode, createContext, useContext, useEffect, useState } from 'react';
+import { ReactNode, createContext, useContext, useMemo, useState } from 'react';
 import { sendLog } from '../utils/rendererLogger';
-import { errToString } from '../utils/utilities';
 import { Mod } from 'types';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 interface Sort {
   column: string;
@@ -19,7 +19,7 @@ interface ModsCtxValue {
 const ModsContext = createContext<ModsCtxValue | null>(null);
 
 const ModsProvider = ({ children }: { children: ReactNode }) => {
-  const [mods, setMods] = useState<Mod[]>([]);
+  const queryClient = useQueryClient();
   const [sort, setSort] = useState<Sort>({ column: 'installDate', order: 'desc' });
 
   const getComparable = (value: Date | boolean | number | string | undefined): number | string => {
@@ -41,47 +41,29 @@ const ModsProvider = ({ children }: { children: ReactNode }) => {
     return [...unsortedMods].sort((a, b) => columnSorter(a, b, sort.column as keyof Mod, sort.order));
   };
 
-  const loadMods = async () => {
-    try {
+  const { data: rawMods = [] } = useQuery({
+    queryKey: ['mods'],
+    queryFn: async () => {
       const dbMods = await window.electronAPI.loadMods();
       if (!dbMods) {
-        sendLog({
-          level: 'error',
-          message: 'Failed to load mods',
-        });
-        return;
+        sendLog({ level: 'error', message: 'Failed to load mods' });
+        return [] as Mod[];
       }
-      setMods(sortMods(dbMods));
-    } catch (error) {
-      const message = `An error occured while loading mods: ${errToString(error)}`;
-      sendLog({
-        level: 'error',
-        message: message,
-        error,
-      });
-    }
-  };
+      return dbMods;
+    },
+  });
 
-  useEffect(() => {
-    void loadMods();
-  }, []);
+  const mods = useMemo(() => sortMods(rawMods), [rawMods, sort]);
 
-  useEffect(() => {
-    setMods(sortMods(mods));
-  }, [sort]);
+  const loadMods = () => queryClient.invalidateQueries({ queryKey: ['mods'] });
 
   const saveMods = async (newMods: Mod[]) => {
-    const sortedMods = sortMods(newMods);
-    await Promise.resolve();
     const success = await window.electronAPI.saveMods(newMods);
     if (!success) {
-      sendLog({
-        level: 'error',
-        message: 'Failed to save mods',
-      });
+      sendLog({ level: 'error', message: 'Failed to save mods' });
       return;
     }
-    setMods(sortedMods);
+    await queryClient.invalidateQueries({ queryKey: ['mods'] });
   };
 
   const changeSort = (column: string) => {

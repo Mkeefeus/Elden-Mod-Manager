@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Button, Group, Loader, Stack, Tabs, Text, Textarea } from '@mantine/core';
 import { Mod } from 'types';
+import { useQuery } from '@tanstack/react-query';
 
 interface IniEditorModalProps {
   mod: Mod;
@@ -8,27 +9,29 @@ interface IniEditorModalProps {
 }
 
 const IniEditorModal = ({ mod, close }: IniEditorModalProps) => {
-  const [files, setFiles] = useState<string[]>([]);
-  const [contents, setContents] = useState<Record<string, string>>({});
-  const [dirty, setDirty] = useState<Record<string, boolean>>({});
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const load = async () => {
-      const iniFiles = await window.electronAPI.listIniFiles(mod.name);
+  const { data, isPending } = useQuery({
+    queryKey: ['ini-files', mod.name],
+    queryFn: async () => {
+      const files = await window.electronAPI.listIniFiles(mod.name);
       const contentMap: Record<string, string> = {};
       await Promise.all(
-        iniFiles.map(async (f) => {
+        files.map(async (f) => {
           contentMap[f] = await window.electronAPI.readIniFile(mod.name, f);
         })
       );
-      setFiles(iniFiles);
-      setContents(contentMap);
-      setDirty(Object.fromEntries(iniFiles.map((f) => [f, false])));
-      setLoading(false);
-    };
-    void load();
-  }, [mod.name]);
+      return { files, contents: contentMap };
+    },
+  });
+
+  const files = data?.files ?? [];
+  const [contents, setContents] = useState<Record<string, string>>({});
+  const [dirty, setDirty] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    if (!data) return;
+    setContents(data.contents);
+    setDirty(Object.fromEntries(data.files.map((f) => [f, false])));
+  }, [data]);
 
   const handleChange = (filename: string, value: string) => {
     setContents((prev) => ({ ...prev, [filename]: value }));
@@ -44,7 +47,7 @@ const IniEditorModal = ({ mod, close }: IniEditorModalProps) => {
     await Promise.all(files.filter((f) => dirty[f]).map((f) => handleSave(f)));
   };
 
-  if (loading) {
+  if (isPending) {
     return (
       <Group justify="center" p="md">
         <Loader />

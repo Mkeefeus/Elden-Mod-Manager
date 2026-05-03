@@ -304,3 +304,26 @@ export const setWindowState = (state: WindowState) => {
     throw new Error(msg, { cause: err });
   }
 };
+
+export const getNexusApiKey = (): string => {
+  debug('Getting Nexus API key');
+  try {
+    return store.get('nexusApiKey') || '';
+  } catch (err) {
+    const msg = `An error occured while getting Nexus API key: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg, { cause: err });
+  }
+};
+
+export const setNexusApiKey = (key: string) => {
+  debug('Setting Nexus API key');
+  try {
+    store.set('nexusApiKey', key);
+    return true;
+  } catch (err) {
+    const msg = `An error occured while setting Nexus API key: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg, { cause: err });
+  }
+};

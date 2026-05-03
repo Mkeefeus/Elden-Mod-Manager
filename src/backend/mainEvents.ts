@@ -19,6 +19,8 @@ import {
   setActiveProfileId,
   getLauncherSettings,
   setLauncherSettings,
+  getNexusApiKey,
+  setNexusApiKey,
 } from './db/api';
 import { AddModFormValues, BrowseType, Mod, LogEntry } from 'types';
 import { existsSync } from 'fs';
@@ -38,8 +40,9 @@ import {
 } from './profiles';
 import './me3Profile';
 import { getMainWindow } from '../main';
+import { validateNexusApiKey } from './nexus';
 
-const { debug, error } = logger;
+const { debug, error, warning } = logger;
 
 app
   .whenReady()
@@ -209,6 +212,33 @@ app
       } catch (err) {
         debug(`Version check failed: ${errToString(err)}`);
         return null;
+      }
+    });
+
+    ipcMain.handle('get-nexus-api-key', () => {
+      return getNexusApiKey();
+    });
+
+    ipcMain.handle('validate-nexus-api-key', async () => {
+      const key = getNexusApiKey();
+      if (!key) return null;
+      try {
+        return await validateNexusApiKey(key);
+      } catch (err) {
+        const msg = `Failed to validate Nexus API key: ${errToString(err)}`;
+        warning(msg);
+        throw new Error(msg, { cause: err });
+      }
+    });
+
+    ipcMain.handle('set-nexus-api-key', async (_, key: string) => {
+      try {
+        const user = await validateNexusApiKey(key);
+        setNexusApiKey(key);
+        return user;
+      } catch (err) {
+        const msg = `Failed to validate Nexus API key: ${errToString(err)}`;
+        warning(msg);
       }
     });
 

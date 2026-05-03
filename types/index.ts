@@ -88,3 +88,12 @@ export type WindowState = {
   y: number;
   displayId: number;
 };
+
+export type NexusUser = {
+  userId: number;
+  name: string;
+  premium: boolean;
+  supporter: boolean;
+  email: string;
+  profileUrl: string;
+};

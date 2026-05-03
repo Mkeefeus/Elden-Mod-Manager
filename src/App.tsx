@@ -36,60 +36,67 @@ const AppNavbar = () => {
   );
 };
 
-const App = () => {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: {
-        refetchOnWindowFocus: false,
-        staleTime: 1000 * 60 * 5,
-      },
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      staleTime: 1000 * 60 * 5,
     },
-  });
+  },
+});
+
+void queryClient.prefetchQuery({
+  queryKey: ['licenses'],
+  queryFn: () => fetch('./licenses.json').then((r) => r.json()),
+  staleTime: Infinity,
+});
+
+const App = () => {
   return (
-    <AppShell
-      header={{ height: { base: 60, md: 70, lg: 80 } }}
-      footer={{ height: { base: 60, md: 70, lg: 80 } }}
-      navbar={{
-        width: 250,
-        breakpoint: 'sm',
-      }}
-    >
-      <AppShell.Header
-        style={{
-          borderBottom: '1px solid var(--mantine-color-gold-7)',
-          display: 'flex',
-          alignItems: 'center',
+    <QueryClientProvider client={queryClient}>
+      <AppShell
+        header={{ height: { base: 60, md: 70, lg: 80 } }}
+        footer={{ height: { base: 60, md: 70, lg: 80 } }}
+        navbar={{
+          width: 250,
+          breakpoint: 'sm',
         }}
       >
-        <Group h="100%" px="md">
-          <Title
-            style={{
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-              fontSize: 'clamp(1rem, 2vw, 1.4rem)',
-            }}
-          >
-            Elden Mod Manager
-          </Title>
-        </Group>
-      </AppShell.Header>
-      <AppShell.Navbar p="md">
-        <AppNavbar />
-      </AppShell.Navbar>
-      <AppShell.Main display={'flex'} style={{ flexDirection: 'column' }}>
-        <ModsProvider>
-          <ModalProvider>
-            <QueryClientProvider client={queryClient}>
+        <AppShell.Header
+          style={{
+            borderBottom: '1px solid var(--mantine-color-gold-7)',
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          <Group h="100%" px="md">
+            <Title
+              style={{
+                letterSpacing: '0.12em',
+                textTransform: 'uppercase',
+                fontSize: 'clamp(1rem, 2vw, 1.4rem)',
+              }}
+            >
+              Elden Mod Manager
+            </Title>
+          </Group>
+        </AppShell.Header>
+        <AppShell.Navbar p="md">
+          <AppNavbar />
+        </AppShell.Navbar>
+        <AppShell.Main display={'flex'} style={{ flexDirection: 'column' }}>
+          <ModsProvider>
+            <ModalProvider>
               <Modal />
               <Outlet />
-            </QueryClientProvider>
-          </ModalProvider>
-        </ModsProvider>
-      </AppShell.Main>
-      <AppShell.Footer>
-        <Footer />
-      </AppShell.Footer>
-    </AppShell>
+            </ModalProvider>
+          </ModsProvider>
+        </AppShell.Main>
+        <AppShell.Footer>
+          <Footer />
+        </AppShell.Footer>
+      </AppShell>
+    </QueryClientProvider>
   );
 };
 
