@@ -20,11 +20,11 @@ const ModTableMenu = ({ mod }: ModTableMenuProps) => {
 
   useEffect(() => {
     const check = async () => {
-      const files = await window.electronAPI.listIniFiles(mod.name);
+      const files = await window.electronAPI.listIniFiles(mod);
       setHasIniFiles(files.length > 0);
     };
     void check();
-  }, [mod.name]);
+  }, [mod.uuid, mod.name, mod.version]);
 
   const handleDelete = () => {
     showModal({

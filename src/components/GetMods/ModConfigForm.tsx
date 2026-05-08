@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   Box,
   Button,
@@ -41,14 +41,22 @@ const deriveModName = (filename: string): string =>
     .replace(/\s+/g, ' ')
     .trim();
 
+const buildModIdentity = (name: string, version?: string): string =>
+  `${name.trim().toLowerCase()}::${(version ?? '').trim().toLowerCase()}`;
+
+const getSuggestedModName = (download: DownloadState): string =>
+  download.nexusSuggestedModName ?? deriveModName(download.filename);
+
 const ModConfigForm = ({ download, onSuccess, onDismiss }: Props) => {
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [namesInUse, setNamesInUse] = useState<string[]>([]);
+  const [installedModKeys, setInstalledModKeys] = useState<string[]>([]);
+  const lastDownloadIdRef = useRef(download.id);
+  const lastSuggestedModNameRef = useRef(getSuggestedModName(download));
 
   const form = useForm<AddModFormValues>({
     initialValues: {
-      modName: deriveModName(download.filename),
+      modName: getSuggestedModName(download),
       isDll: false,
       path: download.extractedPath ?? '',
       delete: false,
@@ -61,11 +69,17 @@ const ModConfigForm = ({ download, onSuccess, onDismiss }: Props) => {
       initializerType: 'none',
       initializerDelayMs: 0,
       initializerFunction: '',
+      modVersion: download.nexusVersion,
+      nexusModId: download.nexusModId,
+      nexusFileId: download.nexusFileId,
+      nexusGameDomain: download.nexusGameDomain,
     },
     validate: {
-      modName: (v) => {
+      modName: (v, values) => {
         if (!v.trim()) return 'Mod name is required';
-        if (namesInUse.includes(v.trim().toLowerCase())) return 'Mod name is already in use';
+        if (installedModKeys.includes(buildModIdentity(v, values.modVersion))) {
+          return 'Mod name and version are already in use';
+        }
         return null;
       },
       path: isNotEmpty('Path is required'),
@@ -74,11 +88,42 @@ const ModConfigForm = ({ download, onSuccess, onDismiss }: Props) => {
     },
   });
 
+  useEffect(() => {
+    const suggestedModName = getSuggestedModName(download);
+
+    if (download.id !== lastDownloadIdRef.current) {
+      form.setFieldValue('modName', suggestedModName);
+      lastDownloadIdRef.current = download.id;
+      lastSuggestedModNameRef.current = suggestedModName;
+      return;
+    }
+
+    if (form.values.modName.trim() === lastSuggestedModNameRef.current.trim()) {
+      form.setFieldValue('modName', suggestedModName);
+    }
+
+    lastSuggestedModNameRef.current = suggestedModName;
+  }, [download.id, download.filename, download.nexusSuggestedModName]);
+
+  useEffect(() => {
+    form.setFieldValue('path', download.extractedPath ?? '');
+    form.setFieldValue('modVersion', download.nexusVersion);
+    form.setFieldValue('nexusModId', download.nexusModId);
+    form.setFieldValue('nexusFileId', download.nexusFileId);
+    form.setFieldValue('nexusGameDomain', download.nexusGameDomain);
+  }, [
+    download.extractedPath,
+    download.nexusVersion,
+    download.nexusModId,
+    download.nexusFileId,
+    download.nexusGameDomain,
+  ]);
+
   // Load names in use and auto-scan for dll/exe
   useEffect(() => {
     window.electronAPI
       .loadMods()
-      .then((mods) => setNamesInUse(mods.map((m) => m.name.toLowerCase())))
+      .then((mods) => setInstalledModKeys(mods.map((m) => buildModIdentity(m.name, m.version))))
       .catch(console.error);
 
     if (download.extractedPath) {

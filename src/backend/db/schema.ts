@@ -36,6 +36,7 @@ const schema: Schema<DBSchema> = {
         optional: { type: 'boolean' },
         finalizer: { type: 'string' },
         initializer: { type: 'object' },
+        version: { type: 'string' },
         loadBefore: {
           type: 'array',
           items: {
@@ -56,6 +57,9 @@ const schema: Schema<DBSchema> = {
             },
           },
         },
+        nexusModId: { type: 'number' },
+        nexusFileId: { type: 'number' },
+        nexusGameDomain: { type: 'string' },
       },
       required: ['uuid', 'name', 'installDate'],
     },

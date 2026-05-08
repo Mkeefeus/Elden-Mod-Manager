@@ -44,8 +44,8 @@ const GetModsInner = () => {
   useEffect(() => {
     window.electronAPI.onDownloadStarted((state) => {
       setDownloads((prev) => {
-        const exists = prev.find((d) => d.id === state.id);
-        return exists ? prev : [...prev, state];
+        const exists = prev.some((d) => d.id === state.id);
+        return exists ? prev.map((d) => (d.id === state.id ? { ...d, ...state } : d)) : [...prev, state];
       });
     });
 

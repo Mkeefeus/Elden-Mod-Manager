@@ -10,13 +10,20 @@ import { getMainWindow } from '../main';
 
 const { debug, error, warning } = logger;
 
+const normalizeOptionalString = (value: unknown): string | undefined => {
+  if (typeof value !== 'string') return undefined;
+
+  const trimmedValue = value.trim();
+  return trimmedValue || undefined;
+};
+
 const genUUID = (): string => {
   debug('Generating UUID');
   const uuid = randomUUID();
   debug(`UUID generated: ${uuid}, checking for duplicates`);
   const mods = loadMods();
   const existingUUIDs = mods.map((mod) => mod.uuid);
-  const duplicate = existingUUIDs?.includes(uuid);
+  const duplicate = existingUUIDs.includes(uuid);
   if (duplicate) {
     debug('Duplicate UUID found, generating new UUID');
     return genUUID();
@@ -66,6 +73,7 @@ export const handleAddMod = (formData: AddModFormValues) => {
   const uuid = genUUID();
   const dllFileName = formData.dllPath ? formData.dllPath.split(/[/\\]/).pop() : undefined;
   const exeFileName = formData.exePath ? formData.exePath.split(/[/\\]/).pop() : undefined;
+  const modVersion = normalizeOptionalString((formData as AddModFormValues & Record<string, unknown>).modVersion);
 
   let initializer: NativeInitializerCondition | undefined;
   if (dllFileName) {
@@ -87,6 +95,10 @@ export const handleAddMod = (formData: AddModFormValues) => {
     optional: dllFileName && formData.optional ? true : undefined,
     finalizer: dllFileName && formData.finalizer ? formData.finalizer : undefined,
     initializer,
+    version: modVersion,
+    nexusModId: formData.nexusModId,
+    nexusFileId: formData.nexusFileId,
+    nexusGameDomain: formData.nexusGameDomain,
   };
 
   debug(`Adding new mod: ${JSON.stringify(newMod)}`);
@@ -98,7 +110,7 @@ export const handleAddMod = (formData: AddModFormValues) => {
     return;
   }
 
-  const pathName = CreateModPathFromName(newMod.name);
+  const pathName = CreateModPathFromName(newMod.name, newMod.version);
   const installPath = join(getModsFolder(), pathName);
   debug(`Installing mod to: ${installPath}`);
 
@@ -150,7 +162,7 @@ export const handleDeleteMod = (mod: Mod) => {
     return;
   }
   const newMods = mods.filter((m) => m.uuid !== mod.uuid);
-  const pathName = CreateModPathFromName(mod.name);
+  const pathName = CreateModPathFromName(mod.name, mod.version);
   debug(`Removing mod from: ${pathName}`);
   const installPath = join(getModsFolder(), pathName);
   debug(`Checking if mod path exists: ${installPath}`);

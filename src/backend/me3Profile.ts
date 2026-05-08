@@ -28,7 +28,7 @@ const generateMe3ProfileString = (mods: Mod[], savefile: string, startOnline: bo
   };
 
   const natives = sortLoadOrder(nativeMods).map((mod) => {
-    const modPath = path.join(getModsFolder(), CreateModPathFromName(mod.name), mod.dllFile!);
+    const modPath = path.join(getModsFolder(), CreateModPathFromName(mod.name, mod.version), mod.dllFile!);
     const entry: Record<string, unknown> = {
       path: modPath,
     };
@@ -42,7 +42,7 @@ const generateMe3ProfileString = (mods: Mod[], savefile: string, startOnline: bo
   });
 
   const packages = sortLoadOrder(packageMods).map((mod) => {
-    const modPath = path.join(getModsFolder(), CreateModPathFromName(mod.name));
+    const modPath = path.join(getModsFolder(), CreateModPathFromName(mod.name, mod.version));
     const entry: Record<string, unknown> = {
       id: mod.uuid,
       path: `${modPath}/`,

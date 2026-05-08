@@ -166,7 +166,7 @@ app
     ipcMain.on('launch-mod-exe', (_, mod: Mod) => {
       debug(`Launching mod executable: ${mod.exe}`);
       try {
-        void shell.openPath(join(getModsFolder(), CreateModPathFromName(mod.name), mod.exe!));
+        void shell.openPath(join(getModsFolder(), CreateModPathFromName(mod.name, mod.version), mod.exe!));
       } catch (err) {
         const msg = `An error occured while launching mod executable: ${errToString(err)}`;
         error(msg);
@@ -176,7 +176,7 @@ app
 
     ipcMain.on('open-mod-folder', (_, mod: Mod) => {
       debug(`Opening mod folder: ${mod.name}`);
-      void shell.openPath(join(getModsFolder(), CreateModPathFromName(mod.name)));
+      void shell.openPath(join(getModsFolder(), CreateModPathFromName(mod.name, mod.version)));
     });
 
     ipcMain.on('log', (event, log: LogEntry) => {
@@ -264,13 +264,13 @@ app
     ipcMain.handle('update-profile', (_, uuid: string) => handleUpdateProfile(uuid));
 
     // INI file editor
-    ipcMain.handle('list-ini-files', (_, modName: string) => {
-      const modDir = join(getModsFolder(), CreateModPathFromName(modName));
+    ipcMain.handle('list-ini-files', (_, mod: Mod) => {
+      const modDir = join(getModsFolder(), CreateModPathFromName(mod.name, mod.version));
       return listIniFiles(modDir);
     });
 
-    ipcMain.handle('read-ini-file', (_, modName: string, filename: string) => {
-      const modDir = join(getModsFolder(), CreateModPathFromName(modName));
+    ipcMain.handle('read-ini-file', (_, mod: Mod, filename: string) => {
+      const modDir = join(getModsFolder(), CreateModPathFromName(mod.name, mod.version));
       const filePath = join(modDir, filename);
       // Prevent path traversal
       if (!filePath.startsWith(normalize(modDir) + sep)) {
@@ -279,8 +279,8 @@ app
       return readIniFile(filePath);
     });
 
-    ipcMain.handle('write-ini-file', (_, modName: string, filename: string, content: string) => {
-      const modDir = join(getModsFolder(), CreateModPathFromName(modName));
+    ipcMain.handle('write-ini-file', (_, mod: Mod, filename: string, content: string) => {
+      const modDir = join(getModsFolder(), CreateModPathFromName(mod.name, mod.version));
       const filePath = join(modDir, filename);
       // Prevent path traversal
       if (!filePath.startsWith(normalize(modDir) + sep)) {

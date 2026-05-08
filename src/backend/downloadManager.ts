@@ -4,12 +4,16 @@ import { rm } from 'fs/promises';
 import { join } from 'path';
 import { DownloadState } from 'types';
 import { extractModArchive } from './fileSystem';
+import { parseNexusMetadata, resolveNexusFileDetails } from './nexus';
 import { logger } from '../utils/mainLogger';
 import { errToString } from '../utils/utilities';
+import { getNexusApiKey } from './db/api';
 
 const { debug, error } = logger;
 
 const downloads = new Map<string, DownloadState & { savePath: string; item?: Electron.DownloadItem }>();
+
+const asOptionalString = (value: unknown): string | undefined => (typeof value === 'string' ? value : undefined);
 
 let getWindow: (() => BrowserWindow | null) | null = null;
 
@@ -17,6 +21,56 @@ const sendToWindow = (channel: string, payload: unknown) => {
   const win = getWindow?.();
   if (win && !win.isDestroyed()) {
     win.webContents.send(channel, payload);
+  }
+};
+
+const sendDownloadState = (entry: DownloadState & { savePath: string }) => {
+  if (entry.status === 'ready') {
+    sendToWindow('download-complete', toPublicState(entry));
+    return;
+  }
+
+  if (entry.status === 'error') {
+    sendToWindow('download-error', toPublicState(entry));
+    return;
+  }
+
+  sendToWindow('download-started', toPublicState(entry));
+};
+
+const getNexusFileID = async (id: string) => {
+  const entry = downloads.get(id);
+  if (!entry || entry.source !== 'nexus') return;
+  if (
+    (entry.nexusFileId && entry.nexusSuggestedModName && entry.nexusVersion) ||
+    !entry.nexusModId ||
+    !entry.nexusGameDomain
+  )
+    return;
+
+  const apiKey = getNexusApiKey();
+  if (!apiKey) {
+    debug(`No Nexus API key configured, skipping file lookup for ${entry.filename}`);
+    return;
+  }
+
+  try {
+    const resolvedFile = await resolveNexusFileDetails(entry.nexusGameDomain, entry.nexusModId, entry.filename, apiKey);
+    if (!resolvedFile) {
+      debug(`No Nexus file match found for ${entry.filename}`);
+      return;
+    }
+
+    const latestEntry = downloads.get(id);
+    if (!latestEntry) return;
+
+    latestEntry.nexusFileId = resolvedFile.fileId;
+    latestEntry.nexusSuggestedModName = resolvedFile.suggestedModName;
+    latestEntry.nexusVersion = resolvedFile.modVersion;
+    debug(`Resolved Nexus metadata for ${entry.filename}: ${JSON.stringify(toPublicState(latestEntry))}`);
+    sendDownloadState(latestEntry);
+  } catch (err) {
+    debug(`Failed to resolve Nexus file ID for ${entry.filename}: ${errToString(err)}`);
   }
 };
 
@@ -30,6 +84,11 @@ export const initDownloadManager = (windowGetter: () => BrowserWindow | null) =>
 
     item.setSavePath(savePath);
 
+    debug(`Parsing Nexus metadata for download: ${filename}`);
+    debug(JSON.stringify({ urlChain: item.getURLChain() }, null, 2));
+    const nexusMeta = parseNexusMetadata(item.getURLChain());
+    debug(`Parsed Nexus metadata: ${JSON.stringify(nexusMeta ?? null)}`);
+
     const state: DownloadState & { savePath: string; item: Electron.DownloadItem } = {
       id,
       filename,
@@ -38,11 +97,14 @@ export const initDownloadManager = (windowGetter: () => BrowserWindow | null) =>
       source: 'nexus',
       savePath,
       item,
+      nexusModId: nexusMeta?.modId,
+      nexusGameDomain: nexusMeta?.gameDomain,
     };
     downloads.set(id, state);
 
     debug(`Download started: ${filename} (${id})`);
     sendToWindow('download-started', toPublicState(state));
+    void getNexusFileID(id);
 
     item.on('updated', (_evt, downloadState) => {
       if (downloadState === 'progressing') {
@@ -75,6 +137,7 @@ export const initDownloadManager = (windowGetter: () => BrowserWindow | null) =>
             entry.extractedPath = extractedPath;
             debug(`Download extracted: ${filename} → ${extractedPath}`);
             sendToWindow('download-complete', toPublicState(entry));
+            void getNexusFileID(id);
           } catch (err) {
             entry.status = 'error';
             entry.error = errToString(err);
@@ -102,6 +165,11 @@ const toPublicState = (entry: DownloadState & { savePath: string }): DownloadSta
   source: entry.source,
   extractedPath: entry.extractedPath,
   error: entry.error,
+  nexusModId: entry.nexusModId,
+  nexusFileId: entry.nexusFileId,
+  nexusGameDomain: entry.nexusGameDomain,
+  nexusSuggestedModName: typeof entry.nexusSuggestedModName === 'string' ? entry.nexusSuggestedModName : undefined,
+  nexusVersion: asOptionalString((entry as Record<string, unknown>).nexusVersion),
 });
 
 export const getActiveDownloads = (): DownloadState[] => [...downloads.values()].map(toPublicState);

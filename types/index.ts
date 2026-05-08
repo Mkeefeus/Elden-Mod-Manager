@@ -32,6 +32,10 @@ export type Mod = {
   optional?: boolean;
   finalizer?: string;
   initializer?: NativeInitializerCondition;
+  version?: string;
+  nexusModId?: number;
+  nexusFileId?: number;
+  nexusGameDomain?: string;
 };
 
 export type AddModFormValues = {
@@ -48,6 +52,10 @@ export type AddModFormValues = {
   initializerType: 'none' | 'delay' | 'function';
   initializerDelayMs: number;
   initializerFunction: string;
+  modVersion?: string;
+  nexusModId?: number;
+  nexusFileId?: number;
+  nexusGameDomain?: string;
 };
 
 export type NewsComponentProps = {
@@ -117,4 +125,9 @@ export type DownloadState = {
   source: 'nexus' | 'local';
   extractedPath?: string;
   error?: string;
+  nexusModId?: number;
+  nexusFileId?: number;
+  nexusGameDomain?: string;
+  nexusSuggestedModName?: string;
+  nexusVersion?: string;
 };

@@ -22,9 +22,9 @@ interface IElectronAPI {
   deleteMod: (mod: Mod) => Promise<void>;
   launchModExe: (mod: Mod) => void;
   openModFolder: (mod: Mod) => void;
-  listIniFiles: (modName: string) => Promise<string[]>;
-  readIniFile: (modName: string, filename: string) => Promise<string>;
-  writeIniFile: (modName: string, filename: string, content: string) => Promise<void>;
+  listIniFiles: (mod: Mod) => Promise<string[]>;
+  readIniFile: (mod: Mod, filename: string) => Promise<string>;
+  writeIniFile: (mod: Mod, filename: string, content: string) => Promise<void>;
 
   // --- Profiles ---
   loadProfiles: () => Promise<ModProfile[]>;
@@ -109,9 +109,9 @@ const electronAPI: IElectronAPI = {
   deleteMod: (...args) => ipcRenderer.invoke('delete-mod', ...args),
   launchModExe: (...args) => ipcRenderer.send('launch-mod-exe', ...args),
   openModFolder: (mod) => ipcRenderer.send('open-mod-folder', mod),
-  listIniFiles: (modName) => ipcRenderer.invoke('list-ini-files', modName),
-  readIniFile: (modName, filename) => ipcRenderer.invoke('read-ini-file', modName, filename),
-  writeIniFile: (modName, filename, content) => ipcRenderer.invoke('write-ini-file', modName, filename, content),
+  listIniFiles: (mod) => ipcRenderer.invoke('list-ini-files', mod),
+  readIniFile: (mod, filename) => ipcRenderer.invoke('read-ini-file', mod, filename),
+  writeIniFile: (mod, filename, content) => ipcRenderer.invoke('write-ini-file', mod, filename, content),
 
   // --- Profiles ---
   loadProfiles: () => ipcRenderer.invoke('load-profiles'),

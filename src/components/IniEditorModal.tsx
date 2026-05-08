@@ -10,13 +10,13 @@ interface IniEditorModalProps {
 
 const IniEditorModal = ({ mod, close }: IniEditorModalProps) => {
   const { data, isPending } = useQuery({
-    queryKey: ['ini-files', mod.name],
+    queryKey: ['ini-files', mod.uuid, mod.version ?? ''],
     queryFn: async () => {
-      const files = await window.electronAPI.listIniFiles(mod.name);
+      const files = await window.electronAPI.listIniFiles(mod);
       const contentMap: Record<string, string> = {};
       await Promise.all(
         files.map(async (f) => {
-          contentMap[f] = await window.electronAPI.readIniFile(mod.name, f);
+          contentMap[f] = await window.electronAPI.readIniFile(mod, f);
         })
       );
       return { files, contents: contentMap };
@@ -39,7 +39,7 @@ const IniEditorModal = ({ mod, close }: IniEditorModalProps) => {
   };
 
   const handleSave = async (filename: string) => {
-    await window.electronAPI.writeIniFile(mod.name, filename, contents[filename]);
+    await window.electronAPI.writeIniFile(mod, filename, contents[filename]);
     setDirty((prev) => ({ ...prev, [filename]: false }));
   };
 
