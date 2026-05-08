@@ -98,6 +98,16 @@ export type NexusUser = {
   profileUrl: string;
 };
 
+export type ExportedSettings = {
+  version: 1;
+  modEnginePath: string;
+  modFolderPath: string;
+  eldenRingFolder: string;
+  noBootBoost: boolean;
+  showLogos: boolean;
+  skipSteamInit: boolean;
+};
+
 export type DownloadStatus = 'downloading' | 'extracting' | 'ready' | 'error';
 
 export type DownloadState = {

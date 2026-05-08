@@ -10,6 +10,7 @@ import {
   LatestRelease,
   NexusUser,
   DownloadState,
+  ExportedSettings,
 } from 'types';
 
 interface IElectronAPI {
@@ -66,6 +67,10 @@ interface IElectronAPI {
   onDownloadProgress: (callback: (update: { id: string; progress: number; status?: string }) => void) => void;
   onDownloadComplete: (callback: (state: DownloadState) => void) => void;
   onDownloadError: (callback: (state: DownloadState) => void) => void;
+
+  // --- Import / Export ---
+  exportSettings: () => Promise<boolean>;
+  importSettings: () => Promise<ExportedSettings | undefined>;
 
   // --- File System ---
   browse: (type: BrowseType, title?: string, startingDir?: string) => Promise<string | undefined>;
@@ -149,6 +154,10 @@ const electronAPI: IElectronAPI = {
   onDownloadComplete: (callback) =>
     ipcRenderer.on('download-complete', (_event, state: DownloadState) => callback(state)),
   onDownloadError: (callback) => ipcRenderer.on('download-error', (_event, state: DownloadState) => callback(state)),
+
+  // --- Import / Export ---
+  exportSettings: () => ipcRenderer.invoke('export-settings'),
+  importSettings: () => ipcRenderer.invoke('import-settings'),
 
   // --- File System ---
   browse: (...args) => ipcRenderer.invoke('browse', ...args),

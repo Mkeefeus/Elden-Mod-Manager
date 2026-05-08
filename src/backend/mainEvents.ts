@@ -30,8 +30,17 @@ import { CreateModPathFromName, errToString } from '../utils/utilities';
 import { handleLog, logger } from '../utils/mainLogger';
 import { launchEldenRingModded, promptME3Install, updateME3Path, detectME3 } from './me3';
 import { launchEldenRing } from './steam';
-import { browse, extractModArchive, scanDirForFile, listIniFiles, readIniFile, writeIniFile } from './fileSystem';
+import {
+  browse,
+  extractModArchive,
+  scanDirForFile,
+  listIniFiles,
+  readIniFile,
+  writeIniFile,
+  saveFilePath,
+} from './fileSystem';
 import { handleAddMod, handleDeleteMod, updateModsFolder } from './mods';
+import { exportSettings, importSettings } from './importExport';
 import {
   handleCreateProfile,
   handleApplyProfile,
@@ -219,6 +228,19 @@ app
         setLauncherSettings(fields);
       }
     );
+
+    ipcMain.handle('export-settings', () => {
+      const dest = saveFilePath('emm-settings.json', 'Export Settings');
+      if (!dest) return false;
+      exportSettings(dest);
+      return true;
+    });
+
+    ipcMain.handle('import-settings', () => {
+      const src = browse('binary', 'Import Settings');
+      if (!src) return undefined;
+      return importSettings(src);
+    });
 
     ipcMain.handle('detect-me3', () => {
       return detectME3();

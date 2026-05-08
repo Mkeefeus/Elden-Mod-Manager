@@ -174,6 +174,40 @@ const Settings = () => {
           window.electronAPI.updateLauncherSettings({ skipSteamInit: checked });
         }}
       />
+      <Divider mt="sm" />
+      <Text size="sm" fw={500} c="dimmed">
+        Backup
+      </Text>
+      <Group>
+        <Button
+          variant="outline"
+          onClick={() => {
+            void window.electronAPI.exportSettings().then((success) => {
+              if (success) sendLog({ level: 'info', message: 'Settings exported successfully' });
+            });
+          }}
+        >
+          Export Settings
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => {
+            void window.electronAPI.importSettings().then((result) => {
+              if (!result) return;
+              queryClient.setQueryData(['me3-path'], result.modEnginePath);
+              queryClient.setQueryData(['mods-path'], result.modFolderPath);
+              queryClient.setQueryData(['launcher-settings'], {
+                noBootBoost: result.noBootBoost,
+                showLogos: result.showLogos,
+                skipSteamInit: result.skipSteamInit,
+              });
+              sendLog({ level: 'info', message: 'Settings imported successfully' });
+            });
+          }}
+        >
+          Import Settings
+        </Button>
+      </Group>
     </Stack>
   );
 };

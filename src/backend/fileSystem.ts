@@ -1,4 +1,4 @@
-import { OpenDialogOptions, app, dialog } from 'electron';
+import { OpenDialogOptions, SaveDialogOptions, app, dialog } from 'electron';
 import { chmodSync, existsSync, readdirSync, readFileSync, writeFileSync } from 'fs';
 import { join, normalize, sep } from 'path';
 import { logger } from '../utils/mainLogger';
@@ -61,6 +61,23 @@ export const browse = (type: BrowseType, title?: string, startingDir?: string) =
     return filePath;
   } catch (err) {
     const msg = `An error occured while browsing for ${type}: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg, { cause: err });
+  }
+};
+
+export const saveFilePath = (defaultName: string, title?: string) => {
+  debug(`Opening save dialog for: ${defaultName}`);
+  const options: SaveDialogOptions = {
+    defaultPath: join(app.getPath('downloads'), defaultName),
+    title: title,
+    filters: [{ name: 'JSON Files', extensions: ['json'] }],
+  };
+  try {
+    const filePath = dialog.showSaveDialogSync(options);
+    return filePath;
+  } catch (err) {
+    const msg = `An error occured while opening save dialog: ${errToString(err)}`;
     error(msg);
     throw new Error(msg, { cause: err });
   }
