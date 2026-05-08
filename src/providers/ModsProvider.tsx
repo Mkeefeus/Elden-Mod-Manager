@@ -3,15 +3,17 @@ import { sendLog } from '../utils/rendererLogger';
 import { Mod } from 'types';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
+type ModWithEnabled = Mod & { enabled: boolean };
+
 interface Sort {
   column: string;
   order: 'asc' | 'desc';
 }
 
 interface ModsCtxValue {
-  mods: Mod[];
+  mods: ModWithEnabled[];
   sort: Sort;
-  saveMods: (mods: Mod[]) => Promise<void>;
+  saveMods: (mods: ModWithEnabled[]) => Promise<void>;
   loadMods: () => Promise<void>;
   changeSort: (column: string) => void;
 }
@@ -28,7 +30,12 @@ const ModsProvider = ({ children }: { children: ReactNode }) => {
     return value || '';
   };
 
-  const columnSorter = (a: Mod, b: Mod, column: keyof Mod, order: 'asc' | 'desc'): number => {
+  const columnSorter = (
+    a: ModWithEnabled,
+    b: ModWithEnabled,
+    column: keyof ModWithEnabled,
+    order: 'asc' | 'desc'
+  ): number => {
     const aValue = getComparable(a[column] as Date | boolean | number | string | undefined);
     const bValue = getComparable(b[column] as Date | boolean | number | string | undefined);
 
@@ -37,8 +44,8 @@ const ModsProvider = ({ children }: { children: ReactNode }) => {
     return 0;
   };
 
-  const sortMods = (unsortedMods: Mod[]) => {
-    return [...unsortedMods].sort((a, b) => columnSorter(a, b, sort.column as keyof Mod, sort.order));
+  const sortMods = (unsortedMods: ModWithEnabled[]) => {
+    return [...unsortedMods].sort((a, b) => columnSorter(a, b, sort.column as keyof ModWithEnabled, sort.order));
   };
 
   const { data: rawMods = [] } = useQuery({
@@ -53,9 +60,21 @@ const ModsProvider = ({ children }: { children: ReactNode }) => {
     },
   });
 
-  const mods = useMemo(() => sortMods(rawMods), [rawMods, sort]);
+  const { data: activeProfile } = useQuery({
+    queryKey: ['active-profile'],
+    queryFn: () => window.electronAPI.getActiveProfile(),
+  });
 
-  const loadMods = () => queryClient.invalidateQueries({ queryKey: ['mods'] });
+  const mods = useMemo(() => {
+    const enabledModIds = new Set(activeProfile?.mods ?? []);
+    const joined: ModWithEnabled[] = rawMods.map((m) => ({ ...m, enabled: enabledModIds.has(m.uuid) }));
+    return sortMods(joined);
+  }, [rawMods, activeProfile, sort]);
+
+  const loadMods = async () => {
+    await queryClient.invalidateQueries({ queryKey: ['mods'] });
+    await queryClient.invalidateQueries({ queryKey: ['active-profile'] });
+  };
 
   useEffect(() => {
     window.electronAPI.onModsChanged(() => {
@@ -63,13 +82,21 @@ const ModsProvider = ({ children }: { children: ReactNode }) => {
     });
   }, []);
 
-  const saveMods = async (newMods: Mod[]) => {
-    const success = await window.electronAPI.saveMods(newMods);
+  const saveMods = async (newMods: ModWithEnabled[]) => {
+    const metaMods: Mod[] = newMods.map((mod) => {
+      const { enabled, ...rest } = mod;
+      void enabled;
+      return rest;
+    });
+    const enabledModIds = newMods.filter((mod) => mod.enabled).map((mod) => mod.uuid);
+    const success = await window.electronAPI.saveMods(metaMods);
     if (!success) {
       sendLog({ level: 'error', message: 'Failed to save mods' });
       return;
     }
+    await window.electronAPI.saveProfileRefs(enabledModIds);
     await queryClient.invalidateQueries({ queryKey: ['mods'] });
+    await queryClient.invalidateQueries({ queryKey: ['active-profile'] });
   };
 
   const changeSort = (column: string) => {

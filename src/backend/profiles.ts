@@ -2,35 +2,30 @@ import { randomUUID } from 'crypto';
 import { ModProfile } from 'types';
 import { logger } from '../utils/mainLogger';
 import { errToString } from '../utils/utilities';
-import {
-  getActiveProfile,
-  getActiveProfileId,
-  getProfiles,
-  loadMods,
-  saveProfiles,
-  saveMods,
-  setActiveProfileId,
-} from './db/api';
+import { getActiveProfile, getActiveProfileId, getProfiles, saveProfiles, setActiveProfileId } from './db/api';
+import { writeMe3Profile } from './me3Profile';
 
 const { debug } = logger;
 
 export const handleCreateProfile = (name: string): ModProfile => {
   debug(`Creating profile: ${name}`);
   try {
+    const activeProfile = getActiveProfile();
     const profile: ModProfile = {
       uuid: randomUUID(),
       name,
       createdAt: Date.now(),
-      mods: loadMods(),
-      savefile: getActiveProfile()?.savefile ?? '',
-      startOnline: getActiveProfile()?.startOnline ?? false,
-      disableArxan: getActiveProfile()?.disableArxan ?? false,
-      noMemPatch: getActiveProfile()?.noMemPatch ?? false,
+      mods: [],
+      savefile: activeProfile?.savefile ?? '',
+      startOnline: activeProfile?.startOnline ?? false,
+      disableArxan: activeProfile?.disableArxan ?? false,
+      noMemPatch: activeProfile?.noMemPatch ?? false,
     };
     const profiles = getProfiles();
     profiles.push(profile);
     saveProfiles(profiles);
     setActiveProfileId(profile.uuid);
+    writeMe3Profile();
     debug(`Profile created: ${profile.uuid}`);
     return profile;
   } catch (err) {
@@ -45,23 +40,8 @@ export const handleApplyProfile = (uuid: string) => {
     const profiles = getProfiles();
     const profile = profiles.find((p) => p.uuid === uuid);
     if (!profile) throw new Error(`Profile not found: ${uuid}`);
-
-    // Build a map of uuid → saved mod state
-    const profileModMap = new Map(profile.mods.map((m) => [m.uuid, m]));
-
-    // For each currently installed mod, restore saved state or disable if not in profile
-    const installedMods = loadMods();
-    const updatedMods = installedMods.map((mod) => {
-      const saved = profileModMap.get(mod.uuid);
-      if (saved) {
-        return { ...mod, enabled: saved.enabled, loadBefore: saved.loadBefore, loadAfter: saved.loadAfter };
-      }
-      // Mod wasn't in this profile — disable it
-      return { ...mod, enabled: false };
-    });
-
-    saveMods(updatedMods);
     setActiveProfileId(uuid);
+    writeMe3Profile();
     debug(`Profile applied: ${uuid}`);
   } catch (err) {
     const msg = `An error occurred while applying profile: ${errToString(err)}`;
@@ -78,7 +58,6 @@ export const handleUpdateProfile = (uuid: string) => {
 
     profiles[index] = {
       ...profiles[index],
-      mods: loadMods(),
       savefile: getActiveProfile()?.savefile ?? '',
       startOnline: getActiveProfile()?.startOnline ?? false,
       disableArxan: getActiveProfile()?.disableArxan ?? false,
@@ -92,18 +71,28 @@ export const handleUpdateProfile = (uuid: string) => {
   }
 };
 
-export const handleDeleteProfile = (uuid: string) => {
+export const handleDeleteProfile = (uuid: string): string => {
   debug(`Deleting profile: ${uuid}`);
   try {
     const profiles = getProfiles();
     const profile = profiles.find((p) => p.uuid === uuid);
+    if (!profile) throw new Error(`Profile not found: ${uuid}`);
     if (profile?.name === 'Default') throw new Error('The Default profile cannot be deleted.');
     const updated = profiles.filter((p) => p.uuid !== uuid);
-    saveProfiles(updated);
-    if (getActiveProfileId() === uuid) {
-      setActiveProfileId('');
+
+    if (updated.length === 0) {
+      throw new Error('The last remaining profile cannot be deleted.');
     }
+
+    let nextActiveId = getActiveProfileId();
+    if (nextActiveId === uuid) {
+      nextActiveId = updated[0].uuid;
+      setActiveProfileId(nextActiveId);
+    }
+
+    saveProfiles(updated);
     debug(`Profile deleted: ${uuid}`);
+    return nextActiveId;
   } catch (err) {
     const msg = `An error occurred while deleting profile: ${errToString(err)}`;
     throw new Error(msg, { cause: err });

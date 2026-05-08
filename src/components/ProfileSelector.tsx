@@ -5,6 +5,7 @@ import { useModal } from '../providers/ModalProvider';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faFloppyDisk, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { sendLog } from '../utils/rendererLogger';
 
 const ProfileSelector = ({ onApply }: { onApply?: () => void }) => {
   const { loadMods } = useMods();
@@ -44,8 +45,9 @@ const ProfileSelector = ({ onApply }: { onApply?: () => void }) => {
 
   const handleCreate = async (name: string) => {
     hideModal();
-    await window.electronAPI.createProfile(name);
+    const newProfile = await window.electronAPI.createProfile(name);
     await queryClient.invalidateQueries({ queryKey: ['profiles'] });
+    await handleProfileChange(newProfile.uuid);
   };
 
   const handleSave = async () => {
@@ -57,16 +59,33 @@ const ProfileSelector = ({ onApply }: { onApply?: () => void }) => {
   const handleDelete = () => {
     if (!activeId) return;
     const profile = profiles.find((p) => p.uuid === activeId);
+
+    const confirmDelete = async () => {
+      hideModal();
+      const nextActive = profiles.find((p) => p.uuid !== activeId);
+      if (!nextActive) {
+        sendLog({
+          level: 'warn',
+          message: "You can't delete the last remaining profile. Please create a new profile before deleting this one.",
+        });
+        return;
+      }
+
+      const nextActiveId = await window.electronAPI.deleteProfile(activeId);
+      queryClient.setQueryData(['active-profile-id'], nextActiveId);
+      await queryClient.invalidateQueries({ queryKey: ['profiles'] });
+      await queryClient.invalidateQueries({ queryKey: ['active-profile-id'] });
+      await loadMods();
+      onApply?.();
+    };
+
     showModal({
       title: 'Delete Profile',
       content: (
         <DeleteProfileModal
           name={profile?.name ?? ''}
           onConfirm={() => {
-            hideModal();
-            void window.electronAPI.deleteProfile(activeId);
-            queryClient.setQueryData(['active-profile-id'], '');
-            void queryClient.invalidateQueries({ queryKey: ['profiles'] });
+            void confirmDelete();
           }}
           onCancel={hideModal}
         />

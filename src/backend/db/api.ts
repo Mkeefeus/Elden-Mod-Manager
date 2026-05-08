@@ -1,37 +1,25 @@
 import { errToString } from '../../utils/utilities';
 import { logger } from '../../utils/mainLogger';
 import store from './init';
-import { Dependent, Mod, ModProfile, WindowState } from 'types';
+import { Mod, ModProfile, WindowState } from 'types';
 import { join } from 'path';
 import { app } from 'electron';
 
 const { debug, error } = logger;
 
-const migrateDeps = (deps: unknown[] | undefined): Dependent[] | undefined => {
-  if (!deps || deps.length === 0) return undefined;
-  return deps.map((d) => {
-    if (typeof d === 'string') return { id: d, optional: false };
-    return d as Dependent;
-  });
-};
-
-export const loadMods = () => {
+export const loadMods = (): Mod[] => {
   debug('Loading mods from DB');
   try {
     const mods = store.get('mods');
-    const migrated = mods.map((mod) => ({
-      ...mod,
-      loadBefore: migrateDeps(mod.loadBefore as unknown as unknown[]),
-      loadAfter: migrateDeps(mod.loadAfter as unknown as unknown[]),
-    }));
     debug(`Mods loaded from DB`);
-    return migrated;
+    return mods;
   } catch (err) {
     const msg = `An error occured while loading mods: ${errToString(err)}`;
     error(msg);
     throw new Error(msg, { cause: err });
   }
 };
+
 export const saveMods = (mods: Mod[]) => {
   debug(`Saving mods to DB`);
   try {
@@ -40,6 +28,22 @@ export const saveMods = (mods: Mod[]) => {
     return true;
   } catch (err) {
     const msg = `An error occured while saving mods: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg, { cause: err });
+  }
+};
+
+export const saveProfileRefs = (profileId: string, refs: string[]) => {
+  debug(`Saving profile refs for: ${profileId}`);
+  try {
+    const profiles = store.get('profiles');
+    const index = profiles.findIndex((p) => p.uuid === profileId);
+    if (index === -1) throw new Error(`Profile not found: ${profileId}`);
+    profiles[index] = { ...profiles[index], mods: refs };
+    store.set('profiles', profiles);
+    return true;
+  } catch (err) {
+    const msg = `An error occured while saving profile refs: ${errToString(err)}`;
     error(msg);
     throw new Error(msg, { cause: err });
   }

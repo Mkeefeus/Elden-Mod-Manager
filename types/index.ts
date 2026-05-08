@@ -1,7 +1,7 @@
 export type Dict<T> = { [key: string]: T };
 
 export interface LogEntry {
-  level: string;
+  level: 'info' | 'warn' | 'error';
   message: string;
   hideDisplay?: boolean;
 }
@@ -20,7 +20,6 @@ export type Dependent = {
 
 export type Mod = {
   uuid: string;
-  enabled: boolean;
   name: string;
   installDate: number;
   dllFile?: string;
@@ -67,7 +66,7 @@ export type ModProfile = {
   uuid: string;
   name: string;
   createdAt: number;
-  mods: Mod[];
+  mods: string[];
   savefile: string;
   startOnline: boolean;
   disableArxan: boolean;

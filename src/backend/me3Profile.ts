@@ -4,15 +4,18 @@ import store from './db/init';
 import { logger } from '../utils/mainLogger';
 import { writeFileSync, mkdirSync } from 'fs';
 import path from 'path';
-import { getProfilesFolder, getActiveProfile, getModsFolder } from './db/api';
+import { getProfilesFolder, getActiveProfile, getModsFolder, loadMods } from './db/api';
 import { app } from 'electron';
 import { ME3_PROFILE_FILENAME } from './constants';
 
 const { debug, error } = logger;
 
+let unsubMods: (() => void) | null = null;
+let unsubProfiles: (() => void) | null = null;
+
 const generateMe3ProfileString = (mods: Mod[], savefile: string, startOnline: boolean): string => {
-  const nativeMods = mods.filter((m) => !!m.dllFile && m.enabled);
-  const packageMods = mods.filter((m) => !m.dllFile && m.enabled);
+  const nativeMods = mods.filter((m) => !!m.dllFile);
+  const packageMods = mods.filter((m) => !m.dllFile);
   debug(
     `Generating ME3 profile: ${nativeMods.length} native mod(s), ${packageMods.length} package mod(s), savefile="${savefile}", startOnline=${startOnline}`
   );
@@ -28,7 +31,6 @@ const generateMe3ProfileString = (mods: Mod[], savefile: string, startOnline: bo
     const modPath = path.join(getModsFolder(), CreateModPathFromName(mod.name), mod.dllFile!);
     const entry: Record<string, unknown> = {
       path: modPath,
-      enabled: mod.enabled,
     };
     if (mod.loadEarly) entry.load_early = true;
     if (mod.optional !== undefined) entry.optional = mod.optional;
@@ -44,7 +46,6 @@ const generateMe3ProfileString = (mods: Mod[], savefile: string, startOnline: bo
     const entry: Record<string, unknown> = {
       id: mod.uuid,
       path: `${modPath}/`,
-      enabled: mod.enabled,
     };
     if (mod.loadBefore && mod.loadBefore.length > 0) entry.load_before = mod.loadBefore;
     if (mod.loadAfter && mod.loadAfter.length > 0) entry.load_after = mod.loadAfter;
@@ -64,12 +65,18 @@ const generateMe3ProfileString = (mods: Mod[], savefile: string, startOnline: bo
   return JSON.stringify(profile, null, 2);
 };
 
-export const writeMe3Profile = (mods: Mod[], savefile?: string, startOnline?: boolean) => {
+export const writeMe3Profile = () => {
   try {
     const activeProfile = getActiveProfile();
-    const sf = savefile !== undefined ? savefile : (activeProfile?.savefile ?? '');
-    const so = startOnline !== undefined ? startOnline : (activeProfile?.startOnline ?? false);
-    const profileString = generateMe3ProfileString(mods, sf, so);
+    if (!activeProfile) {
+      const msg = 'No active profile found, cannot write ME3 profile';
+      error(msg);
+      throw new Error(msg);
+    }
+    const sf = activeProfile.savefile ?? '';
+    const so = activeProfile.startOnline ?? false;
+    const enabledMods = loadMods().filter((mod) => activeProfile.mods.some((m) => m === mod.uuid));
+    const profileString = generateMe3ProfileString(enabledMods, sf, so);
     const profilePath = path.join(getProfilesFolder(), ME3_PROFILE_FILENAME);
     debug(`Writing ME3 profile to: ${profilePath}`);
     mkdirSync(getProfilesFolder(), { recursive: true });
@@ -82,23 +89,28 @@ export const writeMe3Profile = (mods: Mod[], savefile?: string, startOnline?: bo
   }
 };
 
-const unsubMods = store.onDidChange('mods', (mods) => {
-  debug('Mods changed, regenerating ME3 profile');
-  if (!mods) {
-    debug('Mods value is empty, skipping profile write');
-    return;
-  }
-  writeMe3Profile(mods);
-});
+export const initMe3ProfileWatchers = () => {
+  if (unsubMods || unsubProfiles) return;
 
-const unsubProfiles = store.onDidChange('profiles', () => {
-  debug('Profiles changed, regenerating ME3 profile');
-  const mods = store.get('mods');
-  writeMe3Profile(mods);
-});
+  debug('Initializing ME3 profile watchers');
+
+  unsubMods = store.onDidChange('mods', () => {
+    debug('Mods changed, regenerating ME3 profile');
+    writeMe3Profile();
+  });
+
+  unsubProfiles = store.onDidChange('profiles', () => {
+    debug('Profiles changed, regenerating ME3 profile');
+    writeMe3Profile();
+  });
+};
 
 app.on('before-quit', () => {
+  if (!unsubMods && !unsubProfiles) return;
+
   debug('App quitting, unsubscribing ME3 profile watchers');
-  unsubMods();
-  unsubProfiles();
+  unsubMods?.();
+  unsubProfiles?.();
+  unsubMods = null;
+  unsubProfiles = null;
 });

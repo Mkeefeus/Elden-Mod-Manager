@@ -69,7 +69,7 @@ const EditNativeModModal = ({ mod, close }: EditNativeModModalProps) => {
       finalizer: values.finalizer || undefined,
       initializer: formValuesToInitializer(values),
     };
-    const updatedMods = mods.map((m) => (m.uuid === mod.uuid ? updatedMod : m));
+    const updatedMods = mods.map((m) => (m.uuid === mod.uuid ? { ...updatedMod, enabled: m.enabled } : m));
     await saveMods(updatedMods);
     close();
   };

@@ -4,7 +4,7 @@ import { extname, join } from 'path';
 import { errToString, CreateModPathFromName } from '../utils/utilities';
 import { AddModFormValues, Mod, NativeInitializerCondition } from 'types';
 import { logger } from '../utils/mainLogger';
-import { getModsFolder, loadMods, saveMods, setModsFolder } from './db/api';
+import { getModsFolder, getProfiles, loadMods, saveMods, saveProfiles, setModsFolder } from './db/api';
 import { MOD_SUBFOLDERS } from './constants';
 import { getMainWindow } from '../main';
 
@@ -78,9 +78,9 @@ export const handleAddMod = (formData: AddModFormValues) => {
 
   const newMod: Mod = {
     uuid: uuid,
-    enabled: false,
     name: formData.modName,
     installDate: Date.now(),
+    // Note: enabled is NOT stored on Mod — it lives on ProfileModRef
     dllFile: dllFileName || undefined,
     exe: exeFileName || undefined,
     loadEarly: formData.loadEarly ? true : undefined,
@@ -88,6 +88,7 @@ export const handleAddMod = (formData: AddModFormValues) => {
     finalizer: dllFileName && formData.finalizer ? formData.finalizer : undefined,
     initializer,
   };
+
   debug(`Adding new mod: ${JSON.stringify(newMod)}`);
 
   const source = formData.path;
@@ -174,6 +175,17 @@ export const handleDeleteMod = (mod: Mod) => {
     }
   }
   debug('Mod deleted successfully');
+
+  // After deleting the mod files, we need to remove it from any profiles that reference it.
+  const profiles = getProfiles();
+  debug('Removing mod from profiles');
+  for (const profile of profiles) {
+    if (profile.mods.includes(mod.uuid)) {
+      debug(`Removing mod from profile: ${profile.name}`);
+      profile.mods = profile.mods.filter((m) => m !== mod.uuid);
+    }
+  }
+  saveProfiles(profiles);
   saveMods(newMods);
 };
 

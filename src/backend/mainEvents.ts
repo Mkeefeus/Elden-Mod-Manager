@@ -7,15 +7,16 @@ import {
   getModsFolder,
   getPromptedModsFolder,
   getActiveProfile,
+  getActiveProfileId,
   updateActiveProfile,
   isFirstRun,
   loadMods,
   saveMods,
+  saveProfileRefs,
   setModEnginePath,
   clearPromptedModsFolder,
   setModsFolder,
   getProfiles,
-  getActiveProfileId,
   saveProfiles,
   setActiveProfileId,
   getLauncherSettings,
@@ -48,7 +49,7 @@ import {
   handleDeleteProfile,
   handleRenameProfile,
 } from './profiles';
-import './me3Profile';
+import { initMe3ProfileWatchers } from './me3Profile';
 import { getMainWindow } from '../main';
 import { validateNexusApiKey } from './nexus';
 import { getActiveDownloads, cancelDownload, dismissDownload, addLocalDownload } from './downloadManager';
@@ -128,7 +129,14 @@ app
     );
 
     ipcMain.handle('load-mods', loadMods);
-    ipcMain.handle('set-mods', (_, mods: Mod[]) => saveMods(mods));
+    ipcMain.handle('set-mods', (_, mods: Mod[]) => {
+      return saveMods(mods);
+    });
+    ipcMain.handle('save-profile-refs', (_, refs: string[]) => {
+      const activeId = getActiveProfileId();
+      if (!activeId) return false;
+      return saveProfileRefs(activeId, refs);
+    });
     ipcMain.handle('browse', (_, type: BrowseType, title?: string, startingDir?: string) => {
       return browse(type, title, startingDir);
     });
@@ -251,7 +259,7 @@ app
     ipcMain.handle('get-active-profile-id', () => getActiveProfileId());
     ipcMain.handle('create-profile', (_, name: string) => handleCreateProfile(name));
     ipcMain.handle('apply-profile', (_, uuid: string) => handleApplyProfile(uuid));
-    ipcMain.on('delete-profile', (_, uuid: string) => handleDeleteProfile(uuid));
+    ipcMain.handle('delete-profile', (_, uuid: string) => handleDeleteProfile(uuid));
     ipcMain.on('rename-profile', (_, uuid: string, name: string) => handleRenameProfile(uuid, name));
     ipcMain.handle('update-profile', (_, uuid: string) => handleUpdateProfile(uuid));
 
@@ -354,7 +362,8 @@ app
     }
 
     // Bootstrap a "Default" profile on first launch if none exist
-    if (getProfiles().length === 0) {
+    const profiles = getProfiles();
+    if (profiles.length === 0) {
       const defaultProfile = {
         uuid: randomUUID(),
         name: 'Default',
@@ -368,11 +377,16 @@ app
       saveProfiles([defaultProfile]);
       setActiveProfileId(defaultProfile.uuid);
       debug(`Created default profile: ${defaultProfile.uuid}`);
+    } else if (!profiles.some((profile) => profile.uuid === getActiveProfileId())) {
+      setActiveProfileId(profiles[0].uuid);
+      debug(`Recovered missing active profile: ${profiles[0].uuid}`);
     }
 
     if (isFirstRun()) {
       clearFirstRun();
     }
+
+    initMe3ProfileWatchers();
 
     debug('App started');
   })

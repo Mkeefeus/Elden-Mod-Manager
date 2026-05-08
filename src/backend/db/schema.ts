@@ -26,7 +26,6 @@ const schema: Schema<DBSchema> = {
       type: 'object',
       properties: {
         uuid: { type: 'string' },
-        enabled: { type: 'boolean' },
         name: { type: 'string' },
         installDate: { type: 'number' },
         dllFile: { type: 'string' },
@@ -58,7 +57,7 @@ const schema: Schema<DBSchema> = {
           },
         },
       },
-      required: ['uuid', 'enabled', 'name', 'installDate'],
+      required: ['uuid', 'name', 'installDate'],
     },
     default: [],
   },
@@ -90,7 +89,12 @@ const schema: Schema<DBSchema> = {
         uuid: { type: 'string' },
         name: { type: 'string' },
         createdAt: { type: 'number' },
-        mods: { type: 'array' },
+        mods: {
+          type: 'array',
+          items: {
+            type: 'string',
+          },
+        },
         savefile: { type: 'string' },
         startOnline: { type: 'boolean' },
         disableArxan: { type: 'boolean' },
