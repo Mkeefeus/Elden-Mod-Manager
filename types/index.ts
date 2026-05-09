@@ -1,7 +1,7 @@
 export type Dict<T> = { [key: string]: T };
 
 export interface LogEntry {
-  level: 'info' | 'warn' | 'error';
+  level: 'info' | 'warning' | 'error';
   message: string;
   hideDisplay?: boolean;
 }

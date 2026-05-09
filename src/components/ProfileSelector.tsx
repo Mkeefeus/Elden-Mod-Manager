@@ -65,7 +65,7 @@ const ProfileSelector = ({ onApply }: { onApply?: () => void }) => {
       const nextActive = profiles.find((p) => p.uuid !== activeId);
       if (!nextActive) {
         sendLog({
-          level: 'warn',
+          level: 'warning',
           message: "You can't delete the last remaining profile. Please create a new profile before deleting this one.",
         });
         return;
