@@ -1,15 +1,15 @@
 import ModTableHeader from './ModTableHeader';
-import { Badge, Center, Checkbox, Table, Text, Tooltip } from '@mantine/core';
+import { Center, Checkbox, Table, Text, Tooltip } from '@mantine/core';
 import ModTableMenu from './ModTableMenu';
 import { useMods } from '../providers/ModsProvider';
 
 // Fixed px widths for narrow columns; Name column has no width → takes remaining space.
 const COLS = [
-  { label: 'Enabled', sortKey: 'enabled', style: { width: 130 } },
-  { label: 'Deps', sortKey: 'deps', style: { width: 100 } },
-  { label: 'Mod name', sortKey: 'name', style: {} },
-  { label: 'Date', sortKey: 'installDate', style: { width: 120 } },
-  { label: 'DLL', sortKey: 'dllFile', style: { width: 100 } },
+  { label: 'Enabled', sortKey: 'enabled', style: { width: 130 }, align: 'center' },
+  { label: 'Mod name', sortKey: 'name', style: {}, align: 'left' },
+  { label: 'Version', sortKey: 'version', style: { width: 110 }, align: 'center' },
+  { label: 'Install Date', sortKey: 'installDate', style: { width: 130 }, align: 'center' },
+  { label: 'Mod Type', sortKey: 'dllFile', style: { width: 110 }, align: 'center' },
 ] as const;
 
 const ModTable = () => {
@@ -21,25 +21,11 @@ const ModTable = () => {
   };
 
   const rows = mods.map((mod, index) => {
-    const depCount = (mod.loadBefore?.length ?? 0) + (mod.loadAfter?.length ?? 0);
     return (
       <Table.Tr key={mod.uuid} style={{ opacity: mod.enabled ? 1 : 0.4, transition: 'opacity 0.15s ease' }}>
         <Table.Td>
           <Center>
             <Checkbox aria-label="Toggle mod" checked={mod.enabled} onChange={() => handleCheckboxChange(index)} />
-          </Center>
-        </Table.Td>
-        <Table.Td>
-          <Center>
-            {depCount > 0 ? (
-              <Badge size="sm" variant="light">
-                {depCount}
-              </Badge>
-            ) : (
-              <Text size="sm" c="dimmed">
-                —
-              </Text>
-            )}
           </Center>
         </Table.Td>
         {/* maxWidth: 0 forces the fixed-layout cell to clip rather than expand */}
@@ -52,6 +38,15 @@ const ModTable = () => {
         </Table.Td>
         <Table.Td>
           <Text size="sm">
+            {mod.version ?? (
+              <Text size="sm" c="dimmed">
+                —
+              </Text>
+            )}
+          </Text>
+        </Table.Td>
+        <Table.Td>
+          <Text size="sm">
             {new Date(mod.installDate).toLocaleDateString('en-US', {
               year: 'numeric',
               month: '2-digit',
@@ -60,17 +55,7 @@ const ModTable = () => {
           </Text>
         </Table.Td>
         <Table.Td>
-          <Center>
-            {mod.dllFile ? (
-              <Text size="sm" c="green" fw={600}>
-                ✓
-              </Text>
-            ) : (
-              <Text size="sm" c="dimmed">
-                —
-              </Text>
-            )}
-          </Center>
+          <Center>{mod.dllFile ? <Text size="sm">Native</Text> : <Text size="sm">Package</Text>}</Center>
         </Table.Td>
         <ModTableMenu mod={mod} />
       </Table.Tr>
@@ -88,7 +73,7 @@ const ModTable = () => {
     >
       <Table.Thead>
         <Table.Tr>
-          {COLS.map(({ label, sortKey, style }) => (
+          {COLS.map(({ label, sortKey, style, align }) => (
             <ModTableHeader
               key={sortKey}
               sortedBy={sort.column === sortKey}
@@ -96,9 +81,10 @@ const ModTable = () => {
               sortIcon={sort.order || false}
               handleSort={() => changeSort(sortKey)}
               style={style}
+              align={align}
             />
           ))}
-          <Table.Th c="dimmed" style={{ width: 90 }}>
+          <Table.Th c="dimmed" style={{ width: 90, textAlign: 'center' }}>
             More
           </Table.Th>
         </Table.Tr>

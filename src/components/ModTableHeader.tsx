@@ -7,16 +7,17 @@ type ModTableHeaderProps = {
   sortedBy: boolean;
   sortIcon: string | boolean;
   handleSort?: () => void;
-  style?: React.CSSProperties;
+  style: React.CSSProperties;
+  align: 'left' | 'center' | 'right';
 };
 
-const ModTableHeader = ({ sortedBy, label, sortIcon, handleSort, style }: ModTableHeaderProps) => {
+const ModTableHeader = ({ sortedBy, label, sortIcon, handleSort, style, align }: ModTableHeaderProps) => {
   const Icon = sortedBy ? (sortIcon === 'desc' ? IconChevronUp : IconChevronDown) : IconSelector;
   return (
     <Table.Th style={{ overflow: 'hidden', ...style }}>
       <UnstyledButton
         onClick={handleSort}
-        style={{ display: 'flex', alignItems: 'center', gap: rem(4), width: '100%' }}
+        style={{ display: 'flex', alignItems: 'center', gap: rem(4), width: '100%', justifyContent: align }}
       >
         <Text size="sm" fw={500} style={{ flexShrink: 0, whiteSpace: 'nowrap' }}>
           {label}

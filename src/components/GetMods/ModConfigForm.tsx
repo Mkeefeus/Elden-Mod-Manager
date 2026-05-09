@@ -224,7 +224,7 @@ const ModConfigForm = ({ download, onSuccess, onDismiss }: Props) => {
             {download.source === 'local' && <TextInput label="Mod Path" readOnly {...form.getInputProps('path')} />}
 
             <Checkbox
-              label="Is DLL mod?"
+              label="Is Native (has DLL)?"
               {...form.getInputProps('isDll', { type: 'checkbox' })}
               onChange={(e) => {
                 form.setFieldValue('isDll', e.currentTarget.checked);
