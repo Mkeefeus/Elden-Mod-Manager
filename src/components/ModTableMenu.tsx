@@ -9,8 +9,10 @@ import EditNativeModModal from './EditNativeModModal';
 import IniEditorModal from './IniEditorModal';
 import { useMods } from '../providers/ModsProvider';
 
+type TableMod = Mod & { enabled: boolean };
+
 type ModTableMenuProps = {
-  mod: Mod;
+  mod: TableMod;
 };
 
 const ModTableMenu = ({ mod }: ModTableMenuProps) => {
@@ -50,7 +52,7 @@ const ModTableMenu = ({ mod }: ModTableMenuProps) => {
 
   const handleEditProperties = () => {
     showModal({
-      title: `Edit Properties — ${mod.name}`,
+      title: `Profile Settings — ${mod.name}`,
       content: <EditNativeModModal mod={mod} close={hideModal} />,
     });
   };
@@ -74,7 +76,11 @@ const ModTableMenu = ({ mod }: ModTableMenuProps) => {
           </Center>
         </Menu.Target>
         <Menu.Dropdown>
-          {mod.dllFile && <Menu.Item onClick={handleEditProperties}>Edit Properties</Menu.Item>}
+          {mod.dllFile && (
+            <Menu.Item onClick={handleEditProperties} disabled={!mod.enabled}>
+              Edit Profile Settings
+            </Menu.Item>
+          )}
           {hasIniFiles && <Menu.Item onClick={handleEditIniFiles}>Edit INI Files</Menu.Item>}
           {mod.exe && (
             <Menu.Item color="blue" onClick={() => handleOpenExe()}>

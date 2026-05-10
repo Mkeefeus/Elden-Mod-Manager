@@ -1,7 +1,7 @@
 import { errToString } from '../../utils/utilities';
 import { logger } from '../../utils/mainLogger';
 import store from './init';
-import { Mod, ModProfile, WindowState } from 'types';
+import { Mod, ModProfile, ProfileModRef, WindowState } from 'types';
 import { join } from 'path';
 import { app } from 'electron';
 
@@ -33,8 +33,8 @@ export const saveMods = (mods: Mod[]) => {
   }
 };
 
-export const saveProfileRefs = (profileId: string, refs: string[]) => {
-  debug(`Saving profile refs for: ${profileId}`);
+export const saveProfileMods = (profileId: string, refs: ProfileModRef[]) => {
+  debug(`Saving profile mods for: ${profileId}`);
   try {
     const profiles = store.get('profiles');
     const index = profiles.findIndex((p) => p.uuid === profileId);
@@ -43,7 +43,7 @@ export const saveProfileRefs = (profileId: string, refs: string[]) => {
     store.set('profiles', profiles);
     return true;
   } catch (err) {
-    const msg = `An error occured while saving profile refs: ${errToString(err)}`;
+    const msg = `An error occured while saving profile mods: ${errToString(err)}`;
     error(msg);
     throw new Error(msg, { cause: err });
   }

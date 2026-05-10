@@ -3,7 +3,7 @@ import { Select, Group, ActionIcon, Tooltip, TextInput, Button, Stack, Text } fr
 import { useMods } from '../providers/ModsProvider';
 import { useModal } from '../providers/ModalProvider';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faFloppyDisk, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { sendLog } from '../utils/rendererLogger';
 
@@ -48,12 +48,6 @@ const ProfileSelector = ({ onApply }: { onApply?: () => void }) => {
     const newProfile = await window.electronAPI.createProfile(name);
     await queryClient.invalidateQueries({ queryKey: ['profiles'] });
     await handleProfileChange(newProfile.uuid);
-  };
-
-  const handleSave = async () => {
-    if (!activeId) return;
-    await window.electronAPI.updateProfile(activeId);
-    await queryClient.invalidateQueries({ queryKey: ['profiles'] });
   };
 
   const handleDelete = () => {
@@ -110,17 +104,6 @@ const ProfileSelector = ({ onApply }: { onApply?: () => void }) => {
       <Tooltip label="New profile">
         <ActionIcon variant="outline" onClick={handleNew}>
           <FontAwesomeIcon icon={faPlus} />
-        </ActionIcon>
-      </Tooltip>
-      <Tooltip label="Save current state to profile">
-        <ActionIcon
-          variant="outline"
-          disabled={!activeId}
-          onClick={() => {
-            void handleSave();
-          }}
-        >
-          <FontAwesomeIcon icon={faFloppyDisk} />
         </ActionIcon>
       </Tooltip>
       <Tooltip label="Delete profile">

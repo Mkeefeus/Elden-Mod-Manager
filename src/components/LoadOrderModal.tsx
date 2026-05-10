@@ -1,6 +1,6 @@
-import { ActionIcon, Badge, Button, Collapse, Divider, Group, MultiSelect, Stack, Text, Tooltip } from '@mantine/core';
+import { Badge, Button, Collapse, Divider, Group, MultiSelect, Stack, Text } from '@mantine/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAnglesDown, faAnglesUp, faChevronDown, faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { faChevronDown, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { useState } from 'react';
 import { Dependent, Mod } from 'types';
 import { useMods } from '../providers/ModsProvider';
@@ -9,22 +9,31 @@ import { useMods } from '../providers/ModsProvider';
 // Types
 // ──────────────────────────────────────────────────────────────────────────────
 
-type ModLoadState = Pick<Mod, 'uuid' | 'loadFirst' | 'loadLast' | 'loadBefore' | 'loadAfter'>;
+type ModLoadState = {
+  uuid: string;
+  loadBefore?: Dependent[];
+  loadAfter?: Dependent[];
+};
+
+type LoadOrderMod = Mod & {
+  enabled: boolean;
+  loadBefore?: Dependent[];
+  loadAfter?: Dependent[];
+};
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Helpers
 // ──────────────────────────────────────────────────────────────────────────────
 
-/** The ID me3 uses to reference this mod in load_before/load_after */
-const getModSortId = (mod: Mod) => (mod.dllFile ? mod.dllFile : mod.uuid);
+const getModSortId = (mod: LoadOrderMod) => mod.uuid;
 
 // ──────────────────────────────────────────────────────────────────────────────
 // AdvancedDepsPanel — fine-grained load_before / load_after editor for one mod
 // ──────────────────────────────────────────────────────────────────────────────
 
 interface AdvancedDepsPanelProps {
-  mod: Mod;
-  peers: Mod[]; // same-type mods (already filtered)
+  mod: LoadOrderMod;
+  peers: LoadOrderMod[]; // same-type mods (already filtered)
   state: ModLoadState;
   onChange: (updated: Partial<ModLoadState>) => void;
 }
@@ -113,16 +122,14 @@ const AdvancedDepsPanel = ({ mod, peers, state, onChange }: AdvancedDepsPanelPro
 // ──────────────────────────────────────────────────────────────────────────────
 
 interface ModOrderRowProps {
-  mod: Mod;
-  peers: Mod[];
+  mod: LoadOrderMod;
+  peers: LoadOrderMod[];
   state: ModLoadState;
   onChange: (updated: Partial<ModLoadState>) => void;
-  onSetFirst: () => void; // caller handles exclusivity & confirmation
-  onSetLast: () => void;
   startExpanded: boolean;
 }
 
-const ModOrderRow = ({ mod, peers, state, onChange, onSetFirst, onSetLast, startExpanded }: ModOrderRowProps) => {
+const ModOrderRow = ({ mod, peers, state, onChange, startExpanded }: ModOrderRowProps) => {
   const [advancedOpen, setAdvancedOpen] = useState(startExpanded);
   const depCount = (state.loadBefore?.length ?? 0) + (state.loadAfter?.length ?? 0);
 
@@ -139,41 +146,9 @@ const ModOrderRow = ({ mod, peers, state, onChange, onSetFirst, onSetLast, start
             </Badge>
           )}
         </Group>
-        <Group gap={4} wrap="nowrap">
-          <Tooltip label={state.loadFirst ? 'Remove Load First' : 'Load First'} withArrow>
-            <ActionIcon
-              size="sm"
-              variant={state.loadFirst ? 'filled' : 'subtle'}
-              color={state.loadFirst ? 'yellow' : 'gray'}
-              onClick={onSetFirst}
-              aria-label="Load first"
-            >
-              <FontAwesomeIcon icon={faAnglesUp} size="xs" />
-            </ActionIcon>
-          </Tooltip>
-          <Tooltip label={state.loadLast ? 'Remove Load Last' : 'Load Last'} withArrow>
-            <ActionIcon
-              size="sm"
-              variant={state.loadLast ? 'filled' : 'subtle'}
-              color={state.loadLast ? 'blue' : 'gray'}
-              onClick={onSetLast}
-              aria-label="Load last"
-            >
-              <FontAwesomeIcon icon={faAnglesDown} size="xs" />
-            </ActionIcon>
-          </Tooltip>
-          <Tooltip label={advancedOpen ? 'Hide advanced' : 'Advanced ordering'} withArrow>
-            <ActionIcon
-              size="sm"
-              variant="subtle"
-              color="gray"
-              onClick={() => setAdvancedOpen((v) => !v)}
-              aria-label="Advanced ordering"
-            >
-              <FontAwesomeIcon icon={advancedOpen ? faChevronDown : faChevronRight} size="xs" />
-            </ActionIcon>
-          </Tooltip>
-        </Group>
+        <Button size="compact-xs" variant="subtle" color="gray" onClick={() => setAdvancedOpen((value) => !value)}>
+          <FontAwesomeIcon icon={advancedOpen ? faChevronDown : faChevronRight} size="xs" />
+        </Button>
       </Group>
       <Collapse expanded={advancedOpen}>
         <AdvancedDepsPanel mod={mod} peers={peers} state={state} onChange={onChange} />
@@ -188,24 +163,13 @@ const ModOrderRow = ({ mod, peers, state, onChange, onSetFirst, onSetLast, start
 
 interface ModGroupSectionProps {
   title: string;
-  mods: Mod[];
-  allMods: Mod[]; // full list for peer filtering
+  mods: LoadOrderMod[];
   states: Map<string, ModLoadState>;
   onChange: (uuid: string, updated: Partial<ModLoadState>) => void;
-  onSetFirst: (uuid: string) => void;
-  onSetLast: (uuid: string) => void;
   focusedModUuid?: string;
 }
 
-const ModGroupSection = ({
-  title,
-  mods,
-  states,
-  onChange,
-  onSetFirst,
-  onSetLast,
-  focusedModUuid,
-}: ModGroupSectionProps) => {
+const ModGroupSection = ({ title, mods, states, onChange, focusedModUuid }: ModGroupSectionProps) => {
   if (mods.length === 0) return null;
 
   return (
@@ -220,8 +184,6 @@ const ModGroupSection = ({
           peers={mods} // same-type peers only
           state={states.get(mod.uuid)!}
           onChange={(updated) => onChange(mod.uuid, updated)}
-          onSetFirst={() => onSetFirst(mod.uuid)}
-          onSetLast={() => onSetLast(mod.uuid)}
           startExpanded={mod.uuid === focusedModUuid}
         />
       ))}
@@ -241,15 +203,14 @@ interface LoadOrderModalProps {
 
 const LoadOrderModal = ({ hideModal, focusedModUuid }: LoadOrderModalProps) => {
   const { mods, saveMods } = useMods();
+  const profileMods = mods as LoadOrderMod[];
 
   // Local draft state — map from uuid → load order fields
   const [states, setStates] = useState<Map<string, ModLoadState>>(() => {
     const map = new Map<string, ModLoadState>();
-    for (const mod of mods) {
+    for (const mod of profileMods) {
       map.set(mod.uuid, {
         uuid: mod.uuid,
-        loadFirst: mod.loadFirst,
-        loadLast: mod.loadLast,
         loadBefore: mod.loadBefore,
         loadAfter: mod.loadAfter,
       });
@@ -265,52 +226,17 @@ const LoadOrderModal = ({ hideModal, focusedModUuid }: LoadOrderModalProps) => {
     });
   };
 
-  const dllMods = mods.filter((m) => !!m.dllFile);
-  const packageMods = mods.filter((m) => !m.dllFile);
-
-  // ── Load First/Last helpers ─────────────────────────────────────────────────
-
-  const applyExclusiveFlag = (uuid: string, flag: 'loadFirst' | 'loadLast', group: Mod[]) => {
-    const current = states.get(uuid)!;
-    const opposite = flag === 'loadFirst' ? 'loadLast' : 'loadFirst';
-    // Toggle off if already set
-    if (current[flag]) {
-      updateState(uuid, { [flag]: false });
-      return;
-    }
-    // Clear the flag from all other mods in the group, then enable on this one.
-    // Also clear the opposite flag on this mod (can't be both first and last).
-    setStates((prev) => {
-      const next = new Map(prev);
-      for (const mod of group) {
-        if (mod.uuid !== uuid && next.get(mod.uuid)?.[flag]) {
-          next.set(mod.uuid, { ...next.get(mod.uuid)!, [flag]: false });
-        }
-      }
-      next.set(uuid, { ...next.get(uuid)!, [flag]: true, [opposite]: false });
-      return next;
-    });
-  };
-
-  const handleSetFirst = (uuid: string) => {
-    const isDll = !!mods.find((m) => m.uuid === uuid)?.dllFile;
-    applyExclusiveFlag(uuid, 'loadFirst', isDll ? dllMods : packageMods);
-  };
-
-  const handleSetLast = (uuid: string) => {
-    const isDll = !!mods.find((m) => m.uuid === uuid)?.dllFile;
-    applyExclusiveFlag(uuid, 'loadLast', isDll ? dllMods : packageMods);
-  };
+  const dllMods = profileMods.filter((mod) => !!mod.dllFile && mod.enabled);
+  const packageMods = profileMods.filter((mod) => !mod.dllFile && mod.enabled);
+  const enabledMods = [...dllMods, ...packageMods];
 
   // ── Save ───────────────────────────────────────────────────────────────────
 
   const handleSave = () => {
-    const updated = mods.map((mod) => {
+    const updated = profileMods.map((mod) => {
       const s = states.get(mod.uuid)!;
       return {
         ...mod,
-        loadFirst: s.loadFirst || undefined,
-        loadLast: s.loadLast || undefined,
         loadBefore: s.loadBefore?.length ? s.loadBefore : undefined,
         loadAfter: s.loadAfter?.length ? s.loadAfter : undefined,
       };
@@ -319,7 +245,7 @@ const LoadOrderModal = ({ hideModal, focusedModUuid }: LoadOrderModalProps) => {
     hideModal();
   };
 
-  if (mods.length === 0) {
+  if (profileMods.length === 0) {
     return (
       <Stack>
         <Text size="sm" c="dimmed">
@@ -334,22 +260,33 @@ const LoadOrderModal = ({ hideModal, focusedModUuid }: LoadOrderModalProps) => {
     );
   }
 
+  if (enabledMods.length === 0) {
+    return (
+      <Stack>
+        <Text size="sm" c="dimmed">
+          No mods are enabled in the active profile. Enable at least one mod before editing load order.
+        </Text>
+        <Group justify="flex-end">
+          <Button variant="outline" onClick={hideModal}>
+            Close
+          </Button>
+        </Group>
+      </Stack>
+    );
+  }
+
   return (
     <Stack gap="md">
       <Text size="sm" c="dimmed">
-        Use <FontAwesomeIcon icon={faAnglesUp} /> / <FontAwesomeIcon icon={faAnglesDown} /> to pin a mod to load first
-        or last within its group. Use <FontAwesomeIcon icon={faChevronRight} /> for fine-grained ordering against
-        specific mods. DLL mods and package mods are ordered independently.
+        Use <FontAwesomeIcon icon={faChevronRight} /> for profile-specific ordering against specific mods. DLL mods and
+        package mods are ordered independently.
       </Text>
 
       <ModGroupSection
         title="DLL mods"
         mods={dllMods}
-        allMods={mods}
         states={states}
         onChange={updateState}
-        onSetFirst={handleSetFirst}
-        onSetLast={handleSetLast}
         focusedModUuid={focusedModUuid}
       />
 
@@ -358,11 +295,8 @@ const LoadOrderModal = ({ hideModal, focusedModUuid }: LoadOrderModalProps) => {
       <ModGroupSection
         title="Package mods"
         mods={packageMods}
-        allMods={mods}
         states={states}
         onChange={updateState}
-        onSetFirst={handleSetFirst}
-        onSetLast={handleSetLast}
         focusedModUuid={focusedModUuid}
       />
 

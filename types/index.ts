@@ -25,11 +25,6 @@ export type Mod = {
   dllFile?: string;
   exe?: string;
   loadEarly?: boolean;
-  loadFirst?: boolean;
-  loadLast?: boolean;
-  loadBefore?: Dependent[];
-  loadAfter?: Dependent[];
-  optional?: boolean;
   finalizer?: string;
   initializer?: NativeInitializerCondition;
   version?: string;
@@ -47,11 +42,8 @@ export type AddModFormValues = {
   exePath: string;
   dllPath: string;
   loadEarly: boolean;
-  optional: boolean;
-  finalizer: string;
-  initializerType: 'none' | 'delay' | 'function';
-  initializerDelayMs: number;
-  initializerFunction: string;
+  finalizer?: string;
+  initializer?: NativeInitializerCondition;
   modVersion?: string;
   nexusModId?: number;
   nexusFileId?: number;
@@ -70,11 +62,17 @@ export type NewsComponentProps = {
 
 export type BrowseType = 'archive' | 'dll' | 'exe' | 'binary' | 'directory';
 
+export type ProfileModRef = {
+  modUuid: string;
+  loadBefore?: Dependent[];
+  loadAfter?: Dependent[];
+};
+
 export type ModProfile = {
   uuid: string;
   name: string;
   createdAt: number;
-  mods: string[];
+  mods: ProfileModRef[];
   savefile: string;
   startOnline: boolean;
   disableArxan: boolean;

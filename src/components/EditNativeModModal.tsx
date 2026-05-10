@@ -7,7 +7,6 @@ type InitializerType = 'none' | 'delay' | 'function';
 
 type EditNativeModFormValues = {
   loadEarly: boolean;
-  optional: boolean;
   finalizer: string;
   initializerType: InitializerType;
   initializerDelayMs: number;
@@ -35,7 +34,6 @@ const modToFormValues = (mod: Mod): EditNativeModFormValues => {
   }
   return {
     loadEarly: mod.loadEarly ?? false,
-    optional: mod.optional ?? false,
     finalizer: mod.finalizer ?? '',
     initializerType,
     initializerDelayMs,
@@ -65,7 +63,6 @@ const EditNativeModModal = ({ mod, close }: EditNativeModModalProps) => {
     const updatedMod: Mod = {
       ...mod,
       loadEarly: values.loadEarly || undefined,
-      optional: values.optional,
       finalizer: values.finalizer || undefined,
       initializer: formValuesToInitializer(values),
     };
@@ -85,11 +82,6 @@ const EditNativeModModal = ({ mod, close }: EditNativeModModalProps) => {
           label="Load early"
           description="Load this DLL before the game has fully initialized"
           {...form.getInputProps('loadEarly', { type: 'checkbox' })}
-        />
-        <Checkbox
-          label="Optional"
-          description="If unchecked, failure to load this DLL is treated as a critical error"
-          {...form.getInputProps('optional', { type: 'checkbox' })}
         />
         <TextInput
           label="Finalizer"

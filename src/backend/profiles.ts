@@ -49,28 +49,6 @@ export const handleApplyProfile = (uuid: string) => {
   }
 };
 
-export const handleUpdateProfile = (uuid: string) => {
-  debug(`Updating profile: ${uuid}`);
-  try {
-    const profiles = getProfiles();
-    const index = profiles.findIndex((p) => p.uuid === uuid);
-    if (index === -1) throw new Error(`Profile not found: ${uuid}`);
-
-    profiles[index] = {
-      ...profiles[index],
-      savefile: getActiveProfile()?.savefile ?? '',
-      startOnline: getActiveProfile()?.startOnline ?? false,
-      disableArxan: getActiveProfile()?.disableArxan ?? false,
-      noMemPatch: getActiveProfile()?.noMemPatch ?? false,
-    };
-    saveProfiles(profiles);
-    debug(`Profile updated: ${uuid}`);
-  } catch (err) {
-    const msg = `An error occurred while updating profile: ${errToString(err)}`;
-    throw new Error(msg, { cause: err });
-  }
-};
-
 export const handleDeleteProfile = (uuid: string): string => {
   debug(`Deleting profile: ${uuid}`);
   try {

@@ -6,6 +6,7 @@ import {
   AddModFormValues,
   BrowseType,
   ModProfile,
+  ProfileModRef,
   LogEntry,
   LatestRelease,
   DownloadState,
@@ -16,7 +17,7 @@ interface IElectronAPI {
   // --- Mods ---
   loadMods: () => Promise<Mod[]>;
   saveMods: (mods: Mod[]) => Promise<boolean>;
-  saveProfileRefs: (refs: string[]) => Promise<boolean>;
+  saveProfileMods: (mods: ProfileModRef[]) => Promise<boolean>;
   addMod: (formData: AddModFormValues) => Promise<boolean>;
   deleteMod: (mod: Mod) => Promise<void>;
   launchModExe: (mod: Mod) => void;
@@ -33,7 +34,6 @@ interface IElectronAPI {
   applyProfile: (uuid: string) => Promise<void>;
   deleteProfile: (uuid: string) => Promise<string>;
   renameProfile: (uuid: string, name: string) => void;
-  updateProfile: (uuid: string) => Promise<void>;
   updateActiveProfileSettings: (fields: {
     savefile?: string;
     startOnline?: boolean;
@@ -98,7 +98,7 @@ const electronAPI: IElectronAPI = {
   // --- Mods ---
   loadMods: () => ipcRenderer.invoke('load-mods'),
   saveMods: (...args) => ipcRenderer.invoke('set-mods', ...args),
-  saveProfileRefs: (...args) => ipcRenderer.invoke('save-profile-refs', ...args),
+  saveProfileMods: (...args) => ipcRenderer.invoke('save-profile-mods', ...args),
   addMod: (...args) => ipcRenderer.invoke('add-mod', ...args),
   deleteMod: (...args) => ipcRenderer.invoke('delete-mod', ...args),
   launchModExe: (...args) => ipcRenderer.send('launch-mod-exe', ...args),
@@ -115,7 +115,6 @@ const electronAPI: IElectronAPI = {
   applyProfile: (uuid) => ipcRenderer.invoke('apply-profile', uuid),
   deleteProfile: (uuid) => ipcRenderer.invoke('delete-profile', uuid),
   renameProfile: (uuid, name) => ipcRenderer.send('rename-profile', uuid, name),
-  updateProfile: (uuid) => ipcRenderer.invoke('update-profile', uuid),
   updateActiveProfileSettings: (fields) => ipcRenderer.send('update-active-profile-settings', fields),
 
   // --- Settings ---

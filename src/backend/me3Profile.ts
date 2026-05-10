@@ -1,4 +1,4 @@
-import { Mod } from 'types';
+import { Dependent, Mod } from 'types';
 import { CreateModPathFromName, errToString } from '../utils/utilities';
 import store from './db/init';
 import { logger } from '../utils/mainLogger';
@@ -13,42 +13,67 @@ const { debug, error } = logger;
 let unsubMods: (() => void) | null = null;
 let unsubProfiles: (() => void) | null = null;
 
-const generateMe3ProfileString = (mods: Mod[], savefile: string, startOnline: boolean): string => {
+type ResolvedProfileMod = Mod & {
+  loadBefore?: Dependent[];
+  loadAfter?: Dependent[];
+};
+
+const getMe3ReferenceId = (mod: Mod) => (mod.dllFile ? mod.dllFile : mod.uuid);
+
+const translateDependents = (
+  dependents: Dependent[] | undefined,
+  enabledModsByUuid: Map<string, ResolvedProfileMod>
+): Dependent[] | undefined => {
+  if (!dependents?.length) return undefined;
+
+  const translated = dependents
+    .map((dependent) => {
+      const targetMod = enabledModsByUuid.get(dependent.id);
+      if (!targetMod) return undefined;
+
+      return {
+        ...dependent,
+        id: getMe3ReferenceId(targetMod),
+      };
+    })
+    .filter((dependent): dependent is Dependent => !!dependent);
+
+  return translated.length > 0 ? translated : undefined;
+};
+
+const generateMe3ProfileString = (mods: ResolvedProfileMod[], savefile: string, startOnline: boolean): string => {
   const nativeMods = mods.filter((m) => !!m.dllFile);
   const packageMods = mods.filter((m) => !m.dllFile);
+  const enabledModsByUuid = new Map(mods.map((mod) => [mod.uuid, mod]));
   debug(
     `Generating ME3 profile: ${nativeMods.length} native mod(s), ${packageMods.length} package mod(s), savefile="${savefile}", startOnline=${startOnline}`
   );
 
-  const sortLoadOrder = (list: Mod[]) => {
-    const first = list.filter((m) => m.loadFirst);
-    const last = list.filter((m) => m.loadLast);
-    const middle = list.filter((m) => !m.loadFirst && !m.loadLast);
-    return [...first, ...middle, ...last];
-  };
-
-  const natives = sortLoadOrder(nativeMods).map((mod) => {
+  const natives = nativeMods.map((mod) => {
     const modPath = path.join(getModsFolder(), CreateModPathFromName(mod.name, mod.version), mod.dllFile!);
     const entry: Record<string, unknown> = {
       path: modPath,
     };
+    const loadBefore = translateDependents(mod.loadBefore, enabledModsByUuid);
+    const loadAfter = translateDependents(mod.loadAfter, enabledModsByUuid);
     if (mod.loadEarly) entry.load_early = true;
-    if (mod.optional !== undefined) entry.optional = mod.optional;
     if (mod.finalizer) entry.finalizer = mod.finalizer;
     if (mod.initializer) entry.initializer = mod.initializer;
-    if (mod.loadBefore && mod.loadBefore.length > 0) entry.load_before = mod.loadBefore;
-    if (mod.loadAfter && mod.loadAfter.length > 0) entry.load_after = mod.loadAfter;
+    if (loadBefore) entry.load_before = loadBefore;
+    if (loadAfter) entry.load_after = loadAfter;
     return entry;
   });
 
-  const packages = sortLoadOrder(packageMods).map((mod) => {
+  const packages = packageMods.map((mod) => {
     const modPath = path.join(getModsFolder(), CreateModPathFromName(mod.name, mod.version));
     const entry: Record<string, unknown> = {
       id: mod.uuid,
       path: `${modPath}/`,
     };
-    if (mod.loadBefore && mod.loadBefore.length > 0) entry.load_before = mod.loadBefore;
-    if (mod.loadAfter && mod.loadAfter.length > 0) entry.load_after = mod.loadAfter;
+    const loadBefore = translateDependents(mod.loadBefore, enabledModsByUuid);
+    const loadAfter = translateDependents(mod.loadAfter, enabledModsByUuid);
+    if (loadBefore) entry.load_before = loadBefore;
+    if (loadAfter) entry.load_after = loadAfter;
     return entry;
   });
 
@@ -75,7 +100,21 @@ export const writeMe3Profile = () => {
     }
     const sf = activeProfile.savefile ?? '';
     const so = activeProfile.startOnline ?? false;
-    const enabledMods = loadMods().filter((mod) => activeProfile.mods.some((m) => m === mod.uuid));
+    const installedModsByUuid = new Map(loadMods().map((mod) => [mod.uuid, mod]));
+    const enabledMods = activeProfile.mods
+      .map<ResolvedProfileMod | undefined>((profileMod) => {
+        const installedMod = installedModsByUuid.get(profileMod.modUuid);
+        if (!installedMod) return undefined;
+
+        const resolvedMod: ResolvedProfileMod = {
+          ...installedMod,
+          loadBefore: profileMod.loadBefore,
+          loadAfter: profileMod.loadAfter,
+        };
+
+        return resolvedMod;
+      })
+      .filter((mod): mod is ResolvedProfileMod => mod !== undefined);
     const profileString = generateMe3ProfileString(enabledMods, sf, so);
     const profilePath = path.join(getProfilesFolder(), ME3_PROFILE_FILENAME);
     debug(`Writing ME3 profile to: ${profilePath}`);

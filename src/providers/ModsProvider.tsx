@@ -1,9 +1,12 @@
 import { ReactNode, createContext, useContext, useMemo, useState, useEffect } from 'react';
 import { sendLog } from '../utils/rendererLogger';
-import { Mod } from 'types';
+import { Mod, ProfileModRef } from 'types';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
-type ModWithEnabled = Mod & { enabled: boolean };
+export type ModWithProfileState = Mod &
+  Pick<ProfileModRef, 'loadBefore' | 'loadAfter'> & {
+    enabled: boolean;
+  };
 
 interface Sort {
   column: string;
@@ -11,9 +14,9 @@ interface Sort {
 }
 
 interface ModsCtxValue {
-  mods: ModWithEnabled[];
+  mods: ModWithProfileState[];
   sort: Sort;
-  saveMods: (mods: ModWithEnabled[]) => Promise<void>;
+  saveMods: (mods: ModWithProfileState[]) => Promise<void>;
   loadMods: () => Promise<void>;
   changeSort: (column: string) => void;
 }
@@ -31,9 +34,9 @@ const ModsProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const columnSorter = (
-    a: ModWithEnabled,
-    b: ModWithEnabled,
-    column: keyof ModWithEnabled,
+    a: ModWithProfileState,
+    b: ModWithProfileState,
+    column: keyof ModWithProfileState,
     order: 'asc' | 'desc'
   ): number => {
     const aValue = getComparable(a[column] as Date | boolean | number | string | undefined);
@@ -44,8 +47,8 @@ const ModsProvider = ({ children }: { children: ReactNode }) => {
     return 0;
   };
 
-  const sortMods = (unsortedMods: ModWithEnabled[]) => {
-    return [...unsortedMods].sort((a, b) => columnSorter(a, b, sort.column as keyof ModWithEnabled, sort.order));
+  const sortMods = (unsortedMods: ModWithProfileState[]) => {
+    return [...unsortedMods].sort((a, b) => columnSorter(a, b, sort.column as keyof ModWithProfileState, sort.order));
   };
 
   const { data: rawMods = [] } = useQuery({
@@ -66,8 +69,16 @@ const ModsProvider = ({ children }: { children: ReactNode }) => {
   });
 
   const mods = useMemo(() => {
-    const enabledModIds = new Set(activeProfile?.mods ?? []);
-    const joined: ModWithEnabled[] = rawMods.map((m) => ({ ...m, enabled: enabledModIds.has(m.uuid) }));
+    const profileMods = new Map((activeProfile?.mods ?? []).map((profileMod) => [profileMod.modUuid, profileMod]));
+    const joined: ModWithProfileState[] = rawMods.map((mod) => {
+      const profileMod = profileMods.get(mod.uuid);
+      return {
+        ...mod,
+        enabled: !!profileMod,
+        loadBefore: profileMod?.loadBefore,
+        loadAfter: profileMod?.loadAfter,
+      };
+    });
     return sortMods(joined);
   }, [rawMods, activeProfile, sort]);
 
@@ -82,19 +93,27 @@ const ModsProvider = ({ children }: { children: ReactNode }) => {
     });
   }, []);
 
-  const saveMods = async (newMods: ModWithEnabled[]) => {
+  const saveMods = async (newMods: ModWithProfileState[]) => {
     const metaMods: Mod[] = newMods.map((mod) => {
-      const { enabled, ...rest } = mod;
+      const { enabled, loadBefore, loadAfter, ...rest } = mod;
       void enabled;
+      void loadBefore;
+      void loadAfter;
       return rest;
     });
-    const enabledModIds = newMods.filter((mod) => mod.enabled).map((mod) => mod.uuid);
+    const profileMods: ProfileModRef[] = newMods
+      .filter((mod) => mod.enabled)
+      .map((mod) => ({
+        modUuid: mod.uuid,
+        loadBefore: mod.loadBefore?.length ? mod.loadBefore : undefined,
+        loadAfter: mod.loadAfter?.length ? mod.loadAfter : undefined,
+      }));
     const success = await window.electronAPI.saveMods(metaMods);
     if (!success) {
       sendLog({ level: 'error', message: 'Failed to save mods' });
       return;
     }
-    await window.electronAPI.saveProfileRefs(enabledModIds);
+    await window.electronAPI.saveProfileMods(profileMods);
     await queryClient.invalidateQueries({ queryKey: ['mods'] });
     await queryClient.invalidateQueries({ queryKey: ['active-profile'] });
   };

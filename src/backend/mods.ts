@@ -2,7 +2,7 @@ import { randomUUID } from 'crypto';
 import { readdirSync, existsSync, cpSync, rmSync, renameSync } from 'fs';
 import { extname, join } from 'path';
 import { errToString, CreateModPathFromName } from '../utils/utilities';
-import { AddModFormValues, Mod, NativeInitializerCondition } from 'types';
+import { AddModFormValues, Mod } from 'types';
 import { logger } from '../utils/mainLogger';
 import { getModsFolder, getProfiles, loadMods, saveMods, saveProfiles, setModsFolder } from './db/api';
 import { MOD_SUBFOLDERS } from './constants';
@@ -74,15 +74,7 @@ export const handleAddMod = (formData: AddModFormValues) => {
   const dllFileName = formData.dllPath ? formData.dllPath.split(/[/\\]/).pop() : undefined;
   const exeFileName = formData.exePath ? formData.exePath.split(/[/\\]/).pop() : undefined;
   const modVersion = normalizeOptionalString((formData as AddModFormValues & Record<string, unknown>).modVersion);
-
-  let initializer: NativeInitializerCondition | undefined;
-  if (dllFileName) {
-    if (formData.initializerType === 'delay') {
-      initializer = { delay: { ms: formData.initializerDelayMs } };
-    } else if (formData.initializerType === 'function' && formData.initializerFunction) {
-      initializer = { function: formData.initializerFunction };
-    }
-  }
+  const finalizer = normalizeOptionalString(formData.finalizer);
 
   const newMod: Mod = {
     uuid: uuid,
@@ -91,10 +83,9 @@ export const handleAddMod = (formData: AddModFormValues) => {
     // Note: enabled is NOT stored on Mod — it lives on ProfileModRef
     dllFile: dllFileName || undefined,
     exe: exeFileName || undefined,
-    loadEarly: formData.loadEarly ? true : undefined,
-    optional: dllFileName && formData.optional ? true : undefined,
-    finalizer: dllFileName && formData.finalizer ? formData.finalizer : undefined,
-    initializer,
+    loadEarly: dllFileName && formData.loadEarly ? true : undefined,
+    finalizer: dllFileName ? finalizer : undefined,
+    initializer: dllFileName ? formData.initializer : undefined,
     version: modVersion,
     nexusModId: formData.nexusModId,
     nexusFileId: formData.nexusFileId,
@@ -192,10 +183,20 @@ export const handleDeleteMod = (mod: Mod) => {
   const profiles = getProfiles();
   debug('Removing mod from profiles');
   for (const profile of profiles) {
-    if (profile.mods.includes(mod.uuid)) {
+    const hadProfileMod = profile.mods.some((profileMod) => profileMod.modUuid === mod.uuid);
+    const cleanedProfileMods = profile.mods
+      .filter((profileMod) => profileMod.modUuid !== mod.uuid)
+      .map((profileMod) => ({
+        ...profileMod,
+        loadBefore: profileMod.loadBefore?.filter((dependent) => dependent.id !== mod.uuid),
+        loadAfter: profileMod.loadAfter?.filter((dependent) => dependent.id !== mod.uuid),
+      }));
+
+    if (hadProfileMod || cleanedProfileMods.length !== profile.mods.length) {
       debug(`Removing mod from profile: ${profile.name}`);
-      profile.mods = profile.mods.filter((m) => m !== mod.uuid);
     }
+
+    profile.mods = cleanedProfileMods;
   }
   saveProfiles(profiles);
   saveMods(newMods);

@@ -31,32 +31,9 @@ const schema: Schema<DBSchema> = {
         dllFile: { type: 'string' },
         exe: { type: 'string' },
         loadEarly: { type: 'boolean' },
-        loadFirst: { type: 'boolean' },
-        loadLast: { type: 'boolean' },
-        optional: { type: 'boolean' },
         finalizer: { type: 'string' },
         initializer: { type: 'object' },
         version: { type: 'string' },
-        loadBefore: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              id: { type: 'string' },
-              optional: { type: 'boolean' },
-            },
-          },
-        },
-        loadAfter: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              id: { type: 'string' },
-              optional: { type: 'boolean' },
-            },
-          },
-        },
         nexusModId: { type: 'number' },
         nexusFileId: { type: 'number' },
         nexusGameDomain: { type: 'string' },
@@ -96,7 +73,31 @@ const schema: Schema<DBSchema> = {
         mods: {
           type: 'array',
           items: {
-            type: 'string',
+            type: 'object',
+            properties: {
+              modUuid: { type: 'string' },
+              loadBefore: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: { type: 'string' },
+                    optional: { type: 'boolean' },
+                  },
+                },
+              },
+              loadAfter: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: { type: 'string' },
+                    optional: { type: 'boolean' },
+                  },
+                },
+              },
+            },
+            required: ['modUuid'],
           },
         },
         savefile: { type: 'string' },

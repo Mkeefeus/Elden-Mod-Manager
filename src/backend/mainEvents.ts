@@ -12,7 +12,7 @@ import {
   isFirstRun,
   loadMods,
   saveMods,
-  saveProfileRefs,
+  saveProfileMods,
   setModEnginePath,
   clearPromptedModsFolder,
   setModsFolder,
@@ -40,19 +40,12 @@ import {
 } from './fileSystem';
 import { handleAddMod, handleDeleteMod, updateModsFolder } from './mods';
 import { exportSettings, importSettings } from './importExport';
-import {
-  handleCreateProfile,
-  handleApplyProfile,
-  handleUpdateProfile,
-  handleDeleteProfile,
-  handleRenameProfile,
-} from './profiles';
+import { handleCreateProfile, handleApplyProfile, handleDeleteProfile, handleRenameProfile } from './profiles';
 import { initMe3ProfileWatchers } from './me3Profile';
 import { getMainWindow } from '../main';
-import { validateNexusApiKey } from './nexus';
 import { getActiveDownloads, cancelDownload, dismissDownload, addLocalDownload } from './downloadManager';
 
-const { debug, error, warning } = logger;
+const { debug, error } = logger;
 
 let getModsWindow: BrowserWindow | null = null;
 
@@ -130,10 +123,10 @@ app
     ipcMain.handle('set-mods', (_, mods: Mod[]) => {
       return saveMods(mods);
     });
-    ipcMain.handle('save-profile-refs', (_, refs: string[]) => {
+    ipcMain.handle('save-profile-mods', (_, refs: ProfileModRef[]) => {
       const activeId = getActiveProfileId();
       if (!activeId) return false;
-      return saveProfileRefs(activeId, refs);
+      return saveProfileMods(activeId, refs);
     });
     ipcMain.handle('browse', (_, type: BrowseType, title?: string, startingDir?: string) => {
       return browse(type, title, startingDir);
@@ -259,7 +252,6 @@ app
     ipcMain.handle('apply-profile', (_, uuid: string) => handleApplyProfile(uuid));
     ipcMain.handle('delete-profile', (_, uuid: string) => handleDeleteProfile(uuid));
     ipcMain.on('rename-profile', (_, uuid: string, name: string) => handleRenameProfile(uuid, name));
-    ipcMain.handle('update-profile', (_, uuid: string) => handleUpdateProfile(uuid));
 
     // INI file editor
     ipcMain.handle('list-ini-files', (_, mod: Mod) => {

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import {
+  Alert,
   Box,
   Button,
   Checkbox,
@@ -12,12 +13,11 @@ import {
   Text,
   TextInput,
   Title,
-  Alert,
 } from '@mantine/core';
 import { isNotEmpty, useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
 import { IconAlertCircle } from '@tabler/icons-react';
-import { AddModFormValues, DownloadState } from 'types';
+import { AddModFormValues, DownloadState, NativeInitializerCondition } from 'types';
 import { sendLog } from '../../utils/rendererLogger';
 import { sleep } from '../../utils/utilities';
 
@@ -27,11 +27,26 @@ interface Props {
   onDismiss: () => void;
 }
 
+type InitializerType = 'none' | 'delay' | 'function';
+
+type ModConfigFormValues = AddModFormValues & {
+  finalizer: string;
+  initializerType: InitializerType;
+  initializerDelayMs: number;
+  initializerFunction: string;
+};
+
 const INITIALIZER_OPTIONS = [
   { value: 'none', label: 'None' },
   { value: 'delay', label: 'Delay' },
   { value: 'function', label: 'Function' },
 ];
+
+const formValuesToInitializer = (values: ModConfigFormValues): NativeInitializerCondition | undefined => {
+  if (values.initializerType === 'delay') return { delay: { ms: values.initializerDelayMs } };
+  if (values.initializerType === 'function') return { function: values.initializerFunction };
+  return undefined;
+};
 
 /** Derive a friendly mod name from the downloaded filename */
 const deriveModName = (filename: string): string =>
@@ -48,13 +63,13 @@ const getSuggestedModName = (download: DownloadState): string =>
   download.nexusSuggestedModName ?? deriveModName(download.filename);
 
 const ModConfigForm = ({ download, onSuccess, onDismiss }: Props) => {
-  const [showAdvanced, setShowAdvanced] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [installedModKeys, setInstalledModKeys] = useState<string[]>([]);
+  const [showAdvancedNativeSettings, setShowAdvancedNativeSettings] = useState(false);
   const lastDownloadIdRef = useRef(download.id);
   const lastSuggestedModNameRef = useRef(getSuggestedModName(download));
 
-  const form = useForm<AddModFormValues>({
+  const form = useForm<ModConfigFormValues>({
     initialValues: {
       modName: getSuggestedModName(download),
       isDll: false,
@@ -64,7 +79,6 @@ const ModConfigForm = ({ download, onSuccess, onDismiss }: Props) => {
       exePath: '',
       dllPath: '',
       loadEarly: false,
-      optional: false,
       finalizer: '',
       initializerType: 'none',
       initializerDelayMs: 0,
@@ -143,13 +157,29 @@ const ModConfigForm = ({ download, onSuccess, onDismiss }: Props) => {
         })
         .catch(console.error);
     }
-  }, [download.id]);
+  }, [download.id, download.extractedPath]);
 
-  const handleSubmit = async (values: AddModFormValues) => {
-    values.modName = values.modName.trim();
+  const handleSubmit = async (values: ModConfigFormValues) => {
+    const payload: AddModFormValues = {
+      modName: values.modName.trim(),
+      isDll: values.isDll,
+      path: values.path,
+      delete: values.delete,
+      hasExe: values.hasExe,
+      exePath: values.exePath,
+      dllPath: values.dllPath,
+      loadEarly: values.loadEarly,
+      finalizer: values.finalizer.trim() || undefined,
+      initializer: formValuesToInitializer(values),
+      modVersion: values.modVersion,
+      nexusModId: values.nexusModId,
+      nexusFileId: values.nexusFileId,
+      nexusGameDomain: values.nexusGameDomain,
+    };
+
     setSubmitting(true);
     try {
-      const success = await window.electronAPI.addMod(values);
+      const success = await window.electronAPI.addMod(payload);
       if (!success) {
         notifications.show({
           title: 'Failed to add mod',
@@ -160,10 +190,10 @@ const ModConfigForm = ({ download, onSuccess, onDismiss }: Props) => {
         return;
       }
       await sleep(500);
-      sendLog({ level: 'info', message: `Mod "${values.modName}" added successfully`, hideDisplay: true });
+      sendLog({ level: 'info', message: `Mod "${payload.modName}" added successfully`, hideDisplay: true });
       notifications.show({
         title: 'Mod added',
-        message: `"${values.modName}" is now in your mod list.`,
+        message: `"${payload.modName}" is now in your mod list.`,
         color: 'green',
       });
       onSuccess();
@@ -228,6 +258,14 @@ const ModConfigForm = ({ download, onSuccess, onDismiss }: Props) => {
               {...form.getInputProps('isDll', { type: 'checkbox' })}
               onChange={(e) => {
                 form.setFieldValue('isDll', e.currentTarget.checked);
+                if (!e.currentTarget.checked) {
+                  form.setFieldValue('loadEarly', false);
+                  form.setFieldValue('finalizer', '');
+                  form.setFieldValue('initializerType', 'none');
+                  form.setFieldValue('initializerDelayMs', 0);
+                  form.setFieldValue('initializerFunction', '');
+                  setShowAdvancedNativeSettings(false);
+                }
                 if (e.currentTarget.checked && form.values.path) {
                   void window.electronAPI.scanDir(form.values.path, 'dll').then((found) => {
                     if (found) form.setFieldValue('dllPath', found);
@@ -237,19 +275,66 @@ const ModConfigForm = ({ download, onSuccess, onDismiss }: Props) => {
             />
 
             {form.values.isDll && (
-              <Group align="flex-end">
-                <TextInput withAsterisk label="DLL file" {...form.getInputProps('dllPath')} style={{ flex: 4 }} />
+              <>
+                <Group align="flex-end">
+                  <TextInput withAsterisk label="DLL file" {...form.getInputProps('dllPath')} style={{ flex: 4 }} />
+                  <Button
+                    style={{ flex: 1 }}
+                    onClick={() => {
+                      void window.electronAPI.browse('dll', 'Select mod DLL', form.values.path).then((p) => {
+                        if (p) form.setFieldValue('dllPath', p.split(/[/\\]/).pop() ?? p);
+                      });
+                    }}
+                  >
+                    Browse
+                  </Button>
+                </Group>
+                <Checkbox
+                  label="Load early"
+                  description="Load this DLL before the game has fully initialized"
+                  {...form.getInputProps('loadEarly', { type: 'checkbox' })}
+                />
                 <Button
-                  style={{ flex: 1 }}
-                  onClick={() => {
-                    void window.electronAPI.browse('dll', 'Select mod DLL', form.values.path).then((p) => {
-                      if (p) form.setFieldValue('dllPath', p.split(/[/\\]/).pop() ?? p);
-                    });
-                  }}
+                  type="button"
+                  variant="default"
+                  size="xs"
+                  onClick={() => setShowAdvancedNativeSettings((open) => !open)}
                 >
-                  Browse
+                  {showAdvancedNativeSettings ? 'Hide advanced settings' : 'Show advanced settings'}
                 </Button>
-              </Group>
+                <Collapse expanded={showAdvancedNativeSettings}>
+                  <Stack gap="sm">
+                    <TextInput
+                      label="Finalizer"
+                      description="Symbol name called when this DLL is queued for unload"
+                      placeholder="e.g. on_unload"
+                      {...form.getInputProps('finalizer')}
+                    />
+                    <Select
+                      label="Initializer"
+                      description="Action to perform after this DLL successfully loads"
+                      data={INITIALIZER_OPTIONS}
+                      {...form.getInputProps('initializerType')}
+                    />
+                    <Collapse expanded={form.values.initializerType === 'delay'}>
+                      <NumberInput
+                        label="Delay (ms)"
+                        description="Minimum delay in milliseconds before the initializer runs"
+                        min={0}
+                        {...form.getInputProps('initializerDelayMs')}
+                      />
+                    </Collapse>
+                    <Collapse expanded={form.values.initializerType === 'function'}>
+                      <TextInput
+                        label="Initializer function"
+                        description="Symbol name to call after this DLL loads"
+                        placeholder="e.g. on_init"
+                        {...form.getInputProps('initializerFunction')}
+                      />
+                    </Collapse>
+                  </Stack>
+                </Collapse>
+              </>
             )}
 
             <Checkbox
@@ -287,45 +372,6 @@ const ModConfigForm = ({ download, onSuccess, onDismiss }: Props) => {
             )}
 
             <Checkbox label="Delete source after import?" {...form.getInputProps('delete', { type: 'checkbox' })} />
-
-            {form.values.isDll && (
-              <>
-                <Button variant="subtle" size="compact-sm" onClick={() => setShowAdvanced((v) => !v)}>
-                  {showAdvanced ? 'Hide advanced options' : 'Show advanced options'}
-                </Button>
-                <Collapse expanded={showAdvanced}>
-                  <Stack gap="sm" mt="xs">
-                    <Checkbox
-                      label="Load early"
-                      description="Load this DLL before the game has fully initialized"
-                      {...form.getInputProps('loadEarly', { type: 'checkbox' })}
-                    />
-                    <Checkbox
-                      label="Optional"
-                      description="If unchecked, failure to load this DLL is treated as a critical error"
-                      {...form.getInputProps('optional', { type: 'checkbox' })}
-                    />
-                    <TextInput
-                      label="Finalizer"
-                      description="Symbol name called when this DLL is queued for unload"
-                      placeholder="e.g. on_unload"
-                      {...form.getInputProps('finalizer')}
-                    />
-                    <Select label="Initializer" data={INITIALIZER_OPTIONS} {...form.getInputProps('initializerType')} />
-                    {form.values.initializerType === 'delay' && (
-                      <NumberInput label="Delay (ms)" min={0} {...form.getInputProps('initializerDelayMs')} />
-                    )}
-                    {form.values.initializerType === 'function' && (
-                      <TextInput
-                        label="Initializer function"
-                        placeholder="e.g. on_init"
-                        {...form.getInputProps('initializerFunction')}
-                      />
-                    )}
-                  </Stack>
-                </Collapse>
-              </>
-            )}
 
             <Group justify="flex-end" mt="md">
               <Button variant="subtle" color="dimmed" onClick={onDismiss}>
