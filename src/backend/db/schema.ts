@@ -135,10 +135,6 @@ const schema: Schema<DBSchema> = {
     },
     default: { width: 1280, height: 720, x: 0, y: 0, displayId: 0 },
   },
-  nexusApiKey: {
-    type: 'string',
-    default: '',
-  },
 };
 
 export default schema;

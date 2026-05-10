@@ -1,11 +1,9 @@
 import { version } from '../../package.json';
 import { logger } from '../utils/mainLogger';
-import { NexusUser } from 'types';
 
 const { debug } = logger;
 
-const NEXUS_V1_API_BASE_URL = 'https://api.nexusmods.com/v1';
-const NEXUS_V3_API_BASE_URL = 'https://api.nexusmods.com/v3';
+const NEXUS_GRAPHQL_API_URL = 'https://api.nexusmods.com/v2/graphql';
 
 export type NexusDownloadMeta = {
   modId: number;
@@ -42,18 +40,8 @@ type NexusModFile = {
   content_preview_link?: string;
 };
 
-type NexusFileUpdate = {
-  old_file_id: number;
-  new_file_id: number;
-  old_file_name: string;
-  new_file_name: string;
-  uploaded_timestamp?: number;
-  uploaded_time?: string;
-};
-
 type NexusFilesResponse = {
   files?: NexusModFile[];
-  file_updates?: NexusFileUpdate[];
 };
 
 type NexusModDetailsResponse = {
@@ -67,12 +55,93 @@ const GAME_ID_MAP: Record<number, string> = {
   4333: 'eldenring',
 };
 
-const buildHeaders = (apiKey: string) => ({
-  apikey: apiKey,
+const GAME_DOMAIN_TO_ID_MAP: Record<string, number> = Object.fromEntries(
+  Object.entries(GAME_ID_MAP).map(([gameId, gameDomain]) => [gameDomain, Number(gameId)])
+);
+
+type GraphQLError = {
+  message: string;
+};
+
+type GraphQLResponse<T> = {
+  data?: T;
+  errors?: GraphQLError[];
+};
+
+type NexusGraphqlMod = {
+  name: string;
+};
+
+type NexusGraphqlModFile = {
+  fileId: number;
+  name: string;
+  version: string;
+  uri: string;
+};
+
+type NexusGraphqlModDetailsResponse = {
+  mod: NexusGraphqlMod | null;
+};
+
+type NexusGraphqlModFilesResponse = {
+  modFiles: NexusGraphqlModFile[];
+};
+
+const GRAPHQL_GET_MOD_DETAILS = `
+  query GetModDetails($gameId: ID!, $modId: ID!) {
+    mod(gameId: $gameId, modId: $modId) {
+      name
+    }
+  }
+`;
+
+const GRAPHQL_GET_MOD_FILES = `
+  query GetModFiles($gameId: ID!, $modId: ID!) {
+    modFiles(gameId: $gameId, modId: $modId) {
+      fileId
+      name
+      version
+      uri
+    }
+  }
+`;
+
+const buildBaseHeaders = () => ({
   'Content-Type': 'application/json',
   'Application-Version': version,
   'Application-Name': 'Elden Mod Manager',
 });
+
+const getGraphqlGameId = (gameDomain: string): number => {
+  const gameId = GAME_DOMAIN_TO_ID_MAP[gameDomain];
+  if (!gameId) {
+    throw new Error(`Unsupported Nexus game domain: ${gameDomain}`);
+  }
+  return gameId;
+};
+
+const graphqlRequest = async <TData>(query: string, variables: Record<string, unknown>): Promise<TData> => {
+  const res = await fetch(NEXUS_GRAPHQL_API_URL, {
+    method: 'POST',
+    headers: buildBaseHeaders(),
+    body: JSON.stringify({ query, variables }),
+  });
+
+  if (!res.ok) {
+    throw new Error(`Nexus GraphQL request failed with status ${res.status}`);
+  }
+
+  const payload = (await res.json()) as GraphQLResponse<TData>;
+  if (payload.errors?.length) {
+    throw new Error(payload.errors.map((error) => error.message).join('; '));
+  }
+
+  if (!payload.data) {
+    throw new Error('Nexus GraphQL request returned no data');
+  }
+
+  return payload.data;
+};
 
 const safeDecode = (value: string) => {
   try {
@@ -141,107 +210,35 @@ const findMatchingFile = (files: NexusModFile[], filename: string): NexusModFile
   return undefined;
 };
 
-const findFileById = (files: NexusModFile[], fileId: number): NexusModFile | undefined =>
-  files.find((file) => file.file_id === fileId);
-
-const findMatchingUpdatedFileId = (updates: NexusFileUpdate[], filename: string): number | undefined => {
-  const normalizedFilename = normalizeFilename(filename);
-  const matches = updates.flatMap((update) => {
-    const candidates = [
-      { fileId: update.new_file_id, filename: update.new_file_name },
-      { fileId: update.old_file_id, filename: update.old_file_name },
-    ];
-
-    return candidates.filter((candidate) => normalizeFilename(candidate.filename) === normalizedFilename);
+export const getModFiles = async (gameDomain: string, modId: number): Promise<NexusFilesResponse> => {
+  debug(`Fetching file list from GraphQL for ${gameDomain}/mods/${modId}`);
+  const gameId = getGraphqlGameId(gameDomain);
+  const data = await graphqlRequest<NexusGraphqlModFilesResponse>(GRAPHQL_GET_MOD_FILES, {
+    gameId: String(gameId),
+    modId: String(modId),
   });
 
-  if (matches.length === 1) return matches[0].fileId;
-  return undefined;
-};
-
-export const getModDownloadLinks = async (
-  gameDomain: string,
-  modId: number,
-  fileId: number,
-  apiKey: string
-): Promise<NexusDownloadLink[]> => {
-  debug(`Fetching download links for ${gameDomain}/mods/${modId}/files/${fileId}`);
-  const headers = buildHeaders(apiKey);
-  const res = await fetch(
-    `${NEXUS_V1_API_BASE_URL}/games/${gameDomain}/mods/${modId}/files/${fileId}/download_link.json`,
-    { headers }
-  );
-  if (res.status === 401) {
-    throw new Error('Invalid API key');
-  }
-  if (res.status === 403) {
-    throw new Error('Download links require a Nexus premium membership');
-  }
-  if (!res.ok) {
-    throw new Error(`Nexus API request failed with status ${res.status}`);
-  }
-  return res.json() as Promise<NexusDownloadLink[]>;
-};
-
-export const validateNexusApiKey = async (apiKey: string): Promise<NexusUser> => {
-  debug('Validating Nexus API key');
-  const headers = buildHeaders(apiKey);
-  const res = await fetch(`${NEXUS_V1_API_BASE_URL}/users/validate.json`, { headers });
-  if (res.status === 401) {
-    throw new Error('Invalid API key');
-  }
-  if (!res.ok) {
-    throw new Error(`Nexus API request failed with status ${res.status}`);
-  }
-  const data = (await res.json()) as {
-    user_id: number;
-    name: string;
-    is_premium: boolean;
-    is_supporter: boolean;
-    email: string;
-    profile_url: string;
-  };
-  debug(`Nexus API key validated for user: ${data.name}`);
   return {
-    userId: data.user_id,
-    name: data.name,
-    premium: data.is_premium,
-    supporter: data.is_supporter,
-    email: data.email,
-    profileUrl: data.profile_url,
+    files: data.modFiles.map((file) => ({
+      file_id: file.fileId,
+      name: file.name,
+      file_name: file.uri,
+      version: file.version,
+    })),
   };
 };
 
-export const getModFiles = async (gameDomain: string, modId: number, apiKey: string): Promise<NexusFilesResponse> => {
-  debug(`Fetching file list for ${gameDomain}/mods/${modId}`);
-  const headers = buildHeaders(apiKey);
-  const res = await fetch(`${NEXUS_V1_API_BASE_URL}/games/${gameDomain}/mods/${modId}/files.json`, { headers });
-  if (res.status === 401) {
-    throw new Error('Invalid API key');
-  }
-  if (!res.ok) {
-    throw new Error(`Nexus API request failed with status ${res.status}`);
-  }
+export const getModDetails = async (gameDomain: string, modId: number): Promise<NexusModDetailsResponse> => {
+  debug(`Fetching mod details from GraphQL for ${gameDomain}/mods/${modId}`);
+  const gameId = getGraphqlGameId(gameDomain);
+  const data = await graphqlRequest<NexusGraphqlModDetailsResponse>(GRAPHQL_GET_MOD_DETAILS, {
+    gameId: String(gameId),
+    modId: String(modId),
+  });
 
-  return (await res.json()) as NexusFilesResponse;
-};
-
-export const getModDetails = async (
-  gameDomain: string,
-  modId: number,
-  apiKey: string
-): Promise<NexusModDetailsResponse> => {
-  debug(`Fetching mod details for ${gameDomain}/mods/${modId}`);
-  const headers = buildHeaders(apiKey);
-  const res = await fetch(`${NEXUS_V3_API_BASE_URL}/games/${gameDomain}/mods/${modId}`, { headers });
-  if (res.status === 401) {
-    throw new Error('Invalid API key');
-  }
-  if (!res.ok) {
-    throw new Error(`Nexus API request failed with status ${res.status}`);
-  }
-
-  return (await res.json()) as NexusModDetailsResponse;
+  return {
+    name: data.mod?.name,
+  };
 };
 
 const getSuggestedModNameFromDetails = (details: NexusModDetailsResponse): string | undefined =>
@@ -250,17 +247,16 @@ const getSuggestedModNameFromDetails = (details: NexusModDetailsResponse): strin
 export const resolveNexusFileDetails = async (
   gameDomain: string,
   modId: number,
-  filename: string,
-  apiKey: string
+  filename: string
 ): Promise<ResolvedNexusFile | undefined> => {
-  const modNamePromise = getModDetails(gameDomain, modId, apiKey)
+  const modNamePromise = getModDetails(gameDomain, modId)
     .then((details) => getSuggestedModNameFromDetails(details))
     .catch((err) => {
       debug(`Failed to fetch Nexus mod details for ${gameDomain}/mods/${modId}: ${String(err)}`);
       return undefined;
     });
 
-  const [fileData, suggestedModName] = await Promise.all([getModFiles(gameDomain, modId, apiKey), modNamePromise]);
+  const [fileData, suggestedModName] = await Promise.all([getModFiles(gameDomain, modId), modNamePromise]);
   const files = fileData.files ?? [];
   const matchedFile = findMatchingFile(files, filename);
   if (matchedFile) {
@@ -271,16 +267,7 @@ export const resolveNexusFileDetails = async (
     };
   }
 
-  const matchedUpdatedFileId = findMatchingUpdatedFileId(fileData.file_updates ?? [], filename);
-  if (!matchedUpdatedFileId) return undefined;
-
-  const updatedFile = findFileById(files, matchedUpdatedFileId);
-
-  return {
-    fileId: matchedUpdatedFileId,
-    suggestedModName,
-    modVersion: updatedFile ? getFileVersion(updatedFile) : undefined,
-  };
+  return undefined;
 };
 
 export const parseNexusMetadata = (urlChain: string[]): NexusDownloadMeta | undefined => {

@@ -7,7 +7,6 @@ import { extractModArchive } from './fileSystem';
 import { parseNexusMetadata, resolveNexusFileDetails } from './nexus';
 import { logger } from '../utils/mainLogger';
 import { errToString } from '../utils/utilities';
-import { getNexusApiKey } from './db/api';
 
 const { debug, error } = logger;
 
@@ -48,14 +47,8 @@ const getNexusFileID = async (id: string) => {
   )
     return;
 
-  const apiKey = getNexusApiKey();
-  if (!apiKey) {
-    debug(`No Nexus API key configured, skipping file lookup for ${entry.filename}`);
-    return;
-  }
-
   try {
-    const resolvedFile = await resolveNexusFileDetails(entry.nexusGameDomain, entry.nexusModId, entry.filename, apiKey);
+    const resolvedFile = await resolveNexusFileDetails(entry.nexusGameDomain, entry.nexusModId, entry.filename);
     if (!resolvedFile) {
       debug(`No Nexus file match found for ${entry.filename}`);
       return;

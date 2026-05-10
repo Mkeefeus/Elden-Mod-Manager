@@ -8,7 +8,6 @@ import {
   ModProfile,
   LogEntry,
   LatestRelease,
-  NexusUser,
   DownloadState,
   ExportedSettings,
 } from 'types';
@@ -50,11 +49,6 @@ interface IElectronAPI {
   updateModsFolder: (path: string) => void;
   getLauncherSettings: () => Promise<{ noBootBoost: boolean; showLogos: boolean; skipSteamInit: boolean }>;
   updateLauncherSettings: (fields: { noBootBoost?: boolean; showLogos?: boolean; skipSteamInit?: boolean }) => void;
-
-  // --- Nexus Mods ---
-  getNexusApiKey: () => Promise<string>;
-  validateNexusApiKey: () => Promise<NexusUser | null>;
-  setNexusApiKey: (key: string) => Promise<NexusUser>;
 
   // --- Get Mods Window ---
   openGetModsWindow: () => void;
@@ -132,11 +126,6 @@ const electronAPI: IElectronAPI = {
   updateModsFolder: (path) => ipcRenderer.send('update-mods-folder', path),
   getLauncherSettings: () => ipcRenderer.invoke('get-launcher-settings'),
   updateLauncherSettings: (fields) => ipcRenderer.send('update-launcher-settings', fields),
-
-  // --- Nexus Mods ---
-  getNexusApiKey: () => ipcRenderer.invoke('get-nexus-api-key'),
-  validateNexusApiKey: () => ipcRenderer.invoke('validate-nexus-api-key'),
-  setNexusApiKey: (key) => ipcRenderer.invoke('set-nexus-api-key', key),
 
   // --- Get Mods Window ---
   openGetModsWindow: () => ipcRenderer.send('open-get-mods-window'),

@@ -96,15 +96,6 @@ export type WindowState = {
   displayId: number;
 };
 
-export type NexusUser = {
-  userId: number;
-  name: string;
-  premium: boolean;
-  supporter: boolean;
-  email: string;
-  profileUrl: string;
-};
-
 export type ExportedSettings = {
   version: 1;
   modEnginePath: string;

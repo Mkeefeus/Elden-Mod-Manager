@@ -1,5 +1,4 @@
-import { TextInput, Button, Stack, Group, Switch, Divider, Text, Loader } from '@mantine/core';
-import { useEffect, useState } from 'react';
+import { TextInput, Button, Stack, Group, Switch, Divider, Text } from '@mantine/core';
 import { sendLog } from '../utils/rendererLogger';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
@@ -7,11 +6,6 @@ const TEXT_INPUT_STYLE = { flex: 7 };
 const BUTTON_STYLE = { flex: 1 };
 
 const Settings = () => {
-  const { data: nexusApiKey } = useQuery({
-    queryKey: ['nexus-api-key'],
-    queryFn: () => window.electronAPI.getNexusApiKey(),
-  });
-
   const { data: me3Path } = useQuery({
     queryKey: ['me3-path'],
     queryFn: () => window.electronAPI.getME3Path(),
@@ -27,24 +21,7 @@ const Settings = () => {
     queryFn: () => window.electronAPI.getLauncherSettings(),
     staleTime: Infinity,
   });
-  const [draftKey, setDraftKey] = useState<string>(nexusApiKey ?? '');
   const queryClient = useQueryClient();
-
-  const {
-    data: nexusUser,
-    isFetching: nexusValidating,
-    error: nexusError,
-  } = useQuery({
-    queryKey: ['nexus-user'],
-    queryFn: () => window.electronAPI.validateNexusApiKey(),
-    staleTime: Infinity,
-    retry: false,
-    enabled: !!nexusApiKey,
-  });
-
-  useEffect(() => {
-    if (nexusApiKey !== undefined) setDraftKey(nexusApiKey);
-  }, [nexusApiKey]);
 
   const handleBrowse = async (field: string) => {
     const path = await window.electronAPI.browse('directory', 'Select Folder');
@@ -106,39 +83,6 @@ const Settings = () => {
         >
           Browse
         </Button>
-      </Group>
-      <Group align={'flex-end'} justify={'space-between'}>
-        <TextInput
-          label="Nexus Mods API Key (Premium only)"
-          placeholder="Enter your Nexus Mods API Key"
-          style={TEXT_INPUT_STYLE}
-          value={draftKey}
-          disabled={nexusValidating}
-          error={nexusError ? nexusError.message : undefined}
-          description={
-            nexusValidating ? (
-              <Group gap={4}>
-                <Loader size={10} />
-                <span>Validating...</span>
-              </Group>
-            ) : nexusUser ? (
-              <Text size="xs" c="green">
-                Connected as {nexusUser.name}
-                {nexusUser.premium ? ' (Premium)' : ''}
-              </Text>
-            ) : undefined
-          }
-          onChange={(e) => {
-            setDraftKey(e.currentTarget.value);
-          }}
-          onBlur={() => {
-            if (!draftKey) return;
-            void window.electronAPI
-              .setNexusApiKey(draftKey)
-              .then(() => queryClient.invalidateQueries({ queryKey: ['nexus-user'] }))
-              .catch(() => queryClient.invalidateQueries({ queryKey: ['nexus-user'] }));
-          }}
-        />
       </Group>
       <Divider mt="sm" />
       <Text size="sm" fw={500} c="dimmed">
