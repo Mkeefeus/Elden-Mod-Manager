@@ -1,58 +1,47 @@
-import { useEffect, useRef } from 'react';
-import { Box, Stack, Text } from '@mantine/core';
-
-// Script injected into the WebView after each page load.
-// Disables nxm:// links and observes dynamic content for new ones.
-const NXM_DISABLE_SCRIPT = `
-(function () {
-  const TOOLTIP = 'Use "Manual Download" to download via Elden Mod Manager';
-
-  function disableNxmLink(el) {
-    if (el._nxmDisabled) return;
-    el._nxmDisabled = true;
-    el.setAttribute('href', 'javascript:void(0)');
-    el.setAttribute('title', TOOLTIP);
-    el.style.opacity = '0.5';
-    el.style.cursor = 'not-allowed';
-    el.style.pointerEvents = 'none';
-    const parent = el.closest('[data-e2eid]') || el.parentElement;
-    if (parent) {
-      const badge = document.createElement('span');
-      badge.textContent = '⚠ Use Manual Download';
-      badge.style.cssText =
-        'font-size:11px;color:#c89b4a;display:block;margin-top:2px;';
-      if (!parent.querySelector('.emm-nxm-notice')) {
-        badge.classList.add('emm-nxm-notice');
-        parent.appendChild(badge);
-      }
-    }
-  }
-
-  function processAll() {
-    document.querySelectorAll('a[href^="nxm://"]').forEach(disableNxmLink);
-  }
-
-  processAll();
-
-  const observer = new MutationObserver(processAll);
-  observer.observe(document.body, { childList: true, subtree: true });
-})();
-`;
+import { useEffect, useRef, useState } from 'react';
+import { ActionIcon, Box, Group, Stack, Text } from '@mantine/core';
+import { IconArrowLeft, IconArrowRight } from '@tabler/icons-react';
 
 const NexusWebView = () => {
   const webviewRef = useRef<Electron.WebviewTag | null>(null);
+  const [canGoBack, setCanGoBack] = useState(false);
+  const [canGoForward, setCanGoForward] = useState(false);
 
   useEffect(() => {
     const wv = webviewRef.current;
     if (!wv) return;
+    let isDomReady = false;
 
-    const handleLoad = () => {
-      wv.executeJavaScript(NXM_DISABLE_SCRIPT).catch(console.error);
+    const syncNavigationState = () => {
+      if (!isDomReady) return;
+      setCanGoBack(wv.canGoBack());
+      setCanGoForward(wv.canGoForward());
     };
 
+    const handleDomReady = () => {
+      isDomReady = true;
+      syncNavigationState();
+    };
+
+    const handleLoad = () => {
+      syncNavigationState();
+    };
+
+    const handleNavigation = () => {
+      syncNavigationState();
+    };
+
+    wv.addEventListener('dom-ready', handleDomReady);
     wv.addEventListener('did-finish-load', handleLoad);
+    wv.addEventListener('did-navigate', handleNavigation);
+    wv.addEventListener('did-navigate-in-page', handleNavigation);
+
     return () => {
+      isDomReady = false;
+      wv.removeEventListener('dom-ready', handleDomReady);
       wv.removeEventListener('did-finish-load', handleLoad);
+      wv.removeEventListener('did-navigate', handleNavigation);
+      wv.removeEventListener('did-navigate-in-page', handleNavigation);
     };
   }, []);
 
@@ -68,10 +57,35 @@ const NexusWebView = () => {
           flexShrink: 0,
         }}
       >
-        <Text size="xs" c="gold.4">
-          <strong>Note:</strong> Use the <strong>Manual Download</strong> button on Nexus to download mods. "Mod Manager
-          Download" (nxm://) is not supported.
-        </Text>
+        <Group gap="md" wrap="nowrap" align="center">
+          <Group gap="xs" wrap="nowrap" style={{ flexShrink: 0 }}>
+            <ActionIcon
+              variant="outline"
+              aria-label="Go back"
+              disabled={!canGoBack}
+              onClick={() => {
+                webviewRef.current?.goBack();
+              }}
+            >
+              <IconArrowLeft size={16} />
+            </ActionIcon>
+            <ActionIcon
+              variant="outline"
+              aria-label="Go forward"
+              disabled={!canGoForward}
+              onClick={() => {
+                webviewRef.current?.goForward();
+              }}
+            >
+              <IconArrowRight size={16} />
+            </ActionIcon>
+          </Group>
+
+          <Text size="xs" c="gold.4" style={{ flex: 1 }}>
+            <strong>Note:</strong> Use the <strong>Manual Download</strong> button on Nexus to download mods. "Mod
+            Manager Download" (nxm://) is not supported.
+          </Text>
+        </Group>
       </Box>
 
       {/* WebView */}
