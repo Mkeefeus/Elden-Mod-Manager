@@ -10,7 +10,6 @@ import {
   saveProfiles,
   setActiveProfileId,
 } from './db/api';
-import { writeMe3Profile } from './me3Profile';
 import { writeFileSync } from 'fs';
 
 type ModExport = {
@@ -57,7 +56,6 @@ export const handleCreateProfile = (name: string): ModProfile => {
     profiles.push(profile);
     saveProfiles(profiles);
     setActiveProfileId(profile.uuid);
-    writeMe3Profile();
     debug(`Profile created: ${profile.uuid}`);
     return profile;
   } catch (err) {
@@ -73,7 +71,6 @@ export const handleApplyProfile = (uuid: string) => {
     const profile = profiles.find((p) => p.uuid === uuid);
     if (!profile) throw new Error(`Profile not found: ${uuid}`);
     setActiveProfileId(uuid);
-    writeMe3Profile();
     debug(`Profile applied: ${uuid}`);
   } catch (err) {
     const msg = `An error occurred while applying profile: ${errToString(err)}`;

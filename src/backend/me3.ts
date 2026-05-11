@@ -5,6 +5,7 @@ import { logger } from '../utils/mainLogger';
 import { getModEnginePath, getProfilesFolder, setModEnginePath, getActiveProfile, getLauncherSettings } from './db/api';
 import { errToString } from '../utils/utilities';
 import { ME3_PROFILE_FILENAME, ME3_DEFAULT_WIN_PATH, ME3_DEFAULT_LINUX_PATH } from './constants';
+import { writeMe3Profile } from './me3Profile';
 
 const { debug, error } = logger;
 
@@ -72,6 +73,7 @@ export const launchEldenRingModded = () => {
   debug('Launching game with mods via ME3');
   try {
     const me3Exe = getME3Executable();
+    writeMe3Profile();
     const profilePath = join(getProfilesFolder(), ME3_PROFILE_FILENAME);
     const args = ['launch', '-p', profilePath];
     const activeProfile = getActiveProfile();

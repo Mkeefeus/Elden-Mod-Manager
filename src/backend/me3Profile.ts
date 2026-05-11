@@ -1,17 +1,12 @@
 import { Dependent, Mod } from 'types';
 import { CreateModPathFromName, errToString } from '../utils/utilities';
-import store from './db/init';
 import { logger } from '../utils/mainLogger';
 import { writeFileSync, mkdirSync } from 'fs';
 import path from 'path';
 import { getProfilesFolder, getActiveProfile, getModsFolder, loadMods } from './db/api';
-import { app } from 'electron';
 import { ME3_PROFILE_FILENAME } from './constants';
 
 const { debug, error } = logger;
-
-let unsubMods: (() => void) | null = null;
-let unsubProfiles: (() => void) | null = null;
 
 type ResolvedProfileMod = Mod & {
   loadBefore?: Dependent[];
@@ -127,29 +122,3 @@ export const writeMe3Profile = () => {
     throw new Error(msg, { cause: err });
   }
 };
-
-export const initMe3ProfileWatchers = () => {
-  if (unsubMods || unsubProfiles) return;
-
-  debug('Initializing ME3 profile watchers');
-
-  unsubMods = store.onDidChange('mods', () => {
-    debug('Mods changed, regenerating ME3 profile');
-    writeMe3Profile();
-  });
-
-  unsubProfiles = store.onDidChange('profiles', () => {
-    debug('Profiles changed, regenerating ME3 profile');
-    writeMe3Profile();
-  });
-};
-
-app.on('before-quit', () => {
-  if (!unsubMods && !unsubProfiles) return;
-
-  debug('App quitting, unsubscribing ME3 profile watchers');
-  unsubMods?.();
-  unsubProfiles?.();
-  unsubMods = null;
-  unsubProfiles = null;
-});

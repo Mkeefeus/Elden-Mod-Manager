@@ -14,7 +14,6 @@ import {
   setModEnginePath,
 } from './db/api';
 import { detectME3 } from './me3';
-import { initMe3ProfileWatchers } from './me3Profile';
 
 const { debug } = logger;
 
@@ -67,6 +66,4 @@ export const runStartupTasks = (getMainWindow: () => BrowserWindow | null) => {
   if (isFirstRun()) {
     clearFirstRun();
   }
-
-  initMe3ProfileWatchers();
 };
