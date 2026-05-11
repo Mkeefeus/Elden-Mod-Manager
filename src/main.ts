@@ -7,7 +7,7 @@ import check from './electron-squirrel-startup';
 import { getWindowState, setWindowState } from './backend/db/api';
 import { logger } from './utils/mainLogger';
 import { initDownloadManager } from './backend/downloadManager';
-import { getGetModsWindow } from './backend/mainEvents';
+import { getGetModsWindow } from './backend/getModsWindow';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (check) {

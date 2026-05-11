@@ -1,15 +1,11 @@
-import { app, BrowserWindow, dialog, ipcMain, shell } from 'electron';
-import { randomUUID } from 'crypto';
-import path from 'path';
+import { app, dialog, ipcMain, shell } from 'electron';
 import {
-  clearFirstRun,
   getModEnginePath,
   getModsFolder,
   getPromptedModsFolder,
   getActiveProfile,
   getActiveProfileId,
   updateActiveProfile,
-  isFirstRun,
   loadMods,
   saveMods,
   saveProfileMods,
@@ -17,17 +13,14 @@ import {
   clearPromptedModsFolder,
   setModsFolder,
   getProfiles,
-  saveProfiles,
-  setActiveProfileId,
   getLauncherSettings,
   setLauncherSettings,
 } from './db/api';
 import { AddModFormValues, BrowseType, LogEntry, Mod, ProfileModRef } from 'types';
-import { existsSync } from 'fs';
 import { join, normalize, sep } from 'path';
 import { CreateModPathFromName, errToString } from '../utils/utilities';
 import { handleLog, logger } from '../utils/mainLogger';
-import { launchEldenRingModded, promptME3Install, updateME3Path, detectME3 } from './me3';
+import { launchEldenRingModded, updateME3Path, detectME3 } from './me3';
 import { launchEldenRing } from './steam';
 import {
   browse,
@@ -47,335 +40,255 @@ import {
   handleRenameProfile,
   handleExportProfile,
 } from './profiles';
-import { initMe3ProfileWatchers } from './me3Profile';
 import { getMainWindow } from '../main';
 import { getActiveDownloads, cancelDownload, dismissDownload, addLocalDownload } from './downloadManager';
+import { createOrFocusGetModsWindow } from './getModsWindow';
+import { runStartupTasks } from './startup';
 
 const { debug, error, info } = logger;
 
-let getModsWindow: BrowserWindow | null = null;
+type ActiveProfileSettingsPatch = {
+  savefile?: string;
+  startOnline?: boolean;
+  disableArxan?: boolean;
+  noMemPatch?: boolean;
+};
 
-export const getGetModsWindow = () => getModsWindow;
+type LauncherSettingsPatch = {
+  noBootBoost?: boolean;
+  showLogos?: boolean;
+  skipSteamInit?: boolean;
+};
+
+const getInstalledModPath = (mod: Pick<Mod, 'name' | 'version'>) =>
+  join(getModsFolder(), CreateModPathFromName(mod.name, mod.version));
+
+const getSafeModFilePath = (mod: Pick<Mod, 'name' | 'version'>, filename: string) => {
+  const modDir = getInstalledModPath(mod);
+  const filePath = join(modDir, filename);
+  if (!filePath.startsWith(normalize(modDir) + sep)) {
+    throw new Error('Invalid filename');
+  }
+  return filePath;
+};
+
+const launchModExecutable = (mod: Mod) => {
+  debug(`Launching mod executable: ${mod.exe}`);
+  try {
+    void shell.openPath(join(getInstalledModPath(mod), mod.exe!));
+  } catch (err) {
+    const msg = `An error occured while launching mod executable: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg, { cause: err });
+  }
+};
+
+const openInstalledModFolder = (mod: Mod) => {
+  debug(`Opening mod folder: ${mod.name}`);
+  void shell.openPath(getInstalledModPath(mod));
+};
+
+const exportActiveProfile = (uuid: string) => {
+  try {
+    debug(`Exporting profile: ${uuid}`);
+    const profiles = getProfiles();
+    const profile = profiles.find((p) => p.uuid === uuid);
+    if (!profile) {
+      const msg = `Profile not found: ${uuid}`;
+      error(msg);
+      throw new Error(msg);
+    }
+
+    const dest = saveFilePath(`emm-profile-${profile.name}.json`, 'Export Profile');
+    if (!dest) return;
+
+    handleExportProfile(profile, dest);
+    info(`Profile "${profile.name}" successfully exported to ${dest}`);
+  } catch (err) {
+    const msg = `An error occurred while exporting profile: ${errToString(err)}`;
+    error(msg);
+    dialog.showErrorBox('Export Failed', msg);
+  }
+};
+
+const getLatestVersion = async () => {
+  try {
+    const res = await fetch('https://api.github.com/repos/Mkeefeus/Elden-Mod-Manager/releases/latest', {
+      headers: { 'User-Agent': 'Elden-Mod-Manager' },
+    });
+    const data = (await res.json()) as { tag_name: string; html_url: string };
+    const latest = data.tag_name.replace(/^v/, '');
+    const current = app.getVersion();
+    const isNewer =
+      latest
+        .split('.')
+        .map(Number)
+        .reduce((acc, n, i) => {
+          if (acc !== 0) return acc;
+          return n - (current.split('.').map(Number)[i] ?? 0);
+        }, 0) > 0;
+    return isNewer ? { version: latest, url: data.html_url } : null;
+  } catch (err) {
+    debug(`Version check failed: ${errToString(err)}`);
+    return null;
+  }
+};
+
+const registerShellHandlers = () => {
+  ipcMain.on('open-external-link', (_, href: string) => {
+    void shell.openExternal(href);
+  });
+};
+
+const registerWindowHandlers = () => {
+  ipcMain.on('open-get-mods-window', () => {
+    createOrFocusGetModsWindow();
+  });
+};
+
+const registerDownloadHandlers = () => {
+  ipcMain.handle('get-downloads', () => getActiveDownloads());
+  ipcMain.on('cancel-download', (_, id: string) => cancelDownload(id));
+  ipcMain.on('dismiss-download', (_, id: string) => {
+    void dismissDownload(id);
+  });
+  ipcMain.handle('add-local-download', (_, id: string, filename: string, extractedPath: string) =>
+    addLocalDownload(id, filename, 'local', extractedPath)
+  );
+};
+
+const registerModHandlers = () => {
+  ipcMain.handle('load-mods', loadMods);
+  ipcMain.handle('set-mods', (_, mods: Mod[]) => saveMods(mods));
+  ipcMain.handle('save-profile-mods', (_, refs: ProfileModRef[]) => {
+    const activeId = getActiveProfileId();
+    if (!activeId) return false;
+    return saveProfileMods(activeId, refs);
+  });
+  ipcMain.handle('add-mod', (_, formData: AddModFormValues) => {
+    const result = handleAddMod(formData);
+    if (result) getMainWindow()?.webContents.send('mods-changed');
+    return result;
+  });
+  ipcMain.handle('delete-mod', (_, mod: Mod) => handleDeleteMod(mod));
+  ipcMain.on('launch-mod-exe', (_, mod: Mod) => {
+    launchModExecutable(mod);
+  });
+  ipcMain.on('open-mod-folder', (_, mod: Mod) => {
+    openInstalledModFolder(mod);
+  });
+};
+
+const registerFileSystemHandlers = () => {
+  ipcMain.handle('browse', (_, type: BrowseType, title?: string, startingDir?: string) =>
+    browse(type, title, startingDir)
+  );
+  ipcMain.handle('extract-archive', async (_, archivePath: string) => extractModArchive(archivePath));
+  ipcMain.handle('scan-dir', (_, dirPath: string, extension: string) => scanDirForFile(dirPath, extension));
+};
+
+const registerGameHandlers = () => {
+  ipcMain.on('launch-game', (_, modded: boolean) => {
+    return modded ? launchEldenRingModded() : launchEldenRing();
+  });
+};
+
+const registerSettingsHandlers = () => {
+  ipcMain.on('log', (event, log: LogEntry) => {
+    handleLog(log, event.sender);
+  });
+  ipcMain.on('set-me3-path', (_, path: string) => {
+    setModEnginePath(path);
+  });
+  ipcMain.handle('get-me3-path', () => getModEnginePath());
+  ipcMain.handle('get-mods-path', () => getModsFolder());
+  ipcMain.handle('check-mods-folder-prompt', () => getPromptedModsFolder());
+  ipcMain.on('clear-prompted-mods-folder', () => {
+    clearPromptedModsFolder();
+  });
+  ipcMain.on('save-mods-folder', (_, path: string) => {
+    setModsFolder(path);
+  });
+  ipcMain.on('update-me3-path', (_, path: string) => {
+    updateME3Path(path);
+  });
+  ipcMain.on('update-mods-folder', (_, path: string) => {
+    updateModsFolder(path);
+  });
+  ipcMain.handle('get-active-profile', () => getActiveProfile());
+  ipcMain.on('update-active-profile-settings', (_, fields: ActiveProfileSettingsPatch) => {
+    updateActiveProfile(fields);
+  });
+  ipcMain.handle('get-launcher-settings', () => getLauncherSettings());
+  ipcMain.on('update-launcher-settings', (_, fields: LauncherSettingsPatch) => {
+    setLauncherSettings(fields);
+  });
+  ipcMain.handle('export-settings', () => {
+    const dest = saveFilePath('emm-settings.json', 'Export Settings');
+    if (!dest) return false;
+    exportSettings(dest);
+    return true;
+  });
+  ipcMain.handle('import-settings', () => {
+    const src = browse('binary', 'Import Settings');
+    if (!src) return undefined;
+    return importSettings(src);
+  });
+  ipcMain.handle('detect-me3', () => detectME3());
+};
+
+const registerProfileHandlers = () => {
+  ipcMain.handle('load-profiles', () => getProfiles());
+  ipcMain.handle('get-active-profile-id', () => getActiveProfileId());
+  ipcMain.handle('create-profile', (_, name: string) => handleCreateProfile(name));
+  ipcMain.handle('apply-profile', (_, uuid: string) => handleApplyProfile(uuid));
+  ipcMain.handle('delete-profile', (_, uuid: string) => handleDeleteProfile(uuid));
+  ipcMain.on('rename-profile', (_, uuid: string, name: string) => {
+    handleRenameProfile(uuid, name);
+  });
+  ipcMain.on('export-profile', (_, uuid: string) => {
+    exportActiveProfile(uuid);
+  });
+};
+
+const registerIniEditorHandlers = () => {
+  ipcMain.handle('list-ini-files', (_, mod: Mod) => {
+    const modDir = getInstalledModPath(mod);
+    return listIniFiles(modDir);
+  });
+  ipcMain.handle('read-ini-file', (_, mod: Mod, filename: string) => {
+    return readIniFile(getSafeModFilePath(mod, filename));
+  });
+  ipcMain.handle('write-ini-file', (_, mod: Mod, filename: string, content: string) => {
+    return writeIniFile(getSafeModFilePath(mod, filename), content);
+  });
+};
+
+const registerUpdateHandlers = () => {
+  ipcMain.handle('get-latest-version', getLatestVersion);
+};
+
+const registerIpcHandlers = () => {
+  registerShellHandlers();
+  registerWindowHandlers();
+  registerDownloadHandlers();
+  registerModHandlers();
+  registerFileSystemHandlers();
+  registerGameHandlers();
+  registerSettingsHandlers();
+  registerProfileHandlers();
+  registerIniEditorHandlers();
+  registerUpdateHandlers();
+};
 
 app
   .whenReady()
   .then(() => {
     debug('App starting');
     debug('Registering IPC events');
-    ipcMain.on('open-external-link', (_, href: string) => {
-      void shell.openExternal(href);
-    });
 
-    // --- Get Mods Window ---
-    ipcMain.on('open-get-mods-window', () => {
-      if (getModsWindow && !getModsWindow.isDestroyed()) {
-        getModsWindow.focus();
-        return;
-      }
-      getModsWindow = new BrowserWindow({
-        width: 1280,
-        height: 800,
-        minWidth: 900,
-        minHeight: 600,
-        webPreferences: {
-          preload: path.join(__dirname, 'preload.js'),
-          webviewTag: true,
-        },
-        icon: 'public/256x256.png',
-      });
-
-      if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-        void getModsWindow.loadURL(`${MAIN_WINDOW_VITE_DEV_SERVER_URL}#/get-mods`);
-      } else {
-        void getModsWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`), {
-          hash: '/get-mods',
-        });
-      }
-
-      getModsWindow.webContents.on('will-prevent-unload', (event) => {
-        const choice = dialog.showMessageBoxSync(getModsWindow!, {
-          type: 'question',
-          buttons: ['Close Anyway', 'Stay'],
-          defaultId: 1,
-          cancelId: 1,
-          title: 'Mods Pending Installation',
-          message: 'You have mods that have not been installed yet. Are you sure you want to close?',
-        });
-        if (choice === 0) {
-          event.preventDefault(); // allows the unload to proceed
-        }
-      });
-
-      getModsWindow.on('closed', () => {
-        // Dismiss all pending downloads to clean up temp files
-        for (const dl of getActiveDownloads()) {
-          void dismissDownload(dl.id);
-        }
-        getModsWindow = null;
-      });
-    });
-
-    // --- Download Manager IPC ---
-    ipcMain.handle('get-downloads', () => getActiveDownloads());
-    ipcMain.on('cancel-download', (_, id: string) => cancelDownload(id));
-    ipcMain.on('dismiss-download', (_, id: string) => {
-      void dismissDownload(id);
-    });
-    ipcMain.handle('add-local-download', (_, id: string, filename: string, extractedPath: string) =>
-      addLocalDownload(id, filename, 'local', extractedPath)
-    );
-
-    ipcMain.handle('load-mods', loadMods);
-    ipcMain.handle('set-mods', (_, mods: Mod[]) => {
-      return saveMods(mods);
-    });
-    ipcMain.handle('save-profile-mods', (_, refs: ProfileModRef[]) => {
-      const activeId = getActiveProfileId();
-      if (!activeId) return false;
-      return saveProfileMods(activeId, refs);
-    });
-    ipcMain.handle('browse', (_, type: BrowseType, title?: string, startingDir?: string) => {
-      return browse(type, title, startingDir);
-    });
-
-    ipcMain.handle('extract-archive', async (_, archivePath: string) => {
-      return await extractModArchive(archivePath);
-    });
-
-    ipcMain.handle('scan-dir', (_, dirPath: string, extension: string) => {
-      return scanDirForFile(dirPath, extension);
-    });
-
-    ipcMain.handle('add-mod', (_, formData: AddModFormValues) => {
-      const result = handleAddMod(formData);
-      if (result) getMainWindow()?.webContents.send('mods-changed');
-      return result;
-    });
-
-    ipcMain.handle('delete-mod', (_, mod: Mod) => {
-      return handleDeleteMod(mod);
-    });
-
-    ipcMain.on('launch-game', (_, modded: boolean) => {
-      return modded ? launchEldenRingModded() : launchEldenRing();
-    });
-
-    ipcMain.on('launch-mod-exe', (_, mod: Mod) => {
-      debug(`Launching mod executable: ${mod.exe}`);
-      try {
-        void shell.openPath(join(getModsFolder(), CreateModPathFromName(mod.name, mod.version), mod.exe!));
-      } catch (err) {
-        const msg = `An error occured while launching mod executable: ${errToString(err)}`;
-        error(msg);
-        throw new Error(msg, { cause: err });
-      }
-    });
-
-    ipcMain.on('open-mod-folder', (_, mod: Mod) => {
-      debug(`Opening mod folder: ${mod.name}`);
-      void shell.openPath(join(getModsFolder(), CreateModPathFromName(mod.name, mod.version)));
-    });
-
-    ipcMain.on('log', (event, log: LogEntry) => {
-      handleLog(log, event.sender);
-    });
-
-    ipcMain.on('set-me3-path', (_, path: string) => {
-      setModEnginePath(path);
-    });
-
-    ipcMain.handle('get-me3-path', () => {
-      return getModEnginePath();
-    });
-
-    ipcMain.handle('get-mods-path', () => {
-      return getModsFolder();
-    });
-
-    ipcMain.handle('check-mods-folder-prompt', () => {
-      return getPromptedModsFolder();
-    });
-
-    ipcMain.on('clear-prompted-mods-folder', () => {
-      clearPromptedModsFolder();
-    });
-
-    ipcMain.on('save-mods-folder', (_, path: string) => {
-      setModsFolder(path);
-    });
-
-    ipcMain.on('update-me3-path', (_, path: string) => {
-      updateME3Path(path);
-    });
-
-    ipcMain.on('update-mods-folder', (_, path: string) => {
-      updateModsFolder(path);
-    });
-
-    ipcMain.handle('get-active-profile', () => {
-      return getActiveProfile();
-    });
-
-    ipcMain.on(
-      'update-active-profile-settings',
-      (_, fields: { savefile?: string; startOnline?: boolean; disableArxan?: boolean; noMemPatch?: boolean }) => {
-        updateActiveProfile(fields);
-      }
-    );
-
-    ipcMain.handle('get-launcher-settings', () => {
-      return getLauncherSettings();
-    });
-
-    ipcMain.on(
-      'update-launcher-settings',
-      (_, fields: { noBootBoost?: boolean; showLogos?: boolean; skipSteamInit?: boolean }) => {
-        setLauncherSettings(fields);
-      }
-    );
-
-    ipcMain.handle('export-settings', () => {
-      const dest = saveFilePath('emm-settings.json', 'Export Settings');
-      if (!dest) return false;
-      exportSettings(dest);
-      return true;
-    });
-
-    ipcMain.handle('import-settings', () => {
-      const src = browse('binary', 'Import Settings');
-      if (!src) return undefined;
-      return importSettings(src);
-    });
-
-    ipcMain.handle('detect-me3', () => {
-      return detectME3();
-    });
-
-    // Profile handlers
-    ipcMain.handle('load-profiles', () => getProfiles());
-    ipcMain.handle('get-active-profile-id', () => getActiveProfileId());
-    ipcMain.handle('create-profile', (_, name: string) => handleCreateProfile(name));
-    ipcMain.handle('apply-profile', (_, uuid: string) => handleApplyProfile(uuid));
-    ipcMain.handle('delete-profile', (_, uuid: string) => handleDeleteProfile(uuid));
-    ipcMain.on('rename-profile', (_, uuid: string, name: string) => handleRenameProfile(uuid, name));
-    ipcMain.on('export-profile', (_, uuid: string) => {
-      try {
-        debug(`Exporting profile: ${uuid}`);
-        const profiles = getProfiles();
-        const profile = profiles.find((p) => p.uuid === uuid);
-        if (!profile) {
-          const msg = `Profile not found: ${uuid}`;
-          error(msg);
-          throw new Error(msg);
-        }
-        const dest = saveFilePath(`emm-profile-${profile.name}.json`, 'Export Profile');
-        if (!dest) return false;
-        handleExportProfile(profile, dest);
-        info(`Profile "${profile.name}" successfully exported to ${dest}`);
-      } catch (err) {
-        const msg = `An error occurred while exporting profile: ${errToString(err)}`;
-        error(msg);
-        dialog.showErrorBox('Export Failed', msg);
-      }
-    });
-
-    // INI file editor
-    ipcMain.handle('list-ini-files', (_, mod: Mod) => {
-      const modDir = join(getModsFolder(), CreateModPathFromName(mod.name, mod.version));
-      return listIniFiles(modDir);
-    });
-
-    ipcMain.handle('read-ini-file', (_, mod: Mod, filename: string) => {
-      const modDir = join(getModsFolder(), CreateModPathFromName(mod.name, mod.version));
-      const filePath = join(modDir, filename);
-      // Prevent path traversal
-      if (!filePath.startsWith(normalize(modDir) + sep)) {
-        throw new Error('Invalid filename');
-      }
-      return readIniFile(filePath);
-    });
-
-    ipcMain.handle('write-ini-file', (_, mod: Mod, filename: string, content: string) => {
-      const modDir = join(getModsFolder(), CreateModPathFromName(mod.name, mod.version));
-      const filePath = join(modDir, filename);
-      // Prevent path traversal
-      if (!filePath.startsWith(normalize(modDir) + sep)) {
-        throw new Error('Invalid filename');
-      }
-      return writeIniFile(filePath, content);
-    });
-
-    // Version check — returns { version, url } if a newer release exists, otherwise null
-    ipcMain.handle('get-latest-version', async () => {
-      try {
-        const res = await fetch('https://api.github.com/repos/Mkeefeus/Elden-Mod-Manager/releases/latest', {
-          headers: { 'User-Agent': 'Elden-Mod-Manager' },
-        });
-        const data = (await res.json()) as { tag_name: string; html_url: string };
-        const latest = data.tag_name.replace(/^v/, '');
-        const current = app.getVersion();
-        const isNewer =
-          latest
-            .split('.')
-            .map(Number)
-            .reduce((acc, n, i) => {
-              if (acc !== 0) return acc;
-              return n - (current.split('.').map(Number)[i] ?? 0);
-            }, 0) > 0;
-        return isNewer ? { version: latest, url: data.html_url } : null;
-      } catch (err) {
-        debug(`Version check failed: ${errToString(err)}`);
-        return null;
-      }
-    });
-
-    // Startup: check if ME3 is available; prompt user if not found
-    const storedPath = getModEnginePath();
-    const me3Available =
-      (storedPath && existsSync(storedPath)) ||
-      (() => {
-        const detected = detectME3();
-        if (detected) {
-          setModEnginePath(detected);
-          return true;
-        }
-        return false;
-      })();
-    if (!me3Available) {
-      const window = getMainWindow();
-      if (window) {
-        window.once('ready-to-show', () => {
-          promptME3Install();
-        });
-      }
-    }
-
-    // Bootstrap a "Default" profile on first launch if none exist
-    const profiles = getProfiles();
-    if (profiles.length === 0) {
-      const defaultProfile = {
-        uuid: randomUUID(),
-        name: 'Default',
-        createdAt: Date.now(),
-        mods: [],
-        savefile: '',
-        startOnline: false,
-        disableArxan: false,
-        noMemPatch: false,
-      };
-      saveProfiles([defaultProfile]);
-      setActiveProfileId(defaultProfile.uuid);
-      debug(`Created default profile: ${defaultProfile.uuid}`);
-    } else if (!profiles.some((profile) => profile.uuid === getActiveProfileId())) {
-      setActiveProfileId(profiles[0].uuid);
-      debug(`Recovered missing active profile: ${profiles[0].uuid}`);
-    }
-
-    if (isFirstRun()) {
-      clearFirstRun();
-    }
-
-    initMe3ProfileWatchers();
+    registerIpcHandlers();
+    runStartupTasks(getMainWindow);
 
     debug('App started');
   })

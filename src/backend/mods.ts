@@ -6,7 +6,6 @@ import { AddModFormValues, Mod } from 'types';
 import { logger } from '../utils/mainLogger';
 import { getModsFolder, getProfiles, loadMods, saveMods, saveProfiles, setModsFolder } from './db/api';
 import { MOD_SUBFOLDERS } from './constants';
-import { getMainWindow } from '../main';
 
 const { debug, error, warning } = logger;
 
@@ -200,27 +199,6 @@ export const handleDeleteMod = (mod: Mod) => {
   }
   saveProfiles(profiles);
   saveMods(newMods);
-};
-
-export const promptModsFolder = () => {
-  try {
-    const modsFolder = getModsFolder();
-    if (existsSync(modsFolder)) {
-      throw new Error('Mods folder found, skipping prompt');
-    }
-    debug('Prompting user to select mods folder');
-    const window = getMainWindow();
-    if (!window) {
-      throw new Error('Main window not found');
-    }
-    window.once('ready-to-show', () => {
-      window.webContents.send('prompt-mods-folder');
-    });
-  } catch (err) {
-    const msg = `An error occured while prompting user to select mods folder: ${errToString(err)}`;
-    error(msg);
-    throw new Error(msg, { cause: err });
-  }
 };
 
 export const updateModsFolder = (newPath: string) => {

@@ -4,7 +4,6 @@ import { join } from 'path';
 import { logger } from '../utils/mainLogger';
 import { getModEnginePath, getProfilesFolder, setModEnginePath, getActiveProfile, getLauncherSettings } from './db/api';
 import { errToString } from '../utils/utilities';
-import { getMainWindow } from '../main';
 import { ME3_PROFILE_FILENAME, ME3_DEFAULT_WIN_PATH, ME3_DEFAULT_LINUX_PATH } from './constants';
 
 const { debug, error } = logger;
@@ -90,21 +89,6 @@ export const launchEldenRingModded = () => {
     proc.unref();
   } catch (err) {
     const msg = `An error occured while launching game with mods: ${errToString(err)}`;
-    error(msg);
-    throw new Error(msg, { cause: err });
-  }
-};
-
-export const promptME3Install = () => {
-  debug('Prompting user to install ME3');
-  try {
-    const window = getMainWindow();
-    if (!window) {
-      throw new Error('Main window not found');
-    }
-    window.webContents.send('prompt-me3-install');
-  } catch (err) {
-    const msg = `An error occured while prompting user to install ME3: ${errToString(err)}`;
     error(msg);
     throw new Error(msg, { cause: err });
   }
