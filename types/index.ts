@@ -60,7 +60,7 @@ export type NewsComponentProps = {
   postDate: string;
 };
 
-export type BrowseType = 'archive' | 'dll' | 'exe' | 'binary' | 'directory';
+export type BrowseType = 'archive' | 'dll' | 'exe' | 'binary' | 'directory' | 'profile';
 
 export type ProfileModRef = {
   modUuid: string;

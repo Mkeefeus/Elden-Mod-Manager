@@ -3,7 +3,7 @@ import { Select, Group, ActionIcon, Tooltip, TextInput, Button, Stack, Text } fr
 import { useMods } from '../providers/ModsProvider';
 import { useModal } from '../providers/ModalProvider';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faFileExport, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { sendLog } from '../utils/rendererLogger';
 
@@ -87,6 +87,11 @@ const ProfileSelector = ({ onApply }: { onApply?: () => void }) => {
     });
   };
 
+  const handleExport = () => {
+    if (!activeId) return;
+    window.electronAPI.exportProfile(activeId);
+  };
+
   const selectData = profiles.map((p) => ({ value: p.uuid, label: p.name }));
 
   return (
@@ -104,6 +109,11 @@ const ProfileSelector = ({ onApply }: { onApply?: () => void }) => {
       <Tooltip label="New profile">
         <ActionIcon variant="outline" onClick={handleNew}>
           <FontAwesomeIcon icon={faPlus} />
+        </ActionIcon>
+      </Tooltip>
+      <Tooltip label="Export profile">
+        <ActionIcon variant="outline" disabled={!activeId} onClick={() => void handleExport()}>
+          <FontAwesomeIcon icon={faFileExport} />
         </ActionIcon>
       </Tooltip>
       <Tooltip label="Delete profile">

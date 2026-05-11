@@ -1,9 +1,41 @@
 import { randomUUID } from 'crypto';
-import { ModProfile } from 'types';
+import { Dependent, ModProfile, NativeInitializerCondition } from 'types';
 import { logger } from '../utils/mainLogger';
 import { errToString } from '../utils/utilities';
-import { getActiveProfile, getActiveProfileId, getProfiles, saveProfiles, setActiveProfileId } from './db/api';
+import {
+  getActiveProfile,
+  getActiveProfileId,
+  getProfiles,
+  loadMods,
+  saveProfiles,
+  setActiveProfileId,
+} from './db/api';
 import { writeMe3Profile } from './me3Profile';
+import { writeFileSync } from 'fs';
+
+type ModExport = {
+  name: string;
+  dllFile?: string;
+  exe?: string;
+  loadBefore?: Dependent[];
+  loadAfter?: Dependent[];
+  loadEarly?: boolean;
+  finalizer?: string;
+  initializer?: NativeInitializerCondition;
+  version?: string;
+  nexusModId?: number;
+  nexusFileId?: number;
+  nexusGameDomain?: string;
+};
+
+type ProfileExport = {
+  name: string;
+  mods: ModExport[];
+  savefile: string;
+  startOnline: boolean;
+  disableArxan: boolean;
+  noMemPatch: boolean;
+};
 
 const { debug } = logger;
 
@@ -89,6 +121,49 @@ export const handleRenameProfile = (uuid: string, name: string) => {
     debug(`Profile renamed: ${uuid}`);
   } catch (err) {
     const msg = `An error occurred while renaming profile: ${errToString(err)}`;
+    throw new Error(msg, { cause: err });
+  }
+};
+
+export const handleExportProfile = (profile: ModProfile, destPath: string) => {
+  try {
+    const mods = loadMods();
+    const exportMods: ModExport[] = profile.mods.map((profileMod) => {
+      const mod = mods.find((m) => m.uuid === profileMod.modUuid);
+      if (!mod) {
+        debug(`Mod not found for profile mod ref: ${profileMod.modUuid}`);
+        return {
+          name: `Unknown Mod (${profileMod.modUuid})`,
+        };
+      }
+      return {
+        name: mod.name,
+        dllFile: mod.dllFile,
+        exe: mod.exe,
+        loadBefore: profileMod.loadBefore,
+        loadAfter: profileMod.loadAfter,
+        loadEarly: mod.loadEarly,
+        finalizer: mod.finalizer,
+        initializer: mod.initializer,
+        version: mod.version,
+        nexusModId: mod.nexusModId,
+        nexusFileId: mod.nexusFileId,
+        nexusGameDomain: mod.nexusGameDomain,
+      };
+    });
+
+    const exportData: ProfileExport = {
+      name: profile.name,
+      mods: exportMods,
+      savefile: profile.savefile,
+      startOnline: profile.startOnline,
+      disableArxan: profile.disableArxan,
+      noMemPatch: profile.noMemPatch,
+    };
+
+    writeFileSync(destPath, JSON.stringify(exportData, null, 2), 'utf-8');
+  } catch (err) {
+    const msg = `An error occurred while exporting profile: ${errToString(err)}`;
     throw new Error(msg, { cause: err });
   }
 };

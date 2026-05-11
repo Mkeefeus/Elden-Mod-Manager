@@ -40,12 +40,18 @@ import {
 } from './fileSystem';
 import { handleAddMod, handleDeleteMod, updateModsFolder } from './mods';
 import { exportSettings, importSettings } from './importExport';
-import { handleCreateProfile, handleApplyProfile, handleDeleteProfile, handleRenameProfile } from './profiles';
+import {
+  handleCreateProfile,
+  handleApplyProfile,
+  handleDeleteProfile,
+  handleRenameProfile,
+  handleExportProfile,
+} from './profiles';
 import { initMe3ProfileWatchers } from './me3Profile';
 import { getMainWindow } from '../main';
 import { getActiveDownloads, cancelDownload, dismissDownload, addLocalDownload } from './downloadManager';
 
-const { debug, error } = logger;
+const { debug, error, info } = logger;
 
 let getModsWindow: BrowserWindow | null = null;
 
@@ -252,6 +258,26 @@ app
     ipcMain.handle('apply-profile', (_, uuid: string) => handleApplyProfile(uuid));
     ipcMain.handle('delete-profile', (_, uuid: string) => handleDeleteProfile(uuid));
     ipcMain.on('rename-profile', (_, uuid: string, name: string) => handleRenameProfile(uuid, name));
+    ipcMain.on('export-profile', (_, uuid: string) => {
+      try {
+        debug(`Exporting profile: ${uuid}`);
+        const profiles = getProfiles();
+        const profile = profiles.find((p) => p.uuid === uuid);
+        if (!profile) {
+          const msg = `Profile not found: ${uuid}`;
+          error(msg);
+          throw new Error(msg);
+        }
+        const dest = saveFilePath(`emm-profile-${profile.name}.json`, 'Export Profile');
+        if (!dest) return false;
+        handleExportProfile(profile, dest);
+        info(`Profile "${profile.name}" successfully exported to ${dest}`);
+      } catch (err) {
+        const msg = `An error occurred while exporting profile: ${errToString(err)}`;
+        error(msg);
+        dialog.showErrorBox('Export Failed', msg);
+      }
+    });
 
     // INI file editor
     ipcMain.handle('list-ini-files', (_, mod: Mod) => {

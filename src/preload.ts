@@ -40,6 +40,7 @@ interface IElectronAPI {
     disableArxan?: boolean;
     noMemPatch?: boolean;
   }) => void;
+  exportProfile: (uuid: string) => void;
 
   // --- Settings ---
   getME3Path: () => Promise<string>;
@@ -116,6 +117,7 @@ const electronAPI: IElectronAPI = {
   deleteProfile: (uuid) => ipcRenderer.invoke('delete-profile', uuid),
   renameProfile: (uuid, name) => ipcRenderer.send('rename-profile', uuid, name),
   updateActiveProfileSettings: (fields) => ipcRenderer.send('update-active-profile-settings', fields),
+  exportProfile: (uuid) => ipcRenderer.send('export-profile', uuid),
 
   // --- Settings ---
   getME3Path: () => ipcRenderer.invoke('get-me3-path'),

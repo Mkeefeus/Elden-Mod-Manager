@@ -40,6 +40,8 @@ const getBrowseFilters = (type: BrowseType) => {
       return [{ name: 'Dynamic Link Libraries', extensions: ['dll'] }];
     case 'exe':
       return process.platform === 'linux' ? undefined : [{ name: 'Executable Files', extensions: ['exe'] }];
+    case 'profile':
+      return [{ name: 'Profile Files', extensions: ['json'] }];
     case 'binary':
       return undefined;
     default:
