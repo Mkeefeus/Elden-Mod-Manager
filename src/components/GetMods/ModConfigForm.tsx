@@ -60,7 +60,19 @@ const buildModIdentity = (name: string, version?: string): string =>
   `${name.trim().toLowerCase()}::${(version ?? '').trim().toLowerCase()}`;
 
 const getSuggestedModName = (download: DownloadState): string =>
-  download.nexusSuggestedModName ?? deriveModName(download.filename);
+  download.importTarget?.name ?? download.nexusSuggestedModName ?? deriveModName(download.filename);
+
+const getSuggestedModVersion = (download: DownloadState): string | undefined =>
+  download.importTarget?.version ?? download.nexusVersion;
+
+const getSuggestedNexusModId = (download: DownloadState): number | undefined =>
+  download.importTarget?.nexusModId ?? download.nexusModId;
+
+const getSuggestedNexusFileId = (download: DownloadState): number | undefined =>
+  download.importTarget?.nexusFileId ?? download.nexusFileId;
+
+const getSuggestedNexusGameDomain = (download: DownloadState): string | undefined =>
+  download.importTarget?.nexusGameDomain ?? download.nexusGameDomain;
 
 const ModConfigForm = ({ download, onSuccess, onDismiss }: Props) => {
   const [submitting, setSubmitting] = useState(false);
@@ -83,10 +95,10 @@ const ModConfigForm = ({ download, onSuccess, onDismiss }: Props) => {
       initializerType: 'none',
       initializerDelayMs: 0,
       initializerFunction: '',
-      modVersion: download.nexusVersion,
-      nexusModId: download.nexusModId,
-      nexusFileId: download.nexusFileId,
-      nexusGameDomain: download.nexusGameDomain,
+      modVersion: getSuggestedModVersion(download),
+      nexusModId: getSuggestedNexusModId(download),
+      nexusFileId: getSuggestedNexusFileId(download),
+      nexusGameDomain: getSuggestedNexusGameDomain(download),
     },
     validate: {
       modName: (v, values) => {
@@ -117,16 +129,20 @@ const ModConfigForm = ({ download, onSuccess, onDismiss }: Props) => {
     }
 
     lastSuggestedModNameRef.current = suggestedModName;
-  }, [download.id, download.filename, download.nexusSuggestedModName]);
+  }, [download.id, download.filename, download.importTarget?.name, download.nexusSuggestedModName]);
 
   useEffect(() => {
     form.setFieldValue('path', download.extractedPath ?? '');
-    form.setFieldValue('modVersion', download.nexusVersion);
-    form.setFieldValue('nexusModId', download.nexusModId);
-    form.setFieldValue('nexusFileId', download.nexusFileId);
-    form.setFieldValue('nexusGameDomain', download.nexusGameDomain);
+    form.setFieldValue('modVersion', getSuggestedModVersion(download));
+    form.setFieldValue('nexusModId', getSuggestedNexusModId(download));
+    form.setFieldValue('nexusFileId', getSuggestedNexusFileId(download));
+    form.setFieldValue('nexusGameDomain', getSuggestedNexusGameDomain(download));
   }, [
     download.extractedPath,
+    download.importTarget?.version,
+    download.importTarget?.nexusModId,
+    download.importTarget?.nexusFileId,
+    download.importTarget?.nexusGameDomain,
     download.nexusVersion,
     download.nexusModId,
     download.nexusFileId,
@@ -247,9 +263,18 @@ const ModConfigForm = ({ download, onSuccess, onDismiss }: Props) => {
           {download.filename}
         </Text>
 
+        {download.importTarget && (
+          <Text size="sm" c="yellow.2" mb="lg">
+            Pending import target: {download.importTarget.name}
+            {download.importTarget.version ? ` (${download.importTarget.version})` : ''}
+          </Text>
+        )}
+
         <form onSubmit={form.onSubmit((v) => void handleSubmit(v))}>
           <Stack gap="sm">
             <TextInput label="Mod Name" withAsterisk {...form.getInputProps('modName')} />
+
+            <TextInput label="Version" placeholder="e.g. 1.0.0" {...form.getInputProps('modVersion')} />
 
             {download.source === 'local' && <TextInput label="Mod Path" readOnly {...form.getInputProps('path')} />}
 

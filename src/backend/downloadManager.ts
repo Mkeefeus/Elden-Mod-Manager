@@ -2,7 +2,7 @@ import { BrowserWindow, app, session } from 'electron';
 import { randomUUID } from 'crypto';
 import { rm } from 'fs/promises';
 import { join } from 'path';
-import { DownloadState } from 'types';
+import { DownloadState, ImportInstallTarget } from 'types';
 import { extractModArchive } from './fileSystem';
 import { parseNexusMetadata, resolveNexusFileDetails } from './nexus';
 import { logger } from '../utils/mainLogger';
@@ -163,6 +163,7 @@ const toPublicState = (entry: DownloadState & { savePath: string }): DownloadSta
   nexusGameDomain: entry.nexusGameDomain,
   nexusSuggestedModName: typeof entry.nexusSuggestedModName === 'string' ? entry.nexusSuggestedModName : undefined,
   nexusVersion: asOptionalString((entry as Record<string, unknown>).nexusVersion),
+  importTarget: entry.importTarget ? { ...entry.importTarget } : undefined,
 });
 
 export const getActiveDownloads = (): DownloadState[] => [...downloads.values()].map(toPublicState);
@@ -200,7 +201,8 @@ export const addLocalDownload = (
   id: string,
   filename: string,
   source: 'local',
-  extractedPath: string
+  extractedPath: string,
+  importTarget?: ImportInstallTarget
 ): DownloadState => {
   const state: DownloadState & { savePath: string } = {
     id,
@@ -210,6 +212,7 @@ export const addLocalDownload = (
     source,
     extractedPath,
     savePath: extractedPath,
+    importTarget: importTarget ? { ...importTarget } : undefined,
   };
   downloads.set(id, state);
   return toPublicState(state);

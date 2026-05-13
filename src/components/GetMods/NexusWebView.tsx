@@ -2,24 +2,62 @@ import { useEffect, useRef, useState } from 'react';
 import { ActionIcon, Box, Group, Stack, Text } from '@mantine/core';
 import { IconArrowLeft, IconArrowRight } from '@tabler/icons-react';
 
-const NexusWebView = () => {
+interface NexusWebViewProps {
+  navigateTo?: string;
+  onNavigated?: () => void;
+}
+
+const NexusWebView = ({ navigateTo, onNavigated }: NexusWebViewProps) => {
   const webviewRef = useRef<Electron.WebviewTag | null>(null);
   const [canGoBack, setCanGoBack] = useState(false);
   const [canGoForward, setCanGoForward] = useState(false);
+  const isDomReadyRef = useRef(false);
+  const onNavigatedRef = useRef(onNavigated);
+  useEffect(() => {
+    onNavigatedRef.current = onNavigated;
+  }, [onNavigated]);
 
   useEffect(() => {
     const wv = webviewRef.current;
     if (!wv) return;
-    let isDomReady = false;
+
+    const handleNavigateTo = (url: string) => {
+      void wv.loadURL(url);
+    };
+
+    window.electronAPI.onNavigateNexusTo(handleNavigateTo);
+  }, []);
+
+  // Prop-driven navigation (from sidebar click within the same renderer)
+  useEffect(() => {
+    if (!navigateTo || !webviewRef.current) return;
+    const wv = webviewRef.current;
+    const doNav = () => {
+      void wv.loadURL(navigateTo);
+      onNavigatedRef.current?.();
+    };
+    if (isDomReadyRef.current) {
+      doNav();
+      return;
+    }
+    wv.addEventListener('dom-ready', doNav);
+    return () => {
+      wv.removeEventListener('dom-ready', doNav);
+    };
+  }, [navigateTo]);
+
+  useEffect(() => {
+    const wv = webviewRef.current;
+    if (!wv) return;
 
     const syncNavigationState = () => {
-      if (!isDomReady) return;
+      if (!isDomReadyRef.current) return;
       setCanGoBack(wv.canGoBack());
       setCanGoForward(wv.canGoForward());
     };
 
     const handleDomReady = () => {
-      isDomReady = true;
+      isDomReadyRef.current = true;
       syncNavigationState();
     };
 
@@ -37,7 +75,7 @@ const NexusWebView = () => {
     wv.addEventListener('did-navigate-in-page', handleNavigation);
 
     return () => {
-      isDomReady = false;
+      isDomReadyRef.current = false;
       wv.removeEventListener('dom-ready', handleDomReady);
       wv.removeEventListener('did-finish-load', handleLoad);
       wv.removeEventListener('did-navigate', handleNavigation);

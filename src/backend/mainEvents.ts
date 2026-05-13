@@ -16,7 +16,15 @@ import {
   getLauncherSettings,
   setLauncherSettings,
 } from './db/api';
-import { AddModFormValues, BrowseType, LogEntry, Mod, ProfileModRef } from 'types';
+import {
+  AddModFormValues,
+  BrowseType,
+  ImportInstallTarget,
+  ImportModResult,
+  LogEntry,
+  Mod,
+  ProfileModRef,
+} from 'types';
 import { join, normalize, sep } from 'path';
 import { CreateModPathFromName, errToString } from '../utils/utilities';
 import { handleLog, logger } from '../utils/mainLogger';
@@ -39,10 +47,13 @@ import {
   handleDeleteProfile,
   handleRenameProfile,
   handleExportProfile,
+  analyzeProfileImport,
+  completeProfileImport,
 } from './profiles';
+import { ProfileImportAnalysis } from 'types';
 import { getMainWindow } from '../main';
 import { getActiveDownloads, cancelDownload, dismissDownload, addLocalDownload } from './downloadManager';
-import { createOrFocusGetModsWindow } from './getModsWindow';
+import { createOrFocusGetModsWindow, getGetModsWindow } from './getModsWindow';
 import { runStartupTasks } from './startup';
 
 const { debug, error, info } = logger;
@@ -144,6 +155,39 @@ const registerWindowHandlers = () => {
   ipcMain.on('open-get-mods-window', () => {
     createOrFocusGetModsWindow();
   });
+  ipcMain.on('open-get-mods-with-url', (_, url: string) => {
+    const win = createOrFocusGetModsWindow();
+    const sendNav = () => win.webContents.send('navigate-nexus-to', url);
+    if (win.webContents.isLoading()) {
+      win.webContents.once('did-finish-load', sendNav);
+    } else {
+      sendNav();
+    }
+  });
+  ipcMain.on('open-get-mods-with-queue', (_, mods: ImportModResult[]) => {
+    const win = createOrFocusGetModsWindow();
+    const send = () => {
+      win.webContents.send('set-import-queue', mods);
+      const firstWithNexus = mods.find((mod) => mod.status !== 'installed' && mod.nexusModId);
+      if (firstWithNexus?.nexusModId) {
+        const domain = firstWithNexus.nexusGameDomain ?? 'eldenring';
+        win.webContents.send(
+          'navigate-nexus-to',
+          `https://www.nexusmods.com/${domain}/mods/${firstWithNexus.nexusModId}`
+        );
+      }
+    };
+    if (win.webContents.isLoading()) {
+      win.webContents.once('did-finish-load', send);
+    } else {
+      send();
+    }
+  });
+  ipcMain.on('update-import-queue', (_, mods: ImportModResult[]) => {
+    const win = getGetModsWindow();
+    if (!win || win.isDestroyed()) return;
+    win.webContents.send('set-import-queue', mods);
+  });
 };
 
 const registerDownloadHandlers = () => {
@@ -152,8 +196,10 @@ const registerDownloadHandlers = () => {
   ipcMain.on('dismiss-download', (_, id: string) => {
     void dismissDownload(id);
   });
-  ipcMain.handle('add-local-download', (_, id: string, filename: string, extractedPath: string) =>
-    addLocalDownload(id, filename, 'local', extractedPath)
+  ipcMain.handle(
+    'add-local-download',
+    (_, id: string, filename: string, extractedPath: string, importTarget?: ImportInstallTarget) =>
+      addLocalDownload(id, filename, 'local', extractedPath, importTarget)
   );
 };
 
@@ -249,6 +295,12 @@ const registerProfileHandlers = () => {
   ipcMain.on('export-profile', (_, uuid: string) => {
     exportActiveProfile(uuid);
   });
+  ipcMain.handle('analyze-profile-import', (_, srcPath: string) => analyzeProfileImport(srcPath));
+  ipcMain.handle(
+    'complete-profile-import',
+    (_, analysis: ProfileImportAnalysis, manualMatches: Record<number, string>, profileName: string) =>
+      completeProfileImport(analysis, manualMatches, profileName)
+  );
 };
 
 const registerIniEditorHandlers = () => {

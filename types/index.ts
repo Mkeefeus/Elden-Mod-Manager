@@ -104,6 +104,32 @@ export type ExportedSettings = {
   skipSteamInit: boolean;
 };
 
+export type ImportInstallTarget = {
+  name: string;
+  version?: string;
+  nexusModId?: number;
+  nexusFileId?: number;
+  nexusGameDomain?: string;
+};
+
+export type ImportModStatus = 'installed' | 'needs_install' | 'no_nexus_info';
+
+export type ImportModResult = ImportInstallTarget & {
+  status: ImportModStatus;
+  installedModUuid?: string;
+  loadBefore?: Dependent[];
+  loadAfter?: Dependent[];
+};
+
+export type ProfileImportAnalysis = {
+  profileName: string;
+  savefile: string;
+  startOnline: boolean;
+  disableArxan: boolean;
+  noMemPatch: boolean;
+  mods: ImportModResult[];
+};
+
 export type DownloadStatus = 'downloading' | 'extracting' | 'ready' | 'error';
 
 export type DownloadState = {
@@ -119,4 +145,5 @@ export type DownloadState = {
   nexusGameDomain?: string;
   nexusSuggestedModName?: string;
   nexusVersion?: string;
+  importTarget?: ImportInstallTarget;
 };

@@ -1,16 +1,21 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Box, Button, Group, Stack, Text, TextInput, Title } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import { DownloadState } from 'types';
+import { DownloadState, ImportInstallTarget } from 'types';
 
 interface Props {
   type: 'archive' | 'folder';
   onAdded: (state: DownloadState) => void;
+  importTarget?: ImportInstallTarget;
 }
 
-const AddFromLocalForm = ({ type, onAdded }: Props) => {
+const AddFromLocalForm = ({ type, onAdded, importTarget }: Props) => {
   const [path, setPath] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setPath('');
+  }, [type, importTarget?.name, importTarget?.version, importTarget?.nexusModId, importTarget?.nexusFileId]);
 
   const handleBrowse = async () => {
     const selected = await window.electronAPI.browse(
@@ -44,7 +49,7 @@ const AddFromLocalForm = ({ type, onAdded }: Props) => {
 
       const id = crypto.randomUUID();
       const filename = path.split(/[/\\]/).pop() ?? path;
-      const state = await window.electronAPI.addLocalDownload(id, filename, extractedPath);
+      const state = await window.electronAPI.addLocalDownload(id, filename, extractedPath, importTarget);
       onAdded(state);
       setPath('');
     } catch (err) {
@@ -67,6 +72,13 @@ const AddFromLocalForm = ({ type, onAdded }: Props) => {
             ? 'Select an archive (.zip, .7z, .rar, .tar, etc.) containing an Elden Ring mod. It will be extracted and ready to configure.'
             : 'Select a folder containing an Elden Ring mod (must have valid mod subfolders or a .dll file).'}
         </Text>
+
+        {importTarget && (
+          <Text size="sm" c="yellow.2">
+            Pending import target: {importTarget.name}
+            {importTarget.version ? ` (${importTarget.version})` : ''}
+          </Text>
+        )}
 
         <Group gap="sm" align="flex-end">
           <TextInput

@@ -11,6 +11,9 @@ import {
   LatestRelease,
   DownloadState,
   ExportedSettings,
+  ImportInstallTarget,
+  ProfileImportAnalysis,
+  ImportModResult,
 } from 'types';
 
 interface IElectronAPI {
@@ -41,6 +44,12 @@ interface IElectronAPI {
     noMemPatch?: boolean;
   }) => void;
   exportProfile: (uuid: string) => void;
+  analyzeProfileImport: (srcPath: string) => Promise<ProfileImportAnalysis>;
+  completeProfileImport: (
+    analysis: ProfileImportAnalysis,
+    manualMatches: Record<number, string>,
+    profileName: string
+  ) => Promise<ModProfile>;
 
   // --- Settings ---
   getME3Path: () => Promise<string>;
@@ -53,12 +62,20 @@ interface IElectronAPI {
 
   // --- Get Mods Window ---
   openGetModsWindow: () => void;
+  openGetModsWithUrl: (url: string) => void;
+  openGetModsWithQueue: (mods: ImportModResult[]) => void;
+  updateImportQueue: (mods: ImportModResult[]) => void;
 
   // --- Download Manager ---
   getDownloads: () => Promise<DownloadState[]>;
   cancelDownload: (id: string) => void;
   dismissDownload: (id: string) => void;
-  addLocalDownload: (id: string, filename: string, extractedPath: string) => Promise<DownloadState>;
+  addLocalDownload: (
+    id: string,
+    filename: string,
+    extractedPath: string,
+    importTarget?: ImportInstallTarget
+  ) => Promise<DownloadState>;
   onDownloadStarted: (callback: (state: DownloadState) => void) => void;
   onDownloadProgress: (callback: (update: { id: string; progress: number; status?: string }) => void) => void;
   onDownloadComplete: (callback: (state: DownloadState) => void) => void;
@@ -87,6 +104,9 @@ interface IElectronAPI {
   notify: (callback: (log: LogEntry) => void) => void;
   promptME3Install: (callback: () => void) => void;
   onModsChanged: (callback: () => void) => void;
+  offModsChanged: (callback: () => void) => void;
+  onNavigateNexusTo: (callback: (url: string) => void) => void;
+  onSetImportQueue: (callback: (mods: ImportModResult[]) => void) => void;
 }
 
 declare global {
@@ -118,6 +138,9 @@ const electronAPI: IElectronAPI = {
   renameProfile: (uuid, name) => ipcRenderer.send('rename-profile', uuid, name),
   updateActiveProfileSettings: (fields) => ipcRenderer.send('update-active-profile-settings', fields),
   exportProfile: (uuid) => ipcRenderer.send('export-profile', uuid),
+  analyzeProfileImport: (srcPath) => ipcRenderer.invoke('analyze-profile-import', srcPath),
+  completeProfileImport: (analysis, manualMatches, profileName) =>
+    ipcRenderer.invoke('complete-profile-import', analysis, manualMatches, profileName),
 
   // --- Settings ---
   getME3Path: () => ipcRenderer.invoke('get-me3-path'),
@@ -130,13 +153,16 @@ const electronAPI: IElectronAPI = {
 
   // --- Get Mods Window ---
   openGetModsWindow: () => ipcRenderer.send('open-get-mods-window'),
+  openGetModsWithUrl: (url) => ipcRenderer.send('open-get-mods-with-url', url),
+  openGetModsWithQueue: (mods) => ipcRenderer.send('open-get-mods-with-queue', mods),
+  updateImportQueue: (mods) => ipcRenderer.send('update-import-queue', mods),
 
   // --- Download Manager ---
   getDownloads: () => ipcRenderer.invoke('get-downloads'),
   cancelDownload: (id) => ipcRenderer.send('cancel-download', id),
   dismissDownload: (id) => ipcRenderer.send('dismiss-download', id),
-  addLocalDownload: (id, filename, extractedPath) =>
-    ipcRenderer.invoke('add-local-download', id, filename, extractedPath),
+  addLocalDownload: (id, filename, extractedPath, importTarget) =>
+    ipcRenderer.invoke('add-local-download', id, filename, extractedPath, importTarget),
   onDownloadStarted: (callback) =>
     ipcRenderer.on('download-started', (_event, state: DownloadState) => callback(state)),
   onDownloadProgress: (callback) =>
@@ -170,6 +196,10 @@ const electronAPI: IElectronAPI = {
   notify: (callback) => ipcRenderer.on('notify', (_event, value) => callback(value as LogEntry)),
   promptME3Install: (callback) => ipcRenderer.on('prompt-me3-install', callback),
   onModsChanged: (callback) => ipcRenderer.on('mods-changed', callback),
+  offModsChanged: (callback) => ipcRenderer.removeListener('mods-changed', callback),
+  onNavigateNexusTo: (callback) => ipcRenderer.on('navigate-nexus-to', (_event, url: string) => callback(url)),
+  onSetImportQueue: (callback) =>
+    ipcRenderer.on('set-import-queue', (_event, mods: ImportModResult[]) => callback(mods)),
 };
 
 contextBridge.exposeInMainWorld('electronAPI', electronAPI);

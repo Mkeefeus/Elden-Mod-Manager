@@ -92,7 +92,11 @@ const createWindow = () => {
 
   mainWindow.on('resize', () => saveStateDebounced('resize'));
   mainWindow.on('moved', () => saveStateDebounced('move'));
-  mainWindow.on('close', () => saveState('close'));
+  mainWindow.on('close', () => {
+    saveState('close');
+    const gmWin = getGetModsWindow();
+    if (gmWin && !gmWin.isDestroyed()) gmWin.destroy();
+  });
 
   // and load the index.html of the app.
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {

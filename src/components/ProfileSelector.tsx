@@ -3,9 +3,10 @@ import { Select, Group, ActionIcon, Tooltip, TextInput, Button, Stack, Text } fr
 import { useMods } from '../providers/ModsProvider';
 import { useModal } from '../providers/ModalProvider';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFileExport, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faFileExport, faFileImport, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { sendLog } from '../utils/rendererLogger';
+import ImportProfileModal from './ImportProfileModal';
 
 const ProfileSelector = ({ onApply }: { onApply?: () => void }) => {
   const { loadMods } = useMods();
@@ -92,6 +93,24 @@ const ProfileSelector = ({ onApply }: { onApply?: () => void }) => {
     window.electronAPI.exportProfile(activeId);
   };
 
+  const handleImport = () => {
+    showModal({
+      title: 'Import Profile',
+      content: (
+        <ImportProfileModal
+          onClose={hideModal}
+          onImported={(uuid) => {
+            queryClient.setQueryData(['active-profile-id'], uuid);
+            void loadMods();
+            onApply?.();
+          }}
+        />
+      ),
+      size: 'lg',
+      onBeforeClose: () => window.electronAPI.updateImportQueue([]),
+    });
+  };
+
   const selectData = profiles.map((p) => ({ value: p.uuid, label: p.name }));
 
   return (
@@ -103,7 +122,6 @@ const ProfileSelector = ({ onApply }: { onApply?: () => void }) => {
         onChange={(v) => {
           void handleProfileChange(v);
         }}
-        clearable
         style={{ minWidth: 180 }}
       />
       <Tooltip label="New profile">
@@ -114,6 +132,11 @@ const ProfileSelector = ({ onApply }: { onApply?: () => void }) => {
       <Tooltip label="Export profile">
         <ActionIcon variant="outline" disabled={!activeId} onClick={() => void handleExport()}>
           <FontAwesomeIcon icon={faFileExport} />
+        </ActionIcon>
+      </Tooltip>
+      <Tooltip label="Import profile">
+        <ActionIcon variant="outline" onClick={handleImport}>
+          <FontAwesomeIcon icon={faFileImport} />
         </ActionIcon>
       </Tooltip>
       <Tooltip label="Delete profile">

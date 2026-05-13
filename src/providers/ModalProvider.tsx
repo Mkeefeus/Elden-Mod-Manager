@@ -7,6 +7,7 @@ interface ShowOptions {
   title: string;
   content: ReactNode;
   size?: MantineSize;
+  onBeforeClose?: () => void;
 }
 
 interface ModalCtxValue {
@@ -16,6 +17,7 @@ interface ModalCtxValue {
   title: string | undefined;
   modalContent: ReactNode | null;
   modalSize: MantineSize;
+  onBeforeClose: (() => void) | undefined;
 }
 
 const ModalContext = createContext<ModalCtxValue | null>(null);
@@ -25,18 +27,22 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
   const titleState = useState<string | undefined>();
   const modalContentState = useState<ReactNode | null>(null);
   const modalSizeState = useState<MantineSize>('lg');
+  const onBeforeCloseState = useState<(() => void) | undefined>(undefined);
 
-  const showModal = ({ title, content, size = 'lg' }: ShowOptions) => {
+  const showModal = ({ title, content, size = 'lg', onBeforeClose }: ShowOptions) => {
     titleState[1](title);
     modalContentState[1](content);
     modalSizeState[1](size);
+    onBeforeCloseState[1](() => onBeforeClose);
     open();
   };
 
   const hideModal = () => {
+    onBeforeCloseState[0]?.();
     titleState[1](undefined);
     modalContentState[1](null);
     modalSizeState[1]('lg');
+    onBeforeCloseState[1](undefined);
     close();
   };
 
@@ -58,6 +64,7 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
         title: titleState[0],
         modalContent: modalContentState[0],
         modalSize: modalSizeState[0],
+        onBeforeClose: onBeforeCloseState[0],
       }}
     >
       {children}

@@ -4,7 +4,7 @@ import { MantineProvider } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { theme } from '../themes';
-import { DownloadState } from 'types';
+import { DownloadState, ImportInstallTarget, ImportModResult } from 'types';
 import GetModsSidebar from '../components/GetMods/GetModsSidebar';
 import NexusWebView from '../components/GetMods/NexusWebView';
 import AddFromLocalForm from '../components/GetMods/AddFromLocalForm';
@@ -18,13 +18,31 @@ const queryClient = new QueryClient({
 
 export type ActiveTab = 'nexus' | 'add-archive' | 'add-folder' | (string & {}); // string & {} = download id
 
+type PendingImportAction = 'nexus' | 'add-archive' | 'add-folder';
+
+const toImportTarget = (mod: ImportModResult): ImportInstallTarget => ({
+  name: mod.name,
+  version: mod.version,
+  nexusModId: mod.nexusModId,
+  nexusFileId: mod.nexusFileId,
+  nexusGameDomain: mod.nexusGameDomain,
+});
+
 const GetModsInner = () => {
   const [activeTab, setActiveTab] = useState<ActiveTab>('nexus');
   const [downloads, setDownloads] = useState<DownloadState[]>([]);
+  const [importQueue, setImportQueue] = useState<ImportModResult[]>([]);
+  const [nexusNavUrl, setNexusNavUrl] = useState<string | undefined>(undefined);
+  const [pendingImportTarget, setPendingImportTarget] = useState<ImportInstallTarget | undefined>(undefined);
 
   // Hydrate from download manager on mount
   useEffect(() => {
     window.electronAPI.getDownloads().then(setDownloads).catch(console.error);
+  }, []);
+
+  // Listen for import queue sent from main process
+  useEffect(() => {
+    window.electronAPI.onSetImportQueue(setImportQueue);
   }, []);
 
   // Warn before closing if there are uninstalled mods
@@ -68,11 +86,17 @@ const GetModsInner = () => {
     });
   }, []);
 
+  const handleTabChange = useCallback((tab: ActiveTab) => {
+    setPendingImportTarget(undefined);
+    setActiveTab(tab);
+  }, []);
+
   const handleLocalAdded = useCallback((state: DownloadState) => {
     setDownloads((prev) => {
       const exists = prev.find((d) => d.id === state.id);
       return exists ? prev : [...prev, state];
     });
+    setPendingImportTarget(undefined);
     setActiveTab(state.id);
   }, []);
 
@@ -85,11 +109,36 @@ const GetModsInner = () => {
     [activeTab]
   );
 
+  const handleNavigateWebviewTo = useCallback((url: string) => {
+    setPendingImportTarget(undefined);
+    setActiveTab('nexus');
+    setNexusNavUrl(url);
+  }, []);
+
+  const handleImportInstallAction = useCallback(
+    (mod: ImportModResult, method: PendingImportAction) => {
+      if (method === 'nexus') {
+        if (!mod.nexusModId) return;
+        const domain = mod.nexusGameDomain ?? 'eldenring';
+        handleNavigateWebviewTo(`https://www.nexusmods.com/${domain}/mods/${mod.nexusModId}`);
+        return;
+      }
+
+      setPendingImportTarget(toImportTarget(mod));
+      setActiveTab(method);
+    },
+    [handleNavigateWebviewTo]
+  );
+
   const activeDownload = downloads.find((d) => d.id === activeTab);
 
   const renderOverlayContent = () => {
-    if (activeTab === 'add-archive') return <AddFromLocalForm type="archive" onAdded={handleLocalAdded} />;
-    if (activeTab === 'add-folder') return <AddFromLocalForm type="folder" onAdded={handleLocalAdded} />;
+    if (activeTab === 'add-archive') {
+      return <AddFromLocalForm type="archive" onAdded={handleLocalAdded} importTarget={pendingImportTarget} />;
+    }
+    if (activeTab === 'add-folder') {
+      return <AddFromLocalForm type="folder" onAdded={handleLocalAdded} importTarget={pendingImportTarget} />;
+    }
     if (activeDownload) {
       return (
         <ModConfigForm
@@ -117,15 +166,17 @@ const GetModsInner = () => {
       >
         <GetModsSidebar
           activeTab={activeTab}
-          onTabChange={setActiveTab}
+          onTabChange={handleTabChange}
           downloads={downloads}
           onDismiss={handleDismiss}
+          importQueue={importQueue}
+          onImportInstallAction={handleImportInstallAction}
         />
       </Box>
       <Box style={{ flex: 1, height: '100%', overflow: 'hidden', position: 'relative' }}>
         {/* NexusWebView stays mounted to preserve navigation state */}
         <Box style={{ position: 'absolute', inset: 0, display: overlayContent ? 'none' : 'block' }}>
-          <NexusWebView />
+          <NexusWebView navigateTo={nexusNavUrl} onNavigated={() => setNexusNavUrl(undefined)} />
         </Box>
         {overlayContent && <Box style={{ position: 'absolute', inset: 0 }}>{overlayContent}</Box>}
       </Box>
