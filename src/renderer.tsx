@@ -35,7 +35,7 @@ import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
 import '@fontsource/cinzel';
 import { MantineProvider } from '@mantine/core';
-import { pages } from './pages/pages';
+import { pages } from './pages';
 import { theme } from './themes';
 import { Notifications } from '@mantine/notifications';
 

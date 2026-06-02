@@ -1,7 +1,7 @@
 import { Loader, Paper, Stack, Text, TextInput, Title, UnstyledButton } from '@mantine/core';
 import { Dependency } from 'types';
-import { sendLog } from '../utils/rendererLogger';
-import { version } from '../../package.json';
+import { sendLog } from '@utils/rendererLogger';
+import { version } from 'package.json';
 import { useQuery } from '@tanstack/react-query';
 import { useRef, useState } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';

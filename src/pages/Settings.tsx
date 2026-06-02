@@ -1,5 +1,5 @@
 import { TextInput, Button, Stack, Group, Switch, Divider, Text } from '@mantine/core';
-import { sendLog } from '../utils/rendererLogger';
+import { sendLog } from '@utils/rendererLogger';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 const TEXT_INPUT_STYLE = { flex: 7 };

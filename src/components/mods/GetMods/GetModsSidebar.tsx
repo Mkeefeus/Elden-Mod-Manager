@@ -26,7 +26,7 @@ import {
   IconChevronDown,
 } from '@tabler/icons-react';
 import { DownloadState, ImportModResult } from 'types';
-import { ActiveTab } from '../../pages/GetMods';
+import { ActiveTab } from '~/pages/GetMods';
 
 interface Props {
   activeTab: ActiveTab;

@@ -28,3 +28,11 @@ export const errToString = (err: unknown) => {
 };
 
 export const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+export function formatUsShortDate(dateValue: string | number | Date): string {
+  return new Date(dateValue).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+}

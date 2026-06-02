@@ -28,6 +28,7 @@ export default defineConfig((env) => {
     resolve: {
       // Load the Node.js entry.
       mainFields: ['module', 'jsnext:main', 'jsnext'],
+      tsconfigPaths: true,
     },
   };
 

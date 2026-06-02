@@ -3,8 +3,8 @@ import { Alert, Badge, Box, Button, Divider, Group, ScrollArea, Select, Stack, T
 import { IconAlertCircle, IconCheck, IconFileImport, IconPackageImport, IconQuestionMark } from '@tabler/icons-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { ImportModResult, ProfileImportAnalysis } from 'types';
-import { useMods } from '../providers/ModsProvider';
-import { sendLog } from '../utils/rendererLogger';
+import { useMods } from '@providers/ModsProvider';
+import { sendLog } from '@utils/rendererLogger';
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Sub-components

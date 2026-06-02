@@ -1,8 +1,8 @@
 import { OpenDialogOptions, SaveDialogOptions, app, dialog } from 'electron';
 import { chmodSync, existsSync, readdirSync, readFileSync, writeFileSync } from 'fs';
 import { join, normalize, sep } from 'path';
-import { logger } from '../utils/mainLogger';
-import { errToString } from '../utils/utilities';
+import { logger } from '@utils/mainLogger';
+import { errToString } from '@utils/utilities';
 import { BrowseType } from 'types';
 import { randomUUID } from 'crypto';
 import Seven from 'node-7z';

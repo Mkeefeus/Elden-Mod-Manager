@@ -91,7 +91,6 @@ typings/
 # Electron-Forge
 out/
 dist/
-mods/
 *.toml
 ModEngine2/
 temp/

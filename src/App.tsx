@@ -1,18 +1,19 @@
 import { AppShell, Group, NavLink, Title } from '@mantine/core';
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { pages } from './pages/pages';
-import Footer from './components/Footer';
-import ModalProvider from './providers/ModalProvider';
-import ModsProvider from './providers/ModsProvider';
-import Modal from './components/Modal';
-import './utils/rendererLogger';
+import { pages } from './pages';
+import Footer from '@components/Footer';
+import ModalProvider from '@providers/ModalProvider';
+import ModsProvider from '@providers/ModsProvider';
+import Modal from '@components/shared/Modal';
+import '@utils/rendererLogger';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { IconHome2, IconPuzzle, IconSettings, IconInfoCircle } from '@tabler/icons-react';
+import { IconHome2, IconPuzzle, IconSettings, IconInfoCircle, IconTools } from '@tabler/icons-react';
 
 const pageIcons: Record<string, React.ReactNode> = {
   '/': <IconHome2 size={18} />,
   '/mods': <IconPuzzle size={18} />,
   '/settings': <IconSettings size={18} />,
+  '/tools': <IconTools size={18} />,
   '/about': <IconInfoCircle size={18} />,
 };
 

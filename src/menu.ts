@@ -1,10 +1,10 @@
 import { MenuItemConstructorOptions, shell, app } from 'electron';
-import { getEldenRingInstallDir } from './backend/steam';
+import { getEldenRingInstallDir } from '@backend/steam';
 import archiver from 'archiver';
 import { createWriteStream, readdirSync, unlinkSync, writeFileSync, mkdirSync, chmodSync } from 'fs';
 import { logger } from './utils/mainLogger';
 import { errToString } from './utils/utilities';
-import { getModEnginePath, getModsFolder } from './backend/db/api';
+import { getModEnginePath, getModsFolder } from '@backend/db/api';
 import path from 'path';
 
 const { debug, warning, error } = logger;

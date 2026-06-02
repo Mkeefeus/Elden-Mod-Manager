@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { Select, Group, ActionIcon, Tooltip, TextInput, Button, Stack, Text } from '@mantine/core';
-import { useMods } from '../providers/ModsProvider';
-import { useModal } from '../providers/ModalProvider';
+import { useMods } from '@providers/ModsProvider';
+import { useModal } from '@providers/ModalProvider';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileExport, faFileImport, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { sendLog } from '../utils/rendererLogger';
+import { sendLog } from '@utils/rendererLogger';
 import ImportProfileModal from './ImportProfileModal';
 
 const ProfileSelector = ({ onApply }: { onApply?: () => void }) => {

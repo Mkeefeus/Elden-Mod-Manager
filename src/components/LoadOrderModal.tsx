@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { useState } from 'react';
 import { Dependent, Mod } from 'types';
-import { useMods } from '../providers/ModsProvider';
+import { useMods } from '@providers/ModsProvider';
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Types

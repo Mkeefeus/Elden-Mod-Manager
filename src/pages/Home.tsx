@@ -10,11 +10,11 @@ import {
   Text,
   Paper,
 } from '@mantine/core';
-import NewsCard from '../components/NewsCard';
+import NewsCard from '@components/home/NewsCard';
 import { useElementSize } from '@mantine/hooks';
 import { useQuery } from '@tanstack/react-query';
-import { sendLog } from '../utils/rendererLogger';
-import { errToString } from '../utils/utilities';
+import { sendLog } from '@utils/rendererLogger';
+import { errToString } from '@utils/utilities';
 import { decode } from 'he';
 
 const quickActions: { label: string; variant: string }[] = [

@@ -1,7 +1,7 @@
 import { randomUUID } from 'crypto';
 import { Dependent, ImportModResult, Mod, ModProfile, NativeInitializerCondition, ProfileImportAnalysis } from 'types';
-import { logger } from '../utils/mainLogger';
-import { errToString } from '../utils/utilities';
+import { logger } from '@utils/mainLogger';
+import { errToString } from '@utils/utilities';
 import {
   getActiveProfile,
   getActiveProfileId,

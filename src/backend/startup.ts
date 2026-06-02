@@ -2,7 +2,7 @@ import { BrowserWindow } from 'electron';
 import { randomUUID } from 'crypto';
 import { existsSync } from 'fs';
 import { ModProfile } from 'types';
-import { logger } from '../utils/mainLogger';
+import { logger } from '@utils/mainLogger';
 import {
   clearFirstRun,
   getActiveProfileId,

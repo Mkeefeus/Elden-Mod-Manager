@@ -1,7 +1,7 @@
 import { Button, Checkbox, Collapse, Group, NumberInput, Select, Stack, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { Mod, NativeInitializerCondition } from 'types';
-import { useMods } from '../providers/ModsProvider';
+import { useMods } from '@providers/ModsProvider';
 
 type InitializerType = 'none' | 'delay' | 'function';
 

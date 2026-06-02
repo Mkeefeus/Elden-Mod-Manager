@@ -1,5 +1,5 @@
 import { notifications } from '@mantine/notifications';
-import type { LogEntry } from '../../types';
+import type { LogEntry } from 'types';
 
 const getLogColor = (level: string) => {
   switch (level) {

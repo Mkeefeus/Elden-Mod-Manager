@@ -1,8 +1,8 @@
 import { Button, Group, Text, Space } from '@mantine/core';
-import { useModal } from '../providers/ModalProvider';
+import { useModal } from '@providers/ModalProvider';
 import { Mod } from 'types';
 import { useState } from 'react';
-import { sendLog } from '../utils/rendererLogger';
+import { sendLog } from '@utils/rendererLogger';
 
 interface ConfirmDeleteModalProps {
   mod: Mod;

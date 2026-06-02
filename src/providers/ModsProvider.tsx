@@ -1,5 +1,5 @@
 import { ReactNode, createContext, useContext, useMemo, useState, useEffect } from 'react';
-import { sendLog } from '../utils/rendererLogger';
+import { sendLog } from '@utils/rendererLogger';
 import { Mod, ProfileModRef } from 'types';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 

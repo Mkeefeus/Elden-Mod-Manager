@@ -1,5 +1,5 @@
-import { errToString } from '../../utils/utilities';
-import { logger } from '../../utils/mainLogger';
+import { errToString } from '@utils/utilities';
+import { logger } from '@utils/mainLogger';
 import store from './init';
 import { Mod, ModProfile, ProfileModRef, WindowState } from 'types';
 import { join } from 'path';

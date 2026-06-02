@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
-import { Button, Center, Menu, Table } from '@mantine/core';
+import { Menu, Table } from '@mantine/core';
 import { Mod } from 'types';
-import { useModal } from '../providers/ModalProvider';
+import { useModal } from '@providers/ModalProvider';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
 import EditNativeModModal from './EditNativeModModal';
 import IniEditorModal from './IniEditorModal';
-import { useMods } from '../providers/ModsProvider';
+import { useMods } from '@providers/ModsProvider';
+import MoreMenuTrigger from '../shared/MoreMenuTrigger';
 
 type TableMod = Mod & { enabled: boolean };
 
@@ -69,11 +68,7 @@ const ModTableMenu = ({ mod }: ModTableMenuProps) => {
     <Table.Td>
       <Menu shadow="md" width={200}>
         <Menu.Target>
-          <Center>
-            <Button variant="transparent" color="gray">
-              <FontAwesomeIcon icon={faEllipsisVertical} />
-            </Button>
-          </Center>
+          <MoreMenuTrigger ariaLabel={`Open actions for ${mod.name}`} />
         </Menu.Target>
         <Menu.Dropdown>
           {mod.dllFile && (

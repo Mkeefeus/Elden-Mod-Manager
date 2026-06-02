@@ -23,6 +23,9 @@ export default defineConfig((env) => {
       },
     },
     plugins: [pluginHotRestart('reload')],
+    resolve: {
+      tsconfigPaths: true,
+    },
   };
 
   return mergeConfig(getBuildConfig(forgeEnv), config);

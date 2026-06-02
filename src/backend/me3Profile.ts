@@ -1,6 +1,6 @@
 import { Dependent, Mod } from 'types';
-import { CreateModPathFromName, errToString } from '../utils/utilities';
-import { logger } from '../utils/mainLogger';
+import { CreateModPathFromName, errToString } from '@utils/utilities';
+import { logger } from '@utils/mainLogger';
 import { writeFileSync, mkdirSync } from 'fs';
 import path from 'path';
 import { getProfilesFolder, getActiveProfile, getModsFolder, loadMods } from './db/api';

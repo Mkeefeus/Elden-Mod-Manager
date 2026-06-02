@@ -1,5 +1,5 @@
-import { version } from '../../package.json';
-import { logger } from '../utils/mainLogger';
+import { version } from 'package.json';
+import { logger } from '@utils/mainLogger';
 
 const { debug } = logger;
 

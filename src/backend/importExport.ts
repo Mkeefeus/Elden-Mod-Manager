@@ -10,8 +10,8 @@ import {
   setEldenRingFolder,
   setLauncherSettings,
 } from './db/api';
-import { logger } from '../utils/mainLogger';
-import { errToString } from '../utils/utilities';
+import { logger } from '@utils/mainLogger';
+import { errToString } from '@utils/utilities';
 
 const { debug, error, warning } = logger;
 

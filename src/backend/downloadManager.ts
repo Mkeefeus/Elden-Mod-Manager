@@ -5,8 +5,8 @@ import { join } from 'path';
 import { DownloadState, ImportInstallTarget } from 'types';
 import { extractModArchive } from './fileSystem';
 import { parseNexusMetadata, resolveNexusFileDetails } from './nexus';
-import { logger } from '../utils/mainLogger';
-import { errToString } from '../utils/utilities';
+import { logger } from '@utils/mainLogger';
+import { errToString } from '@utils/utilities';
 
 const { debug, error } = logger;
 

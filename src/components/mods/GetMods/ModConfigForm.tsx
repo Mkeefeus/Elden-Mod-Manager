@@ -18,8 +18,8 @@ import { isNotEmpty, useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
 import { IconAlertCircle } from '@tabler/icons-react';
 import { AddModFormValues, DownloadState, NativeInitializerCondition } from 'types';
-import { sendLog } from '../../utils/rendererLogger';
-import { sleep } from '../../utils/utilities';
+import { sendLog } from '@utils/rendererLogger';
+import { sleep } from '@utils/utilities';
 
 interface Props {
   download: DownloadState;

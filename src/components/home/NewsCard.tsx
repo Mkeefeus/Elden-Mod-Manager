@@ -1,4 +1,3 @@
-import React from 'react';
 import { Badge, Group, Avatar, Divider, Text, Paper, Spoiler, Stack, Title } from '@mantine/core';
 import { NewsComponentProps } from 'types';
 import parse from 'html-react-parser';

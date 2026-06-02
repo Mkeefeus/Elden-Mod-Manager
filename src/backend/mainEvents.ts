@@ -26,8 +26,8 @@ import {
   ProfileModRef,
 } from 'types';
 import { join, normalize, sep } from 'path';
-import { CreateModPathFromName, errToString } from '../utils/utilities';
-import { handleLog, logger } from '../utils/mainLogger';
+import { CreateModPathFromName, errToString } from '@utils/utilities';
+import { handleLog, logger } from '@utils/mainLogger';
 import { launchEldenRingModded, updateME3Path, detectME3 } from './me3';
 import { launchEldenRing } from './steam';
 import {

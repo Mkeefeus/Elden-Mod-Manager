@@ -1,11 +1,11 @@
 import { Button, Collapse, Divider, Group, ScrollArea, Stack, Switch, Text, TextInput } from '@mantine/core';
-import ModTable from '../components/ModTable';
+import ModTable from '@components/mods/ModTable';
 import { useEffect, useState } from 'react';
 import { ModProfile } from 'types';
-import { useModal } from '../providers/ModalProvider';
-import PromptModsFolderModal from '../components/PromptModsFolderModal';
-import ProfileSelector from '../components/ProfileSelector';
-import LoadOrderModal from '../components/LoadOrderModal';
+import { useModal } from '@providers/ModalProvider';
+import PromptModsFolderModal from '@components/PromptModsFolderModal';
+import ProfileSelector from '@components/mods/ProfileSelector';
+import LoadOrderModal from '@components/LoadOrderModal';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 const Mods = () => {

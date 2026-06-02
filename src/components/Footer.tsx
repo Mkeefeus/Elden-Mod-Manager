@@ -50,7 +50,7 @@ const Footer = () => {
         </Button>
       )}
       <Text size={'sm'} span>
-        &copy; 2024 Malcolm Keefe. Licensed under AGPLv3
+        &copy; 2026 Malcolm Keefe. Licensed under AGPLv3
       </Text>
     </Group>
   );

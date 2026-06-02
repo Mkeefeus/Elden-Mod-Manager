@@ -1,6 +1,6 @@
 import { useContext, createContext, Context, ReactNode, useState } from 'react';
 import { useDisclosure } from '@mantine/hooks';
-import InstallME3Modal from '../components/InstallME3Modal';
+import InstallME3Modal from '@components/InstallME3Modal';
 import { MantineSize } from '@mantine/core';
 
 interface ShowOptions {

@@ -5,10 +5,10 @@ import { Notifications } from '@mantine/notifications';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { theme } from '../themes';
 import { DownloadState, ImportInstallTarget, ImportModResult } from 'types';
-import GetModsSidebar from '../components/GetMods/GetModsSidebar';
-import NexusWebView from '../components/GetMods/NexusWebView';
-import AddFromLocalForm from '../components/GetMods/AddFromLocalForm';
-import ModConfigForm from '../components/GetMods/ModConfigForm';
+import GetModsSidebar from '@components/mods/GetMods/GetModsSidebar';
+import NexusWebView from '@components/mods/GetMods/NexusWebView';
+import AddFromLocalForm from '@components/mods/GetMods/AddFromLocalForm';
+import ModConfigForm from '@components/mods/GetMods/ModConfigForm';
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
 

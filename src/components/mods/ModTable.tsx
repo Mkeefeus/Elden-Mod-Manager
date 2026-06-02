@@ -1,7 +1,9 @@
-import ModTableHeader from './ModTableHeader';
-import { Center, Checkbox, Table, Text, Tooltip } from '@mantine/core';
+import { Center, Checkbox, Table, Text } from '@mantine/core';
 import ModTableMenu from './ModTableMenu';
-import { useMods } from '../providers/ModsProvider';
+import { useMods } from '@providers/ModsProvider';
+import SortableTableHeader from '../shared/SortableTableHeader';
+import TruncatedNameCell from '../shared/TruncatedNameCell';
+import DateCell from '../shared/DateCell';
 
 // Fixed px widths for narrow columns; Name column has no width → takes remaining space.
 const COLS = [
@@ -28,14 +30,7 @@ const ModTable = () => {
             <Checkbox aria-label="Toggle mod" checked={mod.enabled} onChange={() => handleCheckboxChange(index)} />
           </Center>
         </Table.Td>
-        {/* maxWidth: 0 forces the fixed-layout cell to clip rather than expand */}
-        <Table.Td style={{ maxWidth: 0, overflow: 'hidden' }}>
-          <Tooltip label={mod.name} openDelay={500} withArrow>
-            <Text size="sm" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {mod.name}
-            </Text>
-          </Tooltip>
-        </Table.Td>
+        <TruncatedNameCell name={mod.name} />
         <Table.Td>
           <Text size="sm">
             {mod.version ?? (
@@ -45,15 +40,7 @@ const ModTable = () => {
             )}
           </Text>
         </Table.Td>
-        <Table.Td>
-          <Text size="sm">
-            {new Date(mod.installDate).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: '2-digit',
-              day: '2-digit',
-            })}
-          </Text>
-        </Table.Td>
+        <DateCell value={mod.installDate} />
         <Table.Td>
           <Center>{mod.dllFile ? <Text size="sm">Native</Text> : <Text size="sm">Package</Text>}</Center>
         </Table.Td>
@@ -74,12 +61,12 @@ const ModTable = () => {
       <Table.Thead>
         <Table.Tr>
           {COLS.map(({ label, sortKey, style, align }) => (
-            <ModTableHeader
+            <SortableTableHeader
               key={sortKey}
               sortedBy={sort.column === sortKey}
               label={label}
-              sortIcon={sort.order || false}
-              handleSort={() => changeSort(sortKey)}
+              sortOrder={sort.order || false}
+              onSort={() => changeSort(sortKey)}
               style={style}
               align={align}
             />

@@ -1,5 +1,5 @@
 import { Button, Stack, Text, Group, Anchor } from '@mantine/core';
-import { sendLog } from '../utils/rendererLogger';
+import { sendLog } from '@utils/rendererLogger';
 import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';

@@ -1,9 +1,9 @@
 import { execSync, spawn } from 'child_process';
 import { existsSync } from 'fs';
 import { join } from 'path';
-import { logger } from '../utils/mainLogger';
+import { logger } from '@utils/mainLogger';
 import { getModEnginePath, getProfilesFolder, setModEnginePath, getActiveProfile, getLauncherSettings } from './db/api';
-import { errToString } from '../utils/utilities';
+import { errToString } from '@utils/utilities';
 import { ME3_PROFILE_FILENAME, ME3_DEFAULT_WIN_PATH, ME3_DEFAULT_LINUX_PATH } from './constants';
 import { writeMe3Profile } from './me3Profile';
 

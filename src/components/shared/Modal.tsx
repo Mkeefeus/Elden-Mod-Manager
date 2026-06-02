@@ -1,4 +1,4 @@
-import { useModal } from '../providers/ModalProvider';
+import { useModal } from '@providers/ModalProvider';
 import { Modal as MantineModal } from '@mantine/core';
 
 const Modal = () => {

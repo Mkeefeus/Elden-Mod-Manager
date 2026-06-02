@@ -53,6 +53,7 @@
   },
   "license": "GPL-3.0-only",
   "dependencies": {
+    "7zip-bin": "^5.2.0",
     "@fontsource/cinzel": "^5.2.8",
     "@fortawesome/fontawesome-svg-core": "^7.2.0",
     "@fortawesome/free-brands-svg-icons": "^7.2.0",
@@ -66,7 +67,6 @@
     "@tanstack/react-query": "^5.100.5",
     "@tanstack/react-virtual": "^3.13.24",
     "@types/eslint": "^9.6.1",
-    "7zip-bin": "^5.2.0",
     "archiver": "^7.0.1",
     "debug": "^4.4.3",
     "dotenv": "^17.4.2",

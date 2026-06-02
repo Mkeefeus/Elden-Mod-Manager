@@ -1,9 +1,9 @@
 import { randomUUID } from 'crypto';
 import { readdirSync, existsSync, cpSync, rmSync, renameSync } from 'fs';
 import { extname, join } from 'path';
-import { errToString, CreateModPathFromName } from '../utils/utilities';
+import { errToString, CreateModPathFromName } from '@utils/utilities';
 import { AddModFormValues, Mod } from 'types';
-import { logger } from '../utils/mainLogger';
+import { logger } from '@utils/mainLogger';
 import { getModsFolder, getProfiles, loadMods, saveMods, saveProfiles, setModsFolder } from './db/api';
 import { MOD_SUBFOLDERS } from './constants';
 
