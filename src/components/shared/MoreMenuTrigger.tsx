@@ -1,19 +1,20 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
-import { Button, Center } from '@mantine/core';
+import { Button, ButtonProps } from '@mantine/core';
+import { forwardRef } from 'react';
 
-type MoreMenuTriggerProps = {
+type MoreMenuTriggerProps = ButtonProps & {
   ariaLabel: string;
 };
 
-const MoreMenuTrigger = ({ ariaLabel }: MoreMenuTriggerProps) => {
+const MoreMenuTrigger = forwardRef<HTMLButtonElement, MoreMenuTriggerProps>(({ ariaLabel, ...props }, ref) => {
   return (
-    <Center>
-      <Button variant="transparent" color="gray" aria-label={ariaLabel}>
-        <FontAwesomeIcon icon={faEllipsisVertical} />
-      </Button>
-    </Center>
+    <Button ref={ref} variant="transparent" color="gray" aria-label={ariaLabel} {...props}>
+      <FontAwesomeIcon icon={faEllipsisVertical} />
+    </Button>
   );
-};
+});
+
+MoreMenuTrigger.displayName = 'MoreMenuTrigger';
 
 export default MoreMenuTrigger;

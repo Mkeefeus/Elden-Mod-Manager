@@ -4,25 +4,65 @@ import { useMods } from '@providers/ModsProvider';
 import SortableTableHeader from '../shared/SortableTableHeader';
 import TruncatedNameCell from '../shared/TruncatedNameCell';
 import DateCell from '../shared/DateCell';
+import { useMemo, useState } from 'react';
+import TableHeader from '../shared/TableHeader';
 
-// Fixed px widths for narrow columns; Name column has no width → takes remaining space.
-const COLS = [
+type ModSortColumn = 'enabled' | 'name' | 'version' | 'installDate' | 'dllFile';
+type ModSortState = { column: ModSortColumn; order: 'asc' | 'desc' };
+
+type ModColumn = {
+  label: string;
+  align: 'left' | 'center' | 'right';
+  sortKey?: ModSortColumn;
+  style?: React.CSSProperties;
+  color?: string;
+};
+
+const COLS: readonly ModColumn[] = [
   { label: 'Enabled', sortKey: 'enabled', style: { width: 130 }, align: 'center' },
-  { label: 'Mod name', sortKey: 'name', style: {}, align: 'left' },
+  { label: 'Mod name', sortKey: 'name', align: 'left' },
   { label: 'Version', sortKey: 'version', style: { width: 110 }, align: 'center' },
   { label: 'Install Date', sortKey: 'installDate', style: { width: 130 }, align: 'center' },
   { label: 'Mod Type', sortKey: 'dllFile', style: { width: 110 }, align: 'center' },
-] as const;
+  { label: 'More', style: { width: 90 }, align: 'center', color: 'dimmed' },
+];
 
 const ModTable = () => {
-  const { mods, sort, saveMods, changeSort } = useMods();
+  const { mods, saveMods } = useMods();
+  const [sort, setSort] = useState<ModSortState>({ column: 'installDate', order: 'desc' });
+
+  const sortedMods = useMemo(() => {
+    const getComparable = (value: string | boolean | number | undefined) => {
+      if (typeof value === 'boolean') return value ? 1 : 0;
+      if (value === undefined) return '';
+      return value;
+    };
+
+    return [...mods].sort((a, b) => {
+      const aValue = getComparable(a[sort.column]);
+      const bValue = getComparable(b[sort.column]);
+
+      if (aValue < bValue) return sort.order === 'asc' ? -1 : 1;
+      if (aValue > bValue) return sort.order === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }, [mods, sort]);
+
+  const handleSort = (column: ModSortColumn) => {
+    setSort((current) => {
+      if (current.column === column) {
+        return { column, order: current.order === 'asc' ? 'desc' : 'asc' };
+      }
+      return { column, order: 'desc' };
+    });
+  };
 
   const handleCheckboxChange = (index: number) => {
     const newMods = mods.map((mod, i) => (i === index ? { ...mod, enabled: !mod.enabled } : mod));
     void saveMods(newMods);
   };
 
-  const rows = mods.map((mod, index) => {
+  const rows = sortedMods.map((mod, index) => {
     return (
       <Table.Tr key={mod.uuid} style={{ opacity: mod.enabled ? 1 : 0.4, transition: 'opacity 0.15s ease' }}>
         <Table.Td>
@@ -60,20 +100,21 @@ const ModTable = () => {
     >
       <Table.Thead>
         <Table.Tr>
-          {COLS.map(({ label, sortKey, style, align }) => (
-            <SortableTableHeader
-              key={sortKey}
-              sortedBy={sort.column === sortKey}
-              label={label}
-              sortOrder={sort.order || false}
-              onSort={() => changeSort(sortKey)}
-              style={style}
-              align={align}
-            />
-          ))}
-          <Table.Th c="dimmed" style={{ width: 90, textAlign: 'center' }}>
-            More
-          </Table.Th>
+          {COLS.map(({ label, sortKey, style, align }) =>
+            sortKey ? (
+              <SortableTableHeader
+                key={sortKey}
+                sortedBy={sort.column === sortKey}
+                label={label}
+                sortOrder={sort.order || false}
+                onSort={() => handleSort(sortKey)}
+                style={style}
+                align={align}
+              />
+            ) : (
+              <TableHeader key={label} label={label} style={style} align={align} />
+            )
+          )}
         </Table.Tr>
       </Table.Thead>
       <Table.Tbody>{rows}</Table.Tbody>

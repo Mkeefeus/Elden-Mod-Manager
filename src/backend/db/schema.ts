@@ -1,10 +1,11 @@
-import { Mod, ModProfile, WindowState } from 'types';
+import { Mod, ModProfile, Tool, WindowState } from 'types';
 import { Schema } from 'electron-store';
 import { app } from 'electron';
 import { join } from 'path';
 
 export type DBSchema = {
   mods: Mod[];
+  tools: Tool[];
   modEnginePath: string;
   eldenRingFolder: string;
   modFolderPath: string;
@@ -15,7 +16,7 @@ export type DBSchema = {
   noBootBoost: boolean;
   showLogos: boolean;
   skipSteamInit: boolean;
-  windowSate: WindowState;
+  windowState: WindowState;
   nexusApiKey?: string;
 };
 
@@ -39,6 +40,21 @@ const schema: Schema<DBSchema> = {
         nexusGameDomain: { type: 'string' },
       },
       required: ['uuid', 'name', 'installDate'],
+    },
+    default: [],
+  },
+  tools: {
+    type: 'array',
+    items: {
+      type: 'object',
+      properties: {
+        id: { type: 'string' },
+        name: { type: 'string' },
+        version: { type: 'string' },
+        installDate: { type: 'number' },
+        executablePath: { type: 'string' },
+      },
+      required: ['name', 'version', 'installDate', 'executablePath'],
     },
     default: [],
   },
@@ -125,7 +141,7 @@ const schema: Schema<DBSchema> = {
     type: 'boolean',
     default: false,
   },
-  windowSate: {
+  windowState: {
     type: 'object',
     properties: {
       width: { type: 'number' },

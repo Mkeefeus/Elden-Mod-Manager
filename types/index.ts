@@ -147,3 +147,11 @@ export type DownloadState = {
   nexusVersion?: string;
   importTarget?: ImportInstallTarget;
 };
+
+export type Tool = {
+  id: string;
+  name: string;
+  version: string;
+  installDate: number;
+  executablePath: string;
+};

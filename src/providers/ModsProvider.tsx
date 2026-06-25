@@ -1,5 +1,5 @@
-import { ReactNode, createContext, useContext, useMemo, useState, useEffect } from 'react';
-import { sendLog } from '@utils/rendererLogger';
+import { ReactNode, createContext, useContext, useMemo, useEffect } from 'react';
+import { sendLog } from '../utils/rendererLogger';
 import { Mod, ProfileModRef } from 'types';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
@@ -8,48 +8,16 @@ export type ModWithProfileState = Mod &
     enabled: boolean;
   };
 
-interface Sort {
-  column: string;
-  order: 'asc' | 'desc';
-}
-
 interface ModsCtxValue {
   mods: ModWithProfileState[];
-  sort: Sort;
   saveMods: (mods: ModWithProfileState[]) => Promise<void>;
   loadMods: () => Promise<void>;
-  changeSort: (column: string) => void;
 }
 
 const ModsContext = createContext<ModsCtxValue | null>(null);
 
 const ModsProvider = ({ children }: { children: ReactNode }) => {
   const queryClient = useQueryClient();
-  const [sort, setSort] = useState<Sort>({ column: 'installDate', order: 'desc' });
-
-  const getComparable = (value: Date | boolean | number | string | undefined): number | string => {
-    if (value instanceof Date) return value.getTime();
-    if (typeof value === 'boolean') return value ? 1 : 0;
-    return value || '';
-  };
-
-  const columnSorter = (
-    a: ModWithProfileState,
-    b: ModWithProfileState,
-    column: keyof ModWithProfileState,
-    order: 'asc' | 'desc'
-  ): number => {
-    const aValue = getComparable(a[column] as Date | boolean | number | string | undefined);
-    const bValue = getComparable(b[column] as Date | boolean | number | string | undefined);
-
-    if (aValue < bValue) return order === 'asc' ? -1 : 1;
-    if (aValue > bValue) return order === 'asc' ? 1 : -1;
-    return 0;
-  };
-
-  const sortMods = (unsortedMods: ModWithProfileState[]) => {
-    return [...unsortedMods].sort((a, b) => columnSorter(a, b, sort.column as keyof ModWithProfileState, sort.order));
-  };
 
   const { data: rawMods = [] } = useQuery({
     queryKey: ['mods'],
@@ -61,11 +29,13 @@ const ModsProvider = ({ children }: { children: ReactNode }) => {
       }
       return dbMods;
     },
+    staleTime: 30_000, // or Infinity if you rely solely on invalidation
   });
 
   const { data: activeProfile } = useQuery({
     queryKey: ['active-profile'],
     queryFn: () => window.electronAPI.getActiveProfile(),
+    staleTime: Infinity, // already manually invalidated via loadMods/saveMods
   });
 
   const mods = useMemo(() => {
@@ -79,8 +49,8 @@ const ModsProvider = ({ children }: { children: ReactNode }) => {
         loadAfter: profileMod?.loadAfter,
       };
     });
-    return sortMods(joined);
-  }, [rawMods, activeProfile, sort]);
+    return joined;
+  }, [rawMods, activeProfile]);
 
   const loadMods = async () => {
     await queryClient.invalidateQueries({ queryKey: ['mods'] });
@@ -118,15 +88,7 @@ const ModsProvider = ({ children }: { children: ReactNode }) => {
     await queryClient.invalidateQueries({ queryKey: ['active-profile'] });
   };
 
-  const changeSort = (column: string) => {
-    if (sort.column === column) {
-      setSort({ column, order: sort.order === 'asc' ? 'desc' : 'asc' });
-    } else {
-      setSort({ column, order: 'desc' });
-    }
-  };
-
-  return <ModsContext.Provider value={{ mods, sort, saveMods, loadMods, changeSort }}>{children}</ModsContext.Provider>;
+  return <ModsContext.Provider value={{ mods, saveMods, loadMods }}>{children}</ModsContext.Provider>;
 };
 
 export default ModsProvider;

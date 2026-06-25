@@ -2,11 +2,12 @@ import { useEffect, useState } from 'react';
 import { Menu, Table } from '@mantine/core';
 import { Mod } from 'types';
 import { useModal } from '@providers/ModalProvider';
-import ConfirmDeleteModal from './ConfirmDeleteModal';
+import ConfirmDeleteModal from '@components/shared/ConfirmDeleteModal';
 import EditNativeModModal from './EditNativeModModal';
 import IniEditorModal from './IniEditorModal';
 import { useMods } from '@providers/ModsProvider';
 import MoreMenuTrigger from '../shared/MoreMenuTrigger';
+import { sendLog } from '~/utils/rendererLogger';
 
 type TableMod = Mod & { enabled: boolean };
 
@@ -25,19 +26,22 @@ const ModTableMenu = ({ mod }: ModTableMenuProps) => {
       setHasIniFiles(files.length > 0);
     };
     void check();
-  }, [mod.uuid, mod.name, mod.version]);
+  }, [mod.uuid]);
 
   const handleDelete = () => {
+    const onDelete = async () => {
+      await window.electronAPI.deleteMod(mod);
+      sendLog({
+        level: 'info',
+        message: `Deleted mod ${mod.name}`,
+      });
+    };
+    const afterDelete = () => {
+      void loadMods();
+    };
     showModal({
       title: 'Delete mod',
-      content: (
-        <ConfirmDeleteModal
-          mod={mod}
-          loadMods={() => {
-            void loadMods();
-          }}
-        />
-      ),
+      content: <ConfirmDeleteModal title={mod.name} onDelete={onDelete} afterDelete={afterDelete} />,
     });
   };
 

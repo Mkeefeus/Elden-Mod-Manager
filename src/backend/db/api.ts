@@ -1,7 +1,7 @@
 import { errToString } from '@utils/utilities';
 import { logger } from '@utils/mainLogger';
 import store from './init';
-import { Mod, ModProfile, ProfileModRef, WindowState } from 'types';
+import { Mod, ModProfile, ProfileModRef, Tool, WindowState } from 'types';
 import { join } from 'path';
 import { app } from 'electron';
 
@@ -304,6 +304,32 @@ export const setWindowState = (state: WindowState) => {
     return true;
   } catch (err) {
     const msg = `An error occured while setting window state: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg, { cause: err });
+  }
+};
+
+export const getTools = (): Tool[] => {
+  debug('Loading tools from DB');
+  try {
+    const tools = store.get('tools');
+    debug(`Tools loaded from DB`);
+    return tools;
+  } catch (err) {
+    const msg = `An error occured while loading tools: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg, { cause: err });
+  }
+};
+
+export const saveTools = (tools: Tool[]) => {
+  debug(`Saving tools to DB`);
+  try {
+    store.set('tools', tools);
+    debug('Tools saved to DB');
+    return true;
+  } catch (err) {
+    const msg = `An error occured while saving tools: ${errToString(err)}`;
     error(msg);
     throw new Error(msg, { cause: err });
   }

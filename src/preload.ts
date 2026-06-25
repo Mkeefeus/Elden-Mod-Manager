@@ -14,6 +14,7 @@ import {
   ImportInstallTarget,
   ProfileImportAnalysis,
   ImportModResult,
+  Tool,
 } from 'types';
 
 interface IElectronAPI {
@@ -28,6 +29,13 @@ interface IElectronAPI {
   listIniFiles: (mod: Mod) => Promise<string[]>;
   readIniFile: (mod: Mod, filename: string) => Promise<string>;
   writeIniFile: (mod: Mod, filename: string, content: string) => Promise<void>;
+
+  // --- Tools ---
+  loadTools: () => Promise<Tool[]>;
+  addTool: (name: string, version: string, executablePath: string) => Promise<boolean>;
+  deleteTool: (id: string) => Promise<void>;
+  launchTool: (tool: Tool) => void;
+  openToolFolder: (tool: Tool) => void;
 
   // --- Profiles ---
   loadProfiles: () => Promise<ModProfile[]>;
@@ -107,6 +115,7 @@ interface IElectronAPI {
   offModsChanged: (callback: () => void) => void;
   onNavigateNexusTo: (callback: (url: string) => void) => void;
   onSetImportQueue: (callback: (mods: ImportModResult[]) => void) => void;
+  platform: 'win32' | 'darwin' | 'linux';
 }
 
 declare global {
@@ -127,6 +136,13 @@ const electronAPI: IElectronAPI = {
   listIniFiles: (mod) => ipcRenderer.invoke('list-ini-files', mod),
   readIniFile: (mod, filename) => ipcRenderer.invoke('read-ini-file', mod, filename),
   writeIniFile: (mod, filename, content) => ipcRenderer.invoke('write-ini-file', mod, filename, content),
+
+  // --- Tools ---
+  loadTools: () => ipcRenderer.invoke('load-tools'),
+  addTool: (...args) => ipcRenderer.invoke('add-tool', ...args),
+  deleteTool: (id) => ipcRenderer.invoke('delete-tool', id),
+  launchTool: (tool) => ipcRenderer.send('launch-tool', tool),
+  openToolFolder: (tool) => ipcRenderer.send('open-tool-folder', tool),
 
   // --- Profiles ---
   loadProfiles: () => ipcRenderer.invoke('load-profiles'),
@@ -200,6 +216,7 @@ const electronAPI: IElectronAPI = {
   onNavigateNexusTo: (callback) => ipcRenderer.on('navigate-nexus-to', (_event, url: string) => callback(url)),
   onSetImportQueue: (callback) =>
     ipcRenderer.on('set-import-queue', (_event, mods: ImportModResult[]) => callback(mods)),
+  platform: process.platform as 'win32' | 'darwin' | 'linux',
 };
 
 contextBridge.exposeInMainWorld('electronAPI', electronAPI);
