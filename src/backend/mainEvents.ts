@@ -15,6 +15,7 @@ import {
   getProfiles,
   getLauncherSettings,
   setLauncherSettings,
+  getTools,
 } from './db/api';
 import {
   AddModFormValues,
@@ -24,6 +25,7 @@ import {
   LogEntry,
   Mod,
   ProfileModRef,
+  Tool,
 } from 'types';
 import { join, normalize, sep } from 'path';
 import { CreateModPathFromName, errToString } from '@utils/utilities';
@@ -55,6 +57,7 @@ import { getMainWindow } from '../main';
 import { getActiveDownloads, cancelDownload, dismissDownload, addLocalDownload } from './downloadManager';
 import { createOrFocusGetModsWindow, getGetModsWindow } from './getModsWindow';
 import { runStartupTasks } from './startup';
+import { handleAddTool, handleDeleteTool, handleEditTool, openToolExecutable, openToolFolder } from './tools';
 
 const { debug, error, info } = logger;
 
@@ -320,6 +323,27 @@ const registerUpdateHandlers = () => {
   ipcMain.handle('get-latest-version', getLatestVersion);
 };
 
+const registerToolHandlers = () => {
+  ipcMain.handle('get-tools', () => {
+    return getTools();
+  });
+  ipcMain.handle('add-tool', (_, toolData: Partial<Tool>) => {
+    return handleAddTool(toolData);
+  });
+  ipcMain.handle('delete-tool', (_, toolId: string) => {
+    return handleDeleteTool(toolId);
+  });
+  ipcMain.handle('edit-tool', (_, toolId: string, updatedData: Partial<Tool>) => {
+    return handleEditTool(toolId, updatedData);
+  });
+  ipcMain.on('launch-tool', (_, toolId: string) => {
+    openToolExecutable(toolId);
+  });
+  ipcMain.on('open-tool-folder', (_, executablePath: string) => {
+    void openToolFolder(executablePath);
+  });
+};
+
 const registerIpcHandlers = () => {
   registerShellHandlers();
   registerWindowHandlers();
@@ -331,6 +355,7 @@ const registerIpcHandlers = () => {
   registerProfileHandlers();
   registerIniEditorHandlers();
   registerUpdateHandlers();
+  registerToolHandlers();
 };
 
 app

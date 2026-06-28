@@ -36,3 +36,13 @@ export function formatUsShortDate(dateValue: string | number | Date): string {
     day: '2-digit',
   });
 }
+
+export function generateUUID(existingIDs?: string[]): string {
+  let uuid = crypto.randomUUID();
+  if (existingIDs) {
+    while (existingIDs.includes(uuid)) {
+      uuid = crypto.randomUUID();
+    }
+  }
+  return uuid;
+}

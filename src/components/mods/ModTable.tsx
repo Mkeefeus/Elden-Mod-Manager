@@ -57,17 +57,17 @@ const ModTable = () => {
     });
   };
 
-  const handleCheckboxChange = (index: number) => {
-    const newMods = mods.map((mod, i) => (i === index ? { ...mod, enabled: !mod.enabled } : mod));
+  const handleCheckboxChange = (uuid: string) => {
+    const newMods = mods.map((mod) => (mod.uuid === uuid ? { ...mod, enabled: !mod.enabled } : mod));
     void saveMods(newMods);
   };
 
-  const rows = sortedMods.map((mod, index) => {
+  const rows = sortedMods.map((mod) => {
     return (
       <Table.Tr key={mod.uuid} style={{ opacity: mod.enabled ? 1 : 0.4, transition: 'opacity 0.15s ease' }}>
         <Table.Td>
           <Center>
-            <Checkbox aria-label="Toggle mod" checked={mod.enabled} onChange={() => handleCheckboxChange(index)} />
+            <Checkbox aria-label="Toggle mod" checked={mod.enabled} onChange={() => handleCheckboxChange(mod.uuid)} />
           </Center>
         </Table.Td>
         <TruncatedNameCell name={mod.name} />

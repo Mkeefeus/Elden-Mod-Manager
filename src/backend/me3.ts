@@ -72,7 +72,9 @@ export const getME3Executable = (): string => {
 export const launchEldenRingModded = () => {
   debug('Launching game with mods via ME3');
   try {
-    const me3Exe = getME3Executable();
+    // const me3Exe = getME3Executable();
+    const me3Exe = 'me3_verb';
+    process.env['ME3_PROTON_LAUNCH_VERB'] = 'run';
     writeMe3Profile();
     const profilePath = join(getProfilesFolder(), ME3_PROFILE_FILENAME);
     const args = ['launch', '-p', profilePath];

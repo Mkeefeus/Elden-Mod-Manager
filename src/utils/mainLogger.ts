@@ -4,6 +4,10 @@ import { app, WebContents } from 'electron';
 import { getMainWindow } from '../main';
 import { type LogEntry } from 'types';
 
+type LogOptions = {
+  hideDisplay?: boolean;
+};
+
 // File transport — write debug+ to a rolling log file in the OS log directory
 log.transports.file.level = 'debug';
 log.transports.file.maxSize = 20 * 1024 * 1024; // 20 MB
@@ -26,19 +30,22 @@ const notifyGui = (level: string, message: string, hideDisplay?: boolean) => {
 
 /** Main-process logger. Supports the custom 'warning' level used across the codebase. */
 export const logger = {
-  debug: (msg: string) => log.debug(msg),
-  error: (msg: string) => {
+  debug: (msg: string, options?: LogOptions) => {
+    log.debug(msg);
+    notifyGui('debug', msg, options?.hideDisplay);
+  },
+  error: (msg: string, options?: LogOptions) => {
     log.error(msg);
-    notifyGui('error', msg);
+    notifyGui('error', msg, options?.hideDisplay);
   },
-  info: (msg: string) => {
+  info: (msg: string, options?: LogOptions) => {
     log.info(msg);
-    notifyGui('info', msg);
+    notifyGui('info', msg, options?.hideDisplay);
   },
-  warning: (msg: string | Error) => {
+  warning: (msg: string | Error, options?: LogOptions) => {
     const message = msg instanceof Error ? msg.message : msg;
     log.warn(message);
-    notifyGui('warning', message);
+    notifyGui('warning', message, options?.hideDisplay);
   },
 };
 
@@ -50,10 +57,10 @@ export const logger = {
  */
 export const handleLog = (entry: LogEntry, sender?: WebContents) => {
   const { level, message, hideDisplay } = entry;
-  if (level === 'error') log.error(message);
-  else if (level === 'warning' || level === 'warn') log.warn(message);
-  else if (level === 'debug') log.debug(message);
-  else log.info(message);
+  if (level === 'error') log.error(message, { hideDisplay });
+  else if (level === 'warning') log.warn(message, { hideDisplay });
+  else if (level === 'debug') log.debug(message, { hideDisplay });
+  else log.info(message, { hideDisplay });
   if (!hideDisplay && level !== 'debug') {
     const target = sender ?? getMainWindow()?.webContents;
     target?.send('notify', { level, message });

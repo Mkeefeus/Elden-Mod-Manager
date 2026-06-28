@@ -1,6 +1,6 @@
 import { execSync } from 'child_process';
 import { existsSync, readFileSync } from 'fs';
-import { dirname, join } from 'path';
+import { dirname, isAbsolute, join } from 'path';
 import os from 'os';
 import { errToString } from '@utils/utilities';
 import { logger } from '@utils/mainLogger';
@@ -28,7 +28,7 @@ interface LibraryFolders {
  * Returns the Steam install directory by checking well-known filesystem paths.
  * Works on both Windows and Linux — no PowerShell or registry reads needed.
  */
-const getSteamInstallDir = (): string | null => {
+export const getSteamInstallDir = (): string | null => {
   debug('Getting steam install dir');
 
   if (process.platform === 'win32') {
@@ -126,8 +126,13 @@ export const getEldenRingInstallDir = (): string | null => {
     return null;
   }
   const libraryFoldersPath = getLibrayPath(appId, steamDir);
+  const libraryRoot = !libraryFoldersPath
+    ? steamDir
+    : isAbsolute(libraryFoldersPath)
+      ? libraryFoldersPath
+      : join(steamDir, libraryFoldersPath);
 
-  const appManifestPath = join(steamDir, libraryFoldersPath ?? '', 'steamapps', `appmanifest_${appId}.acf`);
+  const appManifestPath = join(libraryRoot, 'steamapps', `appmanifest_${appId}.acf`);
   debug(`Searching for ${appManifestPath}`);
 
   try {
@@ -137,7 +142,7 @@ export const getEldenRingInstallDir = (): string | null => {
     for (const line of lines) {
       const match = line.match(/^\s*"installdir"\s*"(.+)"$/);
       if (match && match[1]) {
-        const folder = join(steamDir, 'steamapps', 'common', match[1], 'Game');
+        const folder = join(libraryRoot, 'steamapps', 'common', match[1], 'Game');
         debug(`Game install directory: ${folder}`);
         setEldenRingFolder(folder);
         return folder;

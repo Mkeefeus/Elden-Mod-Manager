@@ -31,11 +31,12 @@ interface IElectronAPI {
   writeIniFile: (mod: Mod, filename: string, content: string) => Promise<void>;
 
   // --- Tools ---
-  loadTools: () => Promise<Tool[]>;
-  addTool: (name: string, version: string, executablePath: string) => Promise<boolean>;
+  getTools: () => Promise<Tool[]>;
+  addTool: (tool: Partial<Tool>) => Promise<void>;
   deleteTool: (id: string) => Promise<void>;
-  launchTool: (tool: Tool) => void;
-  openToolFolder: (tool: Tool) => void;
+  editTool: (id: string, updatedData: Partial<Tool>) => Promise<void>;
+  launchTool: (id: string) => void;
+  openToolFolder: (executablePath: string) => void;
 
   // --- Profiles ---
   loadProfiles: () => Promise<ModProfile[]>;
@@ -138,11 +139,12 @@ const electronAPI: IElectronAPI = {
   writeIniFile: (mod, filename, content) => ipcRenderer.invoke('write-ini-file', mod, filename, content),
 
   // --- Tools ---
-  loadTools: () => ipcRenderer.invoke('load-tools'),
-  addTool: (...args) => ipcRenderer.invoke('add-tool', ...args),
+  getTools: () => ipcRenderer.invoke('get-tools'),
+  addTool: (tool) => ipcRenderer.invoke('add-tool', tool),
   deleteTool: (id) => ipcRenderer.invoke('delete-tool', id),
+  editTool: (id, updatedData) => ipcRenderer.invoke('edit-tool', id, updatedData),
   launchTool: (tool) => ipcRenderer.send('launch-tool', tool),
-  openToolFolder: (tool) => ipcRenderer.send('open-tool-folder', tool),
+  openToolFolder: (executablePath) => ipcRenderer.send('open-tool-folder', executablePath),
 
   // --- Profiles ---
   loadProfiles: () => ipcRenderer.invoke('load-profiles'),

@@ -1,31 +1,29 @@
 import { Box, Stack, Group, TextInput, Button } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { sendLog } from '~/utils/rendererLogger';
+import { Tool, ToolFormValues } from 'types';
 
-type AddToolModalProps = {
+type ToolInfoModalProps = {
   hideModal: () => void;
   toolNames: string[];
+  onSubmit: (values: { path: string; name: string; version: string }) => void | Promise<void>;
+  submitText?: string;
+  tool?: Tool;
 };
 
-type ToolFormValues = {
-  path: string;
-  name: string;
-  version: string;
-};
-
-const AddToolModal = ({ hideModal, toolNames }: AddToolModalProps) => {
+const ToolInfoModal = ({ hideModal, toolNames, onSubmit, submitText, tool }: ToolInfoModalProps) => {
   const isWindows = window.electronAPI.platform === 'win32';
 
   const form = useForm<ToolFormValues>({
     initialValues: {
-      path: '',
-      name: '',
-      version: '',
+      path: tool?.executablePath || '',
+      name: tool?.name || '',
+      version: tool?.version || '',
     },
     validate: {
       name: (value) => {
         const trimmed = value.trim();
         if (!trimmed) return 'Tool name is required';
+        if (tool && tool.name.toLowerCase() === trimmed.toLowerCase()) return null;
         if (toolNames.some((toolName) => toolName.toLowerCase() === trimmed.toLowerCase())) {
           return 'A tool with this name already exists';
         }
@@ -65,31 +63,14 @@ const AddToolModal = ({ hideModal, toolNames }: AddToolModalProps) => {
     form.validateField('name');
   };
 
-  const handleAddTool = async (values: ToolFormValues) => {
-    // Placeholder for adding the tool - would save to state and persist
-    hideModal();
-    const sanitizedValues = {
-      name: values.name.trim(),
-      version: values.version.trim(),
-      path: values.path.trim(),
-    };
-    const success = await window.electronAPI.addTool(
-      sanitizedValues.name,
-      sanitizedValues.version,
-      sanitizedValues.path
-    );
-    if (!success) {
-      return;
-    }
-    sendLog({
-      level: 'info',
-      message: `Added tool: ${sanitizedValues.name} ${sanitizedValues.version ? `(${sanitizedValues.version}) ` : ''}at path: ${sanitizedValues.path} (placeholder, not actually saved)`,
-    });
-  };
-
   return (
     <Box p="xl">
-      <form onSubmit={form.onSubmit(handleAddTool)}>
+      <form
+        onSubmit={form.onSubmit(async (values) => {
+          await onSubmit(values);
+          hideModal();
+        })}
+      >
         <Stack gap="md" maw={600}>
           <Group gap="sm" align="flex-end">
             <TextInput
@@ -110,7 +91,7 @@ const AddToolModal = ({ hideModal, toolNames }: AddToolModalProps) => {
               <TextInput label="Tool Version" placeholder="e.g. 1.2.0" {...form.getInputProps('version')} />
 
               <Button type="submit" disabled={!form.values.path}>
-                Add Tool (placeholder)
+                {submitText || 'Submit'}
               </Button>
             </>
           )}
@@ -120,4 +101,4 @@ const AddToolModal = ({ hideModal, toolNames }: AddToolModalProps) => {
   );
 };
 
-export default AddToolModal;
+export default ToolInfoModal;

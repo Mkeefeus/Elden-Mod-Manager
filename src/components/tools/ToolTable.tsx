@@ -38,8 +38,8 @@ const ToolTable = ({ tools }: { tools: Tool[] }) => {
     };
 
     return [...tools].sort((a, b) => {
-      const aValue = getComparable(a[sort.column]);
-      const bValue = getComparable(b[sort.column]);
+      const aValue = getComparable(a[sort.column] || '');
+      const bValue = getComparable(b[sort.column] || '');
 
       if (aValue < bValue) return sort.order === 'asc' ? -1 : 1;
       if (aValue > bValue) return sort.order === 'asc' ? 1 : -1;
@@ -90,7 +90,7 @@ const ToolTable = ({ tools }: { tools: Tool[] }) => {
           <Table.Tr key={tool.id}>
             <Table.Td>
               <Center>
-                <Button variant="transparent" color="gray">
+                <Button variant="transparent" color="gray" onClick={() => window.electronAPI.launchTool(tool.id)}>
                   <FontAwesomeIcon icon={faExternalLink} />
                 </Button>
               </Center>
@@ -105,7 +105,7 @@ const ToolTable = ({ tools }: { tools: Tool[] }) => {
 
             <DateCell value={tool.installDate} centered />
 
-            <ToolTableMenu tool={tool} />
+            <ToolTableMenu tool={tool} toolNames={tools.map((t) => t.name)} />
           </Table.Tr>
         ))}
       </Table.Tbody>

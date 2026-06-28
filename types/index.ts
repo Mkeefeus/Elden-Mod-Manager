@@ -1,7 +1,7 @@
 export type Dict<T> = { [key: string]: T };
 
 export interface LogEntry {
-  level: 'info' | 'warning' | 'error';
+  level: 'info' | 'warning' | 'error' | 'debug';
   message: string;
   hideDisplay?: boolean;
 }
@@ -150,8 +150,15 @@ export type DownloadState = {
 
 export type Tool = {
   id: string;
+  modUuid?: string;
   name: string;
-  version: string;
+  version?: string;
   installDate: number;
   executablePath: string;
+};
+
+export type ToolFormValues = {
+  path: string;
+  name: string;
+  version: string;
 };

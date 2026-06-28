@@ -1,7 +1,6 @@
-import { randomUUID } from 'crypto';
 import { readdirSync, existsSync, cpSync, rmSync, renameSync } from 'fs';
 import { extname, join } from 'path';
-import { errToString, CreateModPathFromName } from '@utils/utilities';
+import { errToString, CreateModPathFromName, generateUUID } from '@utils/utilities';
 import { AddModFormValues, Mod } from 'types';
 import { logger } from '@utils/mainLogger';
 import { getModsFolder, getProfiles, loadMods, saveMods, saveProfiles, setModsFolder } from './db/api';
@@ -14,21 +13,6 @@ const normalizeOptionalString = (value: unknown): string | undefined => {
 
   const trimmedValue = value.trim();
   return trimmedValue || undefined;
-};
-
-const genUUID = (): string => {
-  debug('Generating UUID');
-  const uuid = randomUUID();
-  debug(`UUID generated: ${uuid}, checking for duplicates`);
-  const mods = loadMods();
-  const existingUUIDs = mods.map((mod) => mod.uuid);
-  const duplicate = existingUUIDs.includes(uuid);
-  if (duplicate) {
-    debug('Duplicate UUID found, generating new UUID');
-    return genUUID();
-  }
-  debug('No duplicates found, UUID generated successfully');
-  return uuid;
 };
 
 const validateMod = (path: string, isDll: boolean, hasExe: boolean) => {
@@ -69,7 +53,7 @@ const validateMod = (path: string, isDll: boolean, hasExe: boolean) => {
 
 export const handleAddMod = (formData: AddModFormValues) => {
   const mods = loadMods();
-  const uuid = genUUID();
+  const uuid = generateUUID(mods.map((mod) => mod.uuid));
   const dllFileName = formData.dllPath ? formData.dllPath.split(/[/\\]/).pop() : undefined;
   const exeFileName = formData.exePath ? formData.exePath.split(/[/\\]/).pop() : undefined;
   const modVersion = normalizeOptionalString((formData as AddModFormValues & Record<string, unknown>).modVersion);

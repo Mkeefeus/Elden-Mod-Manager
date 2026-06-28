@@ -1,50 +1,49 @@
 # Elden Mod Manager
 
-## Description
-
-Elden Mod Manager is a GUI for me3, which aims to simplify the process of installing, enabling, and configuring mods for Elden Ring.
+A user-friendly GUI for managing mods for Elden Ring, running on top of [me3](https://github.com/garyttiereny/me3).
 
 ## Features
 
-- Installing mods to a managed folder separate from your Elden Ring install directory
-- Easy configuration of load order and disabled mods
-- Easy switching between mod profiles, allowing you to have different sets of mods for different playthroughs or characters
-- Built-in launching of the game both modded and unmodded with a single click
-- Support for File and DLL mods
+- **Mod Management** – Install mods to a managed folder separate from your Elden Ring installation
+- **Load Order Control** – Easily configure mod load order and enable/disable individual mods
+- **Mod Profiles** – Create and switch between different mod profiles for different playthroughs or character setups
+- **Profile-Specific Settings** – Customize savefile paths and other settings per profile
+- **Tools Integration** – Manage companion tools and executables alongside your mods
 
 ## Installation
 
-To install, either use the installer from the release or extract the Zip release to a directory of your choosing.  Upon the first launch, you will be prompted to select your install locations for me3. When you first go to the Mods tab, you will be prompted to select an install location for your Mods. I recommend using the defaults for both but feel free to change them. You can add desktop shortcuts for both EMM and launching ER modded from the Tools menu (The setup exe adds these automatically). 
+1. Download the latest release from the [Releases](https://github.com/Mkeefeus/Elden-Mod-Manager/releases) page
+2. Extract or run the installer to your preferred location
+3. On first launch, you'll be prompted to configure:
+   - Your me3 installation path
+   - Your mods folder location (a separate directory from your Elden Ring installation)
+4. The defaults are recommended, but you can customize paths as needed
+5. Optional: Create desktop shortcuts from the Settings menu 
 
-## Usage
+## Quick Start
 
-To add a mod, navigate to the Mods tab and select Add Mod from Zip if the mod is in a compressed Zip file, otherwise, select Add Mod from Folder. From there, fill out the form. Here's some more info on some of the fields.
+1. **Adding Mods** – Go to the Mods tab and click "Add Mod" to import from a Zip file or folder
+2. **Organizing** – Use load order to arrange mods or disable individual ones
+3. **Playing** – Switch to any profile and click "Play" to launch Elden Ring with your mods
+4. **Profiles** – Create different profiles for different characters or mod setups
+5. **Settings** – Configure paths, game launching options, and other preferences from the Settings tab
 
-- Path: The path you downloaded your mod to.
-- Is DLL Mod?: Whether or not the mod you are installing is a .dll file. Some examples include stutter fix, pause the game, and seamless co-op
-- Has application?: Whether or not your mod has an associated executable with it, such as the Item and Enemy randomizer
-- Delete after import?: Check this box if you want to delete the mod's original download after it is imported
+For detailed mod import instructions and configuration options, see the in-app help or visit the [Issues](https://github.com/Mkeefeus/Elden-Mod-Manager/issues) page for FAQs.
 
-## Special Thanks
+## Requirements
 
-Special thanks to garyttiereny and all other contributors for creating and maintaining me3. Without their work, this project would do nothing.
+- Steam version of Elden Ring
+- [me3](https://github.com/garyttiereny/me3) (installed during Elden Mod Manager setup)
 
-- https://github.com/garyttiereny/me3
+## Credits
 
-## Bug Reports
+Elden Mod Manager is built on top of the work of [garyttiereny](https://github.com/garyttiereny) and other contributors to [me3](https://github.com/garyttiereny/me3). Without them, this project would do nothing.
 
-To report a bug or issue, go to Help > Bug Report, or https://github.com/Mkeefeus/Elden-Mod-Manager/issues to open an issue on GitHub.
+## Support & Feedback
 
-## FAQ
+- **Report Issues** – Found a bug? Open an issue on [GitHub Issues](https://github.com/Mkeefeus/Elden-Mod-Manager/issues)
+- **Steam Only** – The Steam version of Elden Ring is the only officially supported platform
+- **Questions?** – Check existing issues for answers, or open a new one with details about your setup
 
-Do I need Elden Mod Loader?
-
-- No. Instead of using Elden Mod Loder to load DLL mods, EMM uses me3 to load them. Any apps that say they require Elden Mod Loader should still work fine.
-
-How do I install Seamless Co-Op?
-
-- Seamless co-op also requires you to configure some settings. Once you have imported the mod, select "Mods folder" from the Go menu, then find your seamless co-op folder, and open the ini file (as of v1.7.8 this is called ersc_settings.ini). You may also need to copy the crashpad and locale folders to your game directory. Copy those folders from the same location as the ini file. From there, select "Elden Ring folder" from the Go menu, and create a folder titled "SeemlessCoop" if it is not already created. Paste the Locales and Crashpad folders into the SeemelessCoop folder.
-
-What if I don't have the game on Steam?
-
-- The Steam version of the game is the only one that I support. It may work, it may not. Do not open issues or bug reports on GitHub if you are not running the game on Steam.
+## AI Disclosure
+- Elden Mod Manager uses AI coding assistance for development, and contains both AI generated and human generated code. All code is reviewed and tested by me before release.
