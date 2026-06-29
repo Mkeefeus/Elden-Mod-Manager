@@ -14,8 +14,7 @@ dotenv.config();
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
-    extraResource: ['public/256x256.png', 'node_modules/7zip-bin'],
-    icon: 'public/EMM-Icon.ico',
+    extraResource: ['node_modules/7zip-bin'],
     name: 'Elden Mod Manager',
     executableName: 'elden-mod-manager',
   },
@@ -25,8 +24,6 @@ const config: ForgeConfig = {
       name: 'EldenModManager',
       authors: 'Mkeefeus and Mark1127',
       description: 'A mod manager for Elden Ring',
-      iconUrl: 'https://raw.githubusercontent.com/Mkeefeus/Elden-Mod-Manager/main/public/EMM-Icon.ico',
-      setupIcon: 'public/EMM-Icon.ico',
     }),
     new MakerZIP({}, ['win32']),
     // Ubuntu / Debian
@@ -38,7 +35,6 @@ const config: ForgeConfig = {
         description: 'A mod manager for Elden Ring',
         maintainer: 'Mkeefeus',
         homepage: 'https://github.com/Mkeefeus/Elden-Mod-Manager',
-        icon: 'public/256x256.png',
         categories: ['Game'],
         section: 'games',
       },
@@ -52,7 +48,6 @@ const config: ForgeConfig = {
         description: 'A mod manager for Elden Ring',
         license: 'GPL-3.0',
         homepage: 'https://github.com/Mkeefeus/Elden-Mod-Manager',
-        icon: 'public/256x256.png',
         categories: ['Game'],
       },
     }),
@@ -65,7 +60,6 @@ const config: ForgeConfig = {
     //     productName: 'Elden Mod Manager',
     //     genericName: 'Mod Manager',
     //     description: 'A mod manager for Elden Ring',
-    //     icon: 'public/256x256.png',
     //     categories: ['Game'],
     //     branch: 'stable',
     //     files: [],
