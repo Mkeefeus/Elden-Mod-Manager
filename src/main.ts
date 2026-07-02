@@ -61,7 +61,6 @@ const createWindow = () => {
     x: windowX,
     y: windowY,
     webPreferences: { preload: path.join(__dirname, 'preload.js') },
-    icon: 'public/256x256.png',
   });
 
   // Persist window state on resize/move (debounced) and on close

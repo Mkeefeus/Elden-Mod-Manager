@@ -24,6 +24,7 @@ export type Mod = {
   installDate: number;
   dllFile?: string;
   exe?: string;
+  toolId?: string;
   loadEarly?: boolean;
   finalizer?: string;
   initializer?: NativeInitializerCondition;
@@ -38,9 +39,11 @@ export type AddModFormValues = {
   isDll: boolean;
   path: string;
   delete: boolean;
-  hasExe: boolean;
-  exePath: string;
-  dllPath: string;
+  hasTool: boolean;
+  toolName?: string;
+  toolVersion?: string;
+  exePath?: string;
+  dllPath?: string;
   loadEarly: boolean;
   finalizer?: string;
   initializer?: NativeInitializerCondition;

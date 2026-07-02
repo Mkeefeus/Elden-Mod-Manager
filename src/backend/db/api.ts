@@ -289,7 +289,9 @@ export const updateActiveProfile = (
 export const getWindowState = (): WindowState => {
   debug('Getting window state');
   try {
-    return store.get('windowSate');
+    const savedState = store.get('windowState');
+    if (savedState) return savedState;
+    return store.get('windowState');
   } catch (err) {
     const msg = `An error occured while getting window state: ${errToString(err)}`;
     error(msg);
@@ -300,7 +302,7 @@ export const getWindowState = (): WindowState => {
 export const setWindowState = (state: WindowState) => {
   debug(`Setting window state: ${JSON.stringify(state)}`);
   try {
-    store.set('windowSate', state);
+    store.set('windowState', state);
     return true;
   } catch (err) {
     const msg = `An error occured while setting window state: ${errToString(err)}`;

@@ -5,6 +5,8 @@ import { AddModFormValues, Mod } from 'types';
 import { logger } from '@utils/mainLogger';
 import { getModsFolder, getProfiles, loadMods, saveMods, saveProfiles, setModsFolder } from './db/api';
 import { MOD_SUBFOLDERS } from './constants';
+import { handleAddTool, handleDeleteTool } from './tools';
+import { getMainWindow } from '~/main';
 
 const { debug, error, warning } = logger;
 
@@ -15,7 +17,7 @@ const normalizeOptionalString = (value: unknown): string | undefined => {
   return trimmedValue || undefined;
 };
 
-const validateMod = (path: string, isDll: boolean, hasExe: boolean) => {
+const validateMod = (path: string, isDll: boolean, hasTool: boolean) => {
   debug(`Validating path: ${path}`);
   debug(`Reading directory: ${path}`);
   let files;
@@ -39,12 +41,12 @@ const validateMod = (path: string, isDll: boolean, hasExe: boolean) => {
   } else {
     debug('Mod is not dll');
     hasValidSubfolder = files.some((file) => MOD_SUBFOLDERS.includes(file));
-    if (!hasValidSubfolder && !hasExe) {
+    if (!hasValidSubfolder && !hasTool) {
       const msg =
         'No valid subfolder was found in the directory, please select the folder that contains the mod files. It should have one or more of the following subfolders: chr, obj, parts, event, map, menu, msg, mtd, param, remo, script, or sfx.';
       warning(msg);
       return false;
-    } else if (!hasValidSubfolder && hasExe) {
+    } else if (!hasValidSubfolder && hasTool) {
       debug('Mod does not have valid subfolder but has exe, skipping warning');
     }
   }
@@ -121,9 +123,25 @@ export const handleAddMod = (formData: AddModFormValues) => {
     }
   }
 
+  if (newMod.exe) {
+    const executablePath = join(installPath, newMod.exe);
+    const toolId = handleAddTool({
+      name: newMod.name,
+      version: newMod.version,
+      executablePath,
+      modUuid: newMod.uuid,
+    });
+
+    if (!toolId) {
+      warning(`Failed to register tool for executable mod: ${newMod.name}`);
+    }
+    newMod.toolId = toolId || undefined;
+  }
+
   debug('Saving new mod to DB');
   const newMods = [...mods, newMod];
   saveMods(newMods);
+
   return true;
 };
 
@@ -181,6 +199,13 @@ export const handleDeleteMod = (mod: Mod) => {
 
     profile.mods = cleanedProfileMods;
   }
+  if (mod.toolId) {
+    debug(`Removing linked tool for mod: ${mod.name}`);
+    handleDeleteTool(mod.toolId, true);
+    const window = getMainWindow();
+    window?.webContents.send('invalidate-tool', mod.toolId);
+  }
+
   saveProfiles(profiles);
   saveMods(newMods);
 };

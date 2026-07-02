@@ -10,6 +10,7 @@ import path from 'path';
 const { debug, warning, error } = logger;
 
 const INSTALL_DIR = app.getPath('exe');
+// const ICON = '';
 
 const createAppDesktopShortcut = () => {
   if (process.platform === 'win32') {
@@ -19,9 +20,9 @@ const createAppDesktopShortcut = () => {
       description: 'Launch Elden Mod Manager',
     });
   } else if (process.platform === 'linux') {
-    const iconPath = app.isPackaged
-      ? path.join(process.resourcesPath, '256x256.png')
-      : path.join(app.getAppPath(), 'public', '256x256.png');
+    // const iconPath = app.isPackaged
+    //   ? path.join(process.resourcesPath, '256x256.png')
+    //   : path.join(app.getAppPath(), 'public', '256x256.png');
 
     const desktopEntry =
       [
@@ -31,7 +32,7 @@ const createAppDesktopShortcut = () => {
         'Name=Elden Mod Manager',
         'Comment=A mod manager for Elden Ring',
         `Exec=${INSTALL_DIR}`,
-        `Icon=${iconPath}`,
+        // `Icon=${iconPath}`,
         'Terminal=false',
         'Categories=Game;Utility;',
       ].join('\n') + '\n';

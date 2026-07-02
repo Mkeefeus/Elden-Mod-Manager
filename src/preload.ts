@@ -24,7 +24,6 @@ interface IElectronAPI {
   saveProfileMods: (mods: ProfileModRef[]) => Promise<boolean>;
   addMod: (formData: AddModFormValues) => Promise<boolean>;
   deleteMod: (mod: Mod) => Promise<void>;
-  launchModExe: (mod: Mod) => void;
   openModFolder: (mod: Mod) => void;
   listIniFiles: (mod: Mod) => Promise<string[]>;
   readIniFile: (mod: Mod, filename: string) => Promise<string>;
@@ -117,6 +116,7 @@ interface IElectronAPI {
   onNavigateNexusTo: (callback: (url: string) => void) => void;
   onSetImportQueue: (callback: (mods: ImportModResult[]) => void) => void;
   platform: 'win32' | 'darwin' | 'linux';
+  invalidateCache: (callback: (key: string) => Promise<void>) => void;
 }
 
 declare global {
@@ -132,7 +132,6 @@ const electronAPI: IElectronAPI = {
   saveProfileMods: (...args) => ipcRenderer.invoke('save-profile-mods', ...args),
   addMod: (...args) => ipcRenderer.invoke('add-mod', ...args),
   deleteMod: (...args) => ipcRenderer.invoke('delete-mod', ...args),
-  launchModExe: (...args) => ipcRenderer.send('launch-mod-exe', ...args),
   openModFolder: (mod) => ipcRenderer.send('open-mod-folder', mod),
   listIniFiles: (mod) => ipcRenderer.invoke('list-ini-files', mod),
   readIniFile: (mod, filename) => ipcRenderer.invoke('read-ini-file', mod, filename),
@@ -219,6 +218,7 @@ const electronAPI: IElectronAPI = {
   onSetImportQueue: (callback) =>
     ipcRenderer.on('set-import-queue', (_event, mods: ImportModResult[]) => callback(mods)),
   platform: process.platform as 'win32' | 'darwin' | 'linux',
+  invalidateCache: (callback) => ipcRenderer.on('invalidate-cache', (_event, key: string) => void callback(key)),
 };
 
 contextBridge.exposeInMainWorld('electronAPI', electronAPI);

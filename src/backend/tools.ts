@@ -151,7 +151,7 @@ const launchViaProton = (executablePath: string) => {
   child.unref();
 };
 
-export const handleAddTool = (toolData: Partial<Tool>) => {
+export const handleAddTool = (toolData: Partial<Tool>): string | false => {
   try {
     if (!toolData.name || !toolData.executablePath) {
       const msg = 'Tool must have a name and executable path';
@@ -175,7 +175,7 @@ export const handleAddTool = (toolData: Partial<Tool>) => {
     tools.push(newTool);
     saveTools(tools);
     info(`Added new tool: ${newTool.name} at ${newTool.executablePath}`);
-    return true;
+    return newTool.id;
   } catch (err) {
     const msg = `An error occurred while adding tool: ${err instanceof Error ? err.message : String(err)}`;
     error(msg);
@@ -183,14 +183,14 @@ export const handleAddTool = (toolData: Partial<Tool>) => {
   }
 };
 
-export const handleDeleteTool = (toolId: string) => {
+export const handleDeleteTool = (toolId: string, force = false) => {
   const tools = getTools();
   const toolIndex = tools.findIndex((tool) => tool.id === toolId);
   const toolToDelete = tools[toolIndex];
   if (toolIndex === -1) {
     throw new Error(`Tool with ID ${toolId} not found`);
   }
-  if (toolToDelete.modUuid) {
+  if (toolToDelete.modUuid && !force) {
     throw new Error(`Cannot delete tool with ID ${toolId} because it is associated with a mod`);
   }
   tools.splice(toolIndex, 1);

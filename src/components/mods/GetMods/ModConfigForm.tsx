@@ -20,6 +20,7 @@ import { IconAlertCircle } from '@tabler/icons-react';
 import { AddModFormValues, DownloadState, NativeInitializerCondition } from 'types';
 import { sendLog } from '@utils/rendererLogger';
 import { sleep } from '@utils/utilities';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface Props {
   download: DownloadState;
@@ -80,6 +81,7 @@ const ModConfigForm = ({ download, onSuccess, onDismiss }: Props) => {
   const [showAdvancedNativeSettings, setShowAdvancedNativeSettings] = useState(false);
   const lastDownloadIdRef = useRef(download.id);
   const lastSuggestedModNameRef = useRef(getSuggestedModName(download));
+  const queryClient = useQueryClient();
 
   const form = useForm<ModConfigFormValues>({
     initialValues: {
@@ -87,7 +89,9 @@ const ModConfigForm = ({ download, onSuccess, onDismiss }: Props) => {
       isDll: false,
       path: download.extractedPath ?? '',
       delete: false,
-      hasExe: false,
+      hasTool: false,
+      toolName: '',
+      toolVersion: '',
       exePath: '',
       dllPath: '',
       loadEarly: false,
@@ -110,7 +114,7 @@ const ModConfigForm = ({ download, onSuccess, onDismiss }: Props) => {
       },
       path: isNotEmpty('Path is required'),
       dllPath: (v, values) => (values.isDll && !v ? 'DLL file is required' : null),
-      exePath: (v, values) => (values.hasExe && !v ? 'Executable is required' : null),
+      exePath: (v, values) => (values.hasTool && !v ? 'Executable is required' : null),
     },
   });
 
@@ -126,10 +130,20 @@ const ModConfigForm = ({ download, onSuccess, onDismiss }: Props) => {
 
     if (form.values.modName.trim() === lastSuggestedModNameRef.current.trim()) {
       form.setFieldValue('modName', suggestedModName);
+      if (form.values.hasTool) {
+        form.setFieldValue('toolName', suggestedModName);
+      }
     }
 
     lastSuggestedModNameRef.current = suggestedModName;
-  }, [download.id, download.filename, download.importTarget?.name, download.nexusSuggestedModName]);
+  }, [
+    download.id,
+    download.filename,
+    download.importTarget?.name,
+    download.nexusSuggestedModName,
+    form.values.modName,
+    form.values.hasTool,
+  ]);
 
   useEffect(() => {
     form.setFieldValue('path', download.extractedPath ?? '');
@@ -167,7 +181,7 @@ const ModConfigForm = ({ download, onSuccess, onDismiss }: Props) => {
             form.setFieldValue('dllPath', dll);
           }
           if (exe) {
-            form.setFieldValue('hasExe', true);
+            form.setFieldValue('hasTool', true);
             form.setFieldValue('exePath', exe);
           }
         })
@@ -181,7 +195,9 @@ const ModConfigForm = ({ download, onSuccess, onDismiss }: Props) => {
       isDll: values.isDll,
       path: values.path,
       delete: values.delete,
-      hasExe: values.hasExe,
+      hasTool: values.hasTool,
+      toolName: values.toolName,
+      toolVersion: values.toolVersion,
       exePath: values.exePath,
       dllPath: values.dllPath,
       loadEarly: values.loadEarly,
@@ -212,6 +228,7 @@ const ModConfigForm = ({ download, onSuccess, onDismiss }: Props) => {
         message: `"${payload.modName}" is now in your mod list.`,
         color: 'green',
       });
+      await queryClient.invalidateQueries({ queryKey: ['tools'] });
       onSuccess();
     } catch (err) {
       notifications.show({ title: 'Error', message: String(err), color: 'red' });
@@ -363,10 +380,10 @@ const ModConfigForm = ({ download, onSuccess, onDismiss }: Props) => {
             )}
 
             <Checkbox
-              label="Has application?"
-              {...form.getInputProps('hasExe', { type: 'checkbox' })}
+              label="Has tool?"
+              {...form.getInputProps('hasTool', { type: 'checkbox' })}
               onChange={(e) => {
-                form.setFieldValue('hasExe', e.currentTarget.checked);
+                form.setFieldValue('hasTool', e.currentTarget.checked);
                 if (e.currentTarget.checked && form.values.path) {
                   void window.electronAPI.scanDir(form.values.path, 'exe').then((found) => {
                     if (found) form.setFieldValue('exePath', found);
@@ -375,25 +392,34 @@ const ModConfigForm = ({ download, onSuccess, onDismiss }: Props) => {
               }}
             />
 
-            {form.values.hasExe && (
-              <Group align="flex-end">
+            {form.values.hasTool && (
+              <>
                 <TextInput
                   withAsterisk
-                  label="Executable file"
-                  {...form.getInputProps('exePath')}
-                  style={{ flex: 4 }}
+                  label="Tool name"
+                  placeholder="e.g. Randomizer App"
+                  {...form.getInputProps('toolName')}
                 />
-                <Button
-                  style={{ flex: 1 }}
-                  onClick={() => {
-                    void window.electronAPI.browse('exe', 'Select mod executable', form.values.path).then((p) => {
-                      if (p) form.setFieldValue('exePath', p.split(/[/\\]/).pop() ?? p);
-                    });
-                  }}
-                >
-                  Browse
-                </Button>
-              </Group>
+                <TextInput label="Tool version" placeholder="e.g. 1.0.0" {...form.getInputProps('toolVersion')} />
+                <Group align="flex-end">
+                  <TextInput
+                    withAsterisk
+                    label="Executable file"
+                    {...form.getInputProps('exePath')}
+                    style={{ flex: 4 }}
+                  />
+                  <Button
+                    style={{ flex: 1 }}
+                    onClick={() => {
+                      void window.electronAPI.browse('exe', 'Select mod executable', form.values.path).then((p) => {
+                        if (p) form.setFieldValue('exePath', p.split(/[/\\]/).pop() ?? p);
+                      });
+                    }}
+                  >
+                    Browse
+                  </Button>
+                </Group>
+              </>
             )}
 
             <Checkbox label="Delete source after import?" {...form.getInputProps('delete', { type: 'checkbox' })} />

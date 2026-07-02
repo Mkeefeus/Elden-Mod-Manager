@@ -21,7 +21,7 @@ export const createOrFocusGetModsWindow = () => {
       preload: path.join(__dirname, 'preload.js'),
       webviewTag: true,
     },
-    icon: 'public/256x256.png',
+    // icon: 'public/256x256.png',
   });
 
   getModsWindow = window;

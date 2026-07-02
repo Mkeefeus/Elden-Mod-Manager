@@ -86,17 +86,6 @@ const getSafeModFilePath = (mod: Pick<Mod, 'name' | 'version'>, filename: string
   return filePath;
 };
 
-const launchModExecutable = (mod: Mod) => {
-  debug(`Launching mod executable: ${mod.exe}`);
-  try {
-    void shell.openPath(join(getInstalledModPath(mod), mod.exe!));
-  } catch (err) {
-    const msg = `An error occured while launching mod executable: ${errToString(err)}`;
-    error(msg);
-    throw new Error(msg, { cause: err });
-  }
-};
-
 const openInstalledModFolder = (mod: Mod) => {
   debug(`Opening mod folder: ${mod.name}`);
   void shell.openPath(getInstalledModPath(mod));
@@ -220,9 +209,6 @@ const registerModHandlers = () => {
     return result;
   });
   ipcMain.handle('delete-mod', (_, mod: Mod) => handleDeleteMod(mod));
-  ipcMain.on('launch-mod-exe', (_, mod: Mod) => {
-    launchModExecutable(mod);
-  });
   ipcMain.on('open-mod-folder', (_, mod: Mod) => {
     openInstalledModFolder(mod);
   });

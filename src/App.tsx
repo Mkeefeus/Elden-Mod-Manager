@@ -52,6 +52,10 @@ void queryClient.prefetchQuery({
   staleTime: Infinity,
 });
 
+window.electronAPI.invalidateCache(async (key) => {
+  await queryClient.invalidateQueries({ queryKey: [key] });
+});
+
 const App = () => {
   return (
     <QueryClientProvider client={queryClient}>

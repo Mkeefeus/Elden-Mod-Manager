@@ -8,6 +8,7 @@ import IniEditorModal from './IniEditorModal';
 import { useMods } from '@providers/ModsProvider';
 import MoreMenuTrigger from '../shared/MoreMenuTrigger';
 import { sendLog } from '~/utils/rendererLogger';
+import { useQueryClient } from '@tanstack/react-query';
 
 type TableMod = Mod & { enabled: boolean };
 
@@ -19,11 +20,14 @@ const ModTableMenu = ({ mod }: ModTableMenuProps) => {
   const { loadMods } = useMods();
   const { showModal, hideModal } = useModal();
   const [hasIniFiles, setHasIniFiles] = useState(false);
+  const [linkedTool, setLinkedTool] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const check = async () => {
       const files = await window.electronAPI.listIniFiles(mod);
       setHasIniFiles(files.length > 0);
+      setLinkedTool(mod.toolId ?? null);
     };
     void check();
   }, [mod.uuid]);
@@ -35,6 +39,10 @@ const ModTableMenu = ({ mod }: ModTableMenuProps) => {
         level: 'info',
         message: `Deleted mod ${mod.name}`,
       });
+      if (linkedTool) {
+        console.log(`Refreshing tools after deleting linked tool with ID: ${linkedTool}`);
+        await queryClient.invalidateQueries({ queryKey: ['tools'] });
+      }
     };
     const afterDelete = () => {
       void loadMods();
@@ -45,8 +53,9 @@ const ModTableMenu = ({ mod }: ModTableMenuProps) => {
     });
   };
 
-  const handleOpenExe = () => {
-    window.electronAPI.launchModExe(mod);
+  const handleOpenTool = () => {
+    if (!linkedTool) return;
+    window.electronAPI.launchTool(linkedTool);
   };
 
   const handleOpenFolder = () => {
@@ -81,9 +90,9 @@ const ModTableMenu = ({ mod }: ModTableMenuProps) => {
             </Menu.Item>
           )}
           {hasIniFiles && <Menu.Item onClick={handleEditIniFiles}>Edit INI Files</Menu.Item>}
-          {mod.exe && (
-            <Menu.Item color="blue" onClick={() => handleOpenExe()}>
-              Open Exe
+          {linkedTool && (
+            <Menu.Item color="blue" onClick={() => handleOpenTool()}>
+              Open Tool
             </Menu.Item>
           )}
           <Menu.Item onClick={handleOpenFolder}>Open Folder</Menu.Item>
