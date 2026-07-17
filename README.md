@@ -33,7 +33,7 @@ For detailed mod import instructions and configuration options, see the in-app h
 ## Requirements
 
 - Steam version of Elden Ring
-- [me3](https://github.com/garyttiereny/me3) (installed during Elden Mod Manager setup)
+- Bundled [me3](https://github.com/garyttiereny/me3) binary included with each release
 
 ## Credits
 

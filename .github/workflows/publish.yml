@@ -3,13 +3,13 @@ name: Publish
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Tag name to use for the draft release (e.g. v0.3.0-test)'
+        description: "Tag name to use for the draft release (e.g. v0.3.0-test)"
         required: true
-        default: 'v0.0.0-test'
+        default: "v0.0.0-test"
 
 jobs:
   publish:
@@ -33,6 +33,46 @@ jobs:
       - name: Install dependencies (Linux)
         if: runner.os == 'Linux'
         run: sudo apt-get install -y rpm
+
+      - name: Stage bundled ME3 binary (Linux)
+        if: runner.os == 'Linux'
+        env:
+          ME3_LINUX_URL: ${{ vars.ME3_LINUX_URL }}
+        run: |
+          set -euo pipefail
+          if [ -z "${ME3_LINUX_URL:-}" ]; then
+            echo "ME3_LINUX_URL repository variable is required"
+            exit 1
+          fi
+
+          tmp_archive="$(mktemp --suffix=.tar.gz)"
+          curl -fL "$ME3_LINUX_URL" -o "$tmp_archive"
+
+          mkdir -p resources/me3/linux
+          tar -xzf "$tmp_archive" -O ./bin/me3 > resources/me3/linux/me3
+          chmod +x resources/me3/linux/me3
+
+      - name: Stage bundled ME3 binary (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        env:
+          ME3_WINDOWS_URL: ${{ vars.ME3_WINDOWS_URL }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:ME3_WINDOWS_URL)) {
+            Write-Error "ME3_WINDOWS_URL repository variable is required"
+          }
+
+          $archivePath = Join-Path $env:RUNNER_TEMP "me3-windows-amd64.zip"
+          $extractPath = Join-Path $env:RUNNER_TEMP "me3-windows"
+
+          Invoke-WebRequest -Uri $env:ME3_WINDOWS_URL -OutFile $archivePath
+          if (Test-Path $extractPath) {
+            Remove-Item -Path $extractPath -Recurse -Force
+          }
+          Expand-Archive -Path $archivePath -DestinationPath $extractPath
+
+          New-Item -ItemType Directory -Path "resources/me3/win32" -Force | Out-Null
+          Copy-Item -Path (Join-Path $extractPath "bin/me3.exe") -Destination "resources/me3/win32/me3.exe" -Force
 
       - name: Install Node dependencies
         run: npm ci

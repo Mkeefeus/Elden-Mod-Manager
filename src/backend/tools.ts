@@ -100,7 +100,7 @@ const resolveProtonRoot = (steamClientPaths: string[], protonVersion: string) =>
   return '';
 };
 
-const launchViaProton = (executablePath: string) => {
+const launchToolViaProton = (executablePath: string) => {
   const steamClientPaths = getSteamClientCandidates();
   const steamCompatClientInstallPath = steamClientPaths[0] || '';
   const eldenRingInstallDir = getEldenRingInstallDir();
@@ -142,7 +142,7 @@ const launchViaProton = (executablePath: string) => {
 
   const executableDir = path.dirname(executablePath);
   const executableName = path.basename(executablePath);
-  const child = spawn(protonExecutable, ['run', `./${executableName}`], {
+  const child = spawn(protonExecutable, ['runinprefix', `./${executableName}`], {
     cwd: executableDir,
     env,
     detached: true,
@@ -223,7 +223,7 @@ export const openToolExecutable = (toolId: string) => {
     exec(`start "" "${tool.executablePath}"`);
   } else if (process.platform === 'linux') {
     if (tool.executablePath.toLowerCase().endsWith('.exe')) {
-      launchViaProton(tool.executablePath);
+      launchToolViaProton(tool.executablePath);
       return;
     }
 

@@ -14,7 +14,7 @@ dotenv.config();
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
-    extraResource: ['node_modules/7zip-bin'],
+    extraResource: ['node_modules/7zip-bin', 'resources/me3'],
     name: 'Elden Mod Manager',
     executableName: 'elden-mod-manager',
   },

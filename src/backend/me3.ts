@@ -1,6 +1,7 @@
 import { execSync, spawn } from 'child_process';
 import { existsSync } from 'fs';
-import { join } from 'path';
+import { dirname, join } from 'path';
+import { app } from 'electron';
 import { logger } from '@utils/mainLogger';
 import { getModEnginePath, getProfilesFolder, setModEnginePath, getActiveProfile, getLauncherSettings } from './db/api';
 import { errToString } from '@utils/utilities';
@@ -9,12 +10,49 @@ import { writeMe3Profile } from './me3Profile';
 
 const { debug, error } = logger;
 
+const getBundledME3Executable = (): string | null => {
+  const platform = process.platform;
+  if (platform !== 'linux' && platform !== 'win32') {
+    return null;
+  }
+
+  const platformDir = platform === 'win32' ? 'me3-windows-amd64' : 'me3-linux-amd64';
+  const binaryName = platform === 'win32' ? 'me3.exe' : 'me3';
+
+  // In packaged builds, extra resources are copied under process.resourcesPath.
+  const packagedCandidate = join(process.resourcesPath, 'me3', platformDir, 'bin', binaryName);
+  if (existsSync(packagedCandidate)) {
+    debug(`ME3 found in packaged resources: ${packagedCandidate}`);
+    return packagedCandidate;
+  }
+
+  // In development, allow testing with project-local staged resources.
+  const devCandidates = [
+    join(app.getAppPath(), 'resources', 'me3', platformDir, 'bin', binaryName),
+    join(process.cwd(), 'resources', 'me3', platformDir, 'bin', binaryName),
+  ];
+
+  for (const candidate of devCandidates) {
+    if (existsSync(candidate)) {
+      debug(`ME3 found in dev resources: ${candidate}`);
+      return candidate;
+    }
+  }
+
+  return null;
+};
+
 /**
  * Attempt to find the me3 executable from the system PATH or a known install location.
  * Returns the absolute path to the me3 binary, or null if not found.
  */
 export const detectME3 = (): string | null => {
   const isLinux = process.platform === 'linux';
+
+  const bundled = getBundledME3Executable();
+  if (bundled) {
+    return bundled;
+  }
 
   // Try system PATH first
   try {
@@ -51,13 +89,13 @@ export const detectME3 = (): string | null => {
  * Throws if ME3 cannot be found.
  */
 export const getME3Executable = (): string => {
-  const storedPath = getModEnginePath();
-  if (storedPath && existsSync(storedPath)) {
-    debug(`Using stored ME3 path: ${storedPath}`);
-    return storedPath;
-  }
+  // const storedPath = getModEnginePath();
+  // if (storedPath && existsSync(storedPath)) {
+  //   debug(`Using stored ME3 path: ${storedPath}`);
+  //   return storedPath;
+  // }
 
-  debug('No valid stored ME3 path, attempting auto-detection');
+  // debug('No valid stored ME3 path, attempting auto-detection');
 
   const detected = detectME3();
   if (detected) {
@@ -72,9 +110,16 @@ export const getME3Executable = (): string => {
 export const launchEldenRingModded = () => {
   debug('Launching game with mods via ME3');
   try {
-    // const me3Exe = getME3Executable();
-    const me3Exe = 'me3_verb';
-    process.env['ME3_PROTON_LAUNCH_VERB'] = 'run';
+    const me3Exe = getME3Executable();
+    const me3ExeDir = dirname(me3Exe);
+    const me3VerbName = process.platform === 'win32' ? 'me3_verb.exe' : 'me3_verb';
+    const me3VerbPath = join(me3ExeDir, me3VerbName);
+    const launchCommand = process.platform === 'linux' && existsSync(me3VerbPath) ? me3VerbPath : me3Exe;
+
+    if (process.platform === 'linux') {
+      process.env['ME3_PROTON_LAUNCH_VERB'] = 'run';
+    }
+
     writeMe3Profile();
     const profilePath = join(getProfilesFolder(), ME3_PROFILE_FILENAME);
     const args = ['launch', '-p', profilePath];
@@ -85,8 +130,8 @@ export const launchEldenRingModded = () => {
     if (launcherSettings.noBootBoost) args.push('--no-boot-boost');
     if (launcherSettings.showLogos) args.push('--show-logos');
     if (launcherSettings.skipSteamInit) args.push('--skip-steam-init');
-    debug(`Running: ${me3Exe} ${args.join(' ')}`);
-    const proc = spawn(me3Exe, args, {
+    debug(`Running: ${launchCommand} ${args.join(' ')}`);
+    const proc = spawn(launchCommand, args, {
       detached: true,
       stdio: 'ignore',
     });
