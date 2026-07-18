@@ -75,6 +75,10 @@ jobs:
           mkdir -p resources/me3/linux
           cp -a "$bin_dir"/. resources/me3/linux/
 
+          while IFS= read -r license_file; do
+            cp "$license_file" resources/me3/linux/
+          done < <(find "$tmp_extract_dir" -type f -name 'LICENSE*')
+
           if [ -f resources/me3/linux/me3 ]; then
             chmod +x resources/me3/linux/me3
           fi
@@ -108,6 +112,10 @@ jobs:
           }
           New-Item -ItemType Directory -Path "resources/me3/win32" -Force | Out-Null
           Copy-Item -Path (Join-Path $binDir.FullName "*") -Destination "resources/me3/win32" -Recurse -Force
+
+          Get-ChildItem -Path $extractPath -File -Recurse -Filter "LICENSE*" | ForEach-Object {
+            Copy-Item -Path $_.FullName -Destination "resources/me3/win32" -Force
+          }
 
       - name: Install Node dependencies
         run: pnpm install --frozen-lockfile

@@ -16,7 +16,7 @@ const getBundledME3Executable = (): string | null => {
     return null;
   }
 
-  const platformDir = platform === 'win32' ? 'me3-windows-amd64' : 'me3-linux-amd64';
+  const platformDir = platform === 'win32' ? 'win32' : 'linux';
   const binaryName = platform === 'win32' ? 'me3.exe' : 'me3';
 
   // In packaged builds, extra resources are copied under process.resourcesPath.
