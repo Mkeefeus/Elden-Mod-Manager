@@ -24,20 +24,29 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 24
           cache: pnpm
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10
-
       - name: Install dependencies (Linux)
         if: runner.os == 'Linux'
-        run: sudo apt-get install -y rpm
+        run: |
+          set -euo pipefail
+          if command -v sudo >/dev/null 2>&1; then
+            APT_PREFIX="sudo"
+          else
+            APT_PREFIX=""
+          fi
+
+          $APT_PREFIX apt-get update
+          $APT_PREFIX apt-get install -y rpm dpkg fakeroot
 
       - name: Stage bundled ME3 binary (Linux)
         if: runner.os == 'Linux'
