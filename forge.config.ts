@@ -136,13 +136,24 @@ const config: ForgeConfig = {
           const detectedExt = path.extname(currentBaseName).replace('.', '').toLowerCase();
           const extension = detectedExt || currentBaseName.toLowerCase();
 
-          const baseName = `eldenmodmanager-${appVersion}-${normalizedPlatform}-${makeResult.arch}`;
+          let installType = '';
+          if (makeResult.platform === 'win32' && extension !== 'nupkg') {
+            installType = extension === 'exe' ? '-installer' : '-portable';
+          } else if (makeResult.platform === 'linux') {
+            installType = extension === 'deb' || extension === 'rpm' ? '-installer' : '-portable';
+          }
+
+          const baseName = `eldenmodmanager-${appVersion}-${normalizedPlatform}${installType}-${makeResult.arch}`;
           let nextName = `${baseName}.${extension}`;
           let collisionIndex = 2;
 
           while (usedNames.has(nextName)) {
             nextName = `${baseName}-${collisionIndex}.${extension}`;
             collisionIndex += 1;
+          }
+
+          if (currentBaseName === 'RELEASES') {
+            nextName = 'RELEASES';
           }
 
           usedNames.add(nextName);
