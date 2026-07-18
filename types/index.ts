@@ -80,6 +80,7 @@ export type ModProfile = {
   startOnline: boolean;
   disableArxan: boolean;
   noMemPatch: boolean;
+  overrideProtonVerb?: boolean;
 };
 
 export type Dependency = {

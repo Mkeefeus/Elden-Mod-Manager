@@ -136,6 +136,14 @@ const Mods = () => {
               checked={activeProfile?.noMemPatch ?? false}
               onChange={(e) => updateActiveProfile({ noMemPatch: e.currentTarget.checked })}
             />
+            {window.electronAPI.platform === 'linux' && (
+              <Switch
+                label="Override Proton Verb"
+                description="Use 'proton run' rather than 'proton waitforexitandrun'. Use this when you need to run an app alongside the game (default: off)"
+                checked={activeProfile?.overrideProtonVerb ?? false}
+                onChange={(e) => updateActiveProfile({ overrideProtonVerb: e.currentTarget.checked })}
+              />
+            )}
           </Stack>
         </Collapse>
       </Stack>

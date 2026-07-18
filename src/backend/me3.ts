@@ -65,11 +65,6 @@ export const launchEldenRingModded = () => {
     const me3VerbName = process.platform === 'win32' ? 'me3_verb.exe' : 'me3_verb';
     const me3VerbPath = join(me3ExeDir, me3VerbName);
     const launchCommand = process.platform === 'linux' && existsSync(me3VerbPath) ? me3VerbPath : me3Exe;
-
-    if (process.platform === 'linux') {
-      process.env['ME3_PROTON_LAUNCH_VERB'] = 'run';
-    }
-
     writeMe3Profile();
     const profilePath = join(getProfilesFolder(), ME3_PROFILE_FILENAME);
     const args = ['launch', '-p', profilePath];
@@ -80,6 +75,9 @@ export const launchEldenRingModded = () => {
     if (launcherSettings.noBootBoost) args.push('--no-boot-boost');
     if (launcherSettings.showLogos) args.push('--show-logos');
     if (launcherSettings.skipSteamInit) args.push('--skip-steam-init');
+    if (process.platform === 'linux' && activeProfile?.overrideProtonVerb) {
+      process.env['ME3_PROTON_LAUNCH_VERB'] = 'run';
+    }
     debug(`Running: ${launchCommand} ${args.join(' ')}`);
     const proc = spawn(launchCommand, args, {
       detached: true,
