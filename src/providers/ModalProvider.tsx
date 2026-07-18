@@ -1,6 +1,5 @@
 import { useContext, createContext, Context, ReactNode, useState } from 'react';
 import { useDisclosure } from '@mantine/hooks';
-import InstallME3Modal from '@components/InstallME3Modal';
 import { MantineSize } from '@mantine/core';
 
 interface ShowOptions {
@@ -45,15 +44,6 @@ const ModalProvider = ({ children }: { children: ReactNode }) => {
     onBeforeCloseState[1](undefined);
     close();
   };
-
-  // Main to Renderer modal triggers
-
-  window.electronAPI.promptME3Install(() => {
-    showModal({
-      title: 'Install ModEngine3',
-      content: <InstallME3Modal hideModal={hideModal} />,
-    });
-  });
 
   return (
     <ModalContext.Provider

@@ -99,7 +99,6 @@ export type WindowState = {
 
 export type ExportedSettings = {
   version: 1;
-  modEnginePath: string;
   modFolderPath: string;
   eldenRingFolder: string;
   noBootBoost: boolean;

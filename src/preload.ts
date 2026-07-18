@@ -60,9 +60,6 @@ interface IElectronAPI {
   ) => Promise<ModProfile>;
 
   // --- Settings ---
-  getME3Path: () => Promise<string>;
-  updateME3Path: (path: string) => void;
-  detectME3: () => Promise<string | null>;
   getModsPath: () => Promise<string>;
   updateModsFolder: (path: string) => void;
   getLauncherSettings: () => Promise<{ noBootBoost: boolean; showLogos: boolean; skipSteamInit: boolean }>;
@@ -106,11 +103,9 @@ interface IElectronAPI {
   launchGame: (modded: boolean) => void;
   getLatestVersion: () => Promise<LatestRelease | null>;
   log: (log: LogEntry) => void;
-  setME3Path: (path: string) => void;
 
   // --- Main to renderer ---
   notify: (callback: (log: LogEntry) => void) => void;
-  promptME3Install: (callback: () => void) => void;
   onModsChanged: (callback: () => void) => void;
   offModsChanged: (callback: () => void) => void;
   onNavigateNexusTo: (callback: (url: string) => void) => void;
@@ -160,9 +155,6 @@ const electronAPI: IElectronAPI = {
     ipcRenderer.invoke('complete-profile-import', analysis, manualMatches, profileName),
 
   // --- Settings ---
-  getME3Path: () => ipcRenderer.invoke('get-me3-path'),
-  updateME3Path: (path) => ipcRenderer.send('update-me3-path', path),
-  detectME3: () => ipcRenderer.invoke('detect-me3'),
   getModsPath: () => ipcRenderer.invoke('get-mods-path'),
   updateModsFolder: (path) => ipcRenderer.send('update-mods-folder', path),
   getLauncherSettings: () => ipcRenderer.invoke('get-launcher-settings'),
@@ -207,11 +199,9 @@ const electronAPI: IElectronAPI = {
   launchGame: (...args) => ipcRenderer.send('launch-game', ...args),
   getLatestVersion: () => ipcRenderer.invoke('get-latest-version'),
   log: (...args) => ipcRenderer.send('log', ...args),
-  setME3Path: (path) => ipcRenderer.send('set-me3-path', path),
 
   // --- Main to renderer ---
   notify: (callback) => ipcRenderer.on('notify', (_event, value) => callback(value as LogEntry)),
-  promptME3Install: (callback) => ipcRenderer.on('prompt-me3-install', callback),
   onModsChanged: (callback) => ipcRenderer.on('mods-changed', callback),
   offModsChanged: (callback) => ipcRenderer.removeListener('mods-changed', callback),
   onNavigateNexusTo: (callback) => ipcRenderer.on('navigate-nexus-to', (_event, url: string) => callback(url)),

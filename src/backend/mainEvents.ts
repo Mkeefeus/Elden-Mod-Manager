@@ -1,6 +1,5 @@
 import { app, dialog, ipcMain, shell } from 'electron';
 import {
-  getModEnginePath,
   getModsFolder,
   getPromptedModsFolder,
   getActiveProfile,
@@ -9,7 +8,6 @@ import {
   loadMods,
   saveMods,
   saveProfileMods,
-  setModEnginePath,
   clearPromptedModsFolder,
   setModsFolder,
   getProfiles,
@@ -30,7 +28,7 @@ import {
 import { join, normalize, sep } from 'path';
 import { CreateModPathFromName, errToString } from '@utils/utilities';
 import { handleLog, logger } from '@utils/mainLogger';
-import { launchEldenRingModded, updateME3Path, detectME3 } from './me3';
+import { launchEldenRingModded } from './me3';
 import { launchEldenRing } from './steam';
 import {
   browse,
@@ -232,10 +230,6 @@ const registerSettingsHandlers = () => {
   ipcMain.on('log', (event, log: LogEntry) => {
     handleLog(log, event.sender);
   });
-  ipcMain.on('set-me3-path', (_, path: string) => {
-    setModEnginePath(path);
-  });
-  ipcMain.handle('get-me3-path', () => getModEnginePath());
   ipcMain.handle('get-mods-path', () => getModsFolder());
   ipcMain.handle('check-mods-folder-prompt', () => getPromptedModsFolder());
   ipcMain.on('clear-prompted-mods-folder', () => {
@@ -243,9 +237,6 @@ const registerSettingsHandlers = () => {
   });
   ipcMain.on('save-mods-folder', (_, path: string) => {
     setModsFolder(path);
-  });
-  ipcMain.on('update-me3-path', (_, path: string) => {
-    updateME3Path(path);
   });
   ipcMain.on('update-mods-folder', (_, path: string) => {
     updateModsFolder(path);
@@ -269,7 +260,6 @@ const registerSettingsHandlers = () => {
     if (!src) return undefined;
     return importSettings(src);
   });
-  ipcMain.handle('detect-me3', () => detectME3());
 };
 
 const registerProfileHandlers = () => {
@@ -351,7 +341,7 @@ app
     debug('Registering IPC events');
 
     registerIpcHandlers();
-    runStartupTasks(getMainWindow);
+    runStartupTasks();
 
     debug('App started');
   })

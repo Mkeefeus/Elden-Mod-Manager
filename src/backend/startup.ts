@@ -1,48 +1,11 @@
-import { BrowserWindow } from 'electron';
 import { randomUUID } from 'crypto';
-import { existsSync } from 'fs';
 import { ModProfile } from 'types';
 import { logger } from '@utils/mainLogger';
-import {
-  clearFirstRun,
-  getActiveProfileId,
-  getModEnginePath,
-  getProfiles,
-  isFirstRun,
-  saveProfiles,
-  setActiveProfileId,
-  setModEnginePath,
-} from './db/api';
-import { detectME3 } from './me3';
+import { clearFirstRun, getActiveProfileId, getProfiles, isFirstRun, saveProfiles, setActiveProfileId } from './db/api';
 
 const { debug } = logger;
 
-const queueMissingMe3Prompt = (getMainWindow: () => BrowserWindow | null) => {
-  const window = getMainWindow();
-  if (!window) return;
-
-  window.once('ready-to-show', () => {
-    window.webContents.send('prompt-me3-install');
-  });
-};
-
-export const runStartupTasks = (getMainWindow: () => BrowserWindow | null) => {
-  const storedPath = getModEnginePath();
-  const me3Available =
-    (storedPath && existsSync(storedPath)) ||
-    (() => {
-      const detected = detectME3();
-      if (detected) {
-        setModEnginePath(detected);
-        return true;
-      }
-      return false;
-    })();
-
-  if (!me3Available) {
-    queueMissingMe3Prompt(getMainWindow);
-  }
-
+export const runStartupTasks = () => {
   const profiles = getProfiles();
   if (profiles.length === 0) {
     const defaultProfile: ModProfile = {

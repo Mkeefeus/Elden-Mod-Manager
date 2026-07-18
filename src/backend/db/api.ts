@@ -49,45 +49,6 @@ export const saveProfileMods = (profileId: string, refs: ProfileModRef[]) => {
   }
 };
 
-export const saveModEnginePath = (path: string) => {
-  debug(`Saving ME3 Path: ${path}`);
-  try {
-    store.set('modEnginePath', path);
-    debug('ME3 Path saved');
-    return true;
-  } catch (err) {
-    const msg = `An error occured while saving ME3 Path: ${errToString(err)}`;
-    error(msg);
-    throw new Error(msg, { cause: err });
-  }
-};
-
-export const getModEnginePath = () => {
-  debug('Getting ME3 Path');
-  try {
-    const path = store.get('modEnginePath');
-    debug(`ME3 Path: ${path}`);
-    return path;
-  } catch (err) {
-    const msg = `An error occured while getting ME3 Path: ${errToString(err)}`;
-    error(msg);
-    throw new Error(msg, { cause: err });
-  }
-};
-
-export const setModEnginePath = (path: string) => {
-  debug(`Setting ME3 Path: ${path}`);
-  try {
-    store.set('modEnginePath', path);
-    debug('ME3 Path set');
-    return true;
-  } catch (err) {
-    const msg = `An error occured while setting ME3 Path: ${errToString(err)}`;
-    error(msg);
-    throw new Error(msg, { cause: err });
-  }
-};
-
 export const getEldenRingFolder = () => {
   debug('Getting Elden Ring Path');
   try {

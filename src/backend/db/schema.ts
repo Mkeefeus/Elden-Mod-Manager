@@ -6,7 +6,6 @@ import { join } from 'path';
 export type DBSchema = {
   mods: Mod[];
   tools: Tool[];
-  modEnginePath: string;
   eldenRingFolder: string;
   modFolderPath: string;
   firstRun: boolean;
@@ -58,10 +57,6 @@ const schema: Schema<DBSchema> = {
       required: ['id', 'name', 'installDate', 'executablePath'],
     },
     default: [],
-  },
-  modEnginePath: {
-    type: 'string',
-    default: '',
   },
   eldenRingFolder: {
     type: 'string',

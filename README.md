@@ -15,7 +15,6 @@ A user-friendly GUI for managing mods for Elden Ring, running on top of [me3](ht
 1. Download the latest release from the [Releases](https://github.com/Mkeefeus/Elden-Mod-Manager/releases) page
 2. Extract or run the installer to your preferred location
 3. On first launch, you'll be prompted to configure:
-   - Your me3 installation path
    - Your mods folder location (a separate directory from your Elden Ring installation)
 4. The defaults are recommended, but you can customize paths as needed
 5. Optional: Create desktop shortcuts from the Settings menu 

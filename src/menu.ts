@@ -4,7 +4,7 @@ import archiver from 'archiver';
 import { createWriteStream, readdirSync, unlinkSync, writeFileSync, mkdirSync, chmodSync } from 'fs';
 import { logger } from './utils/mainLogger';
 import { errToString } from './utils/utilities';
-import { getModEnginePath, getModsFolder } from '@backend/db/api';
+import { getModsFolder } from '@backend/db/api';
 import path from 'path';
 
 const { debug, warning, error } = logger;
@@ -109,18 +109,6 @@ const handleCollectLogs = () => {
     throw err;
   }
 
-  // grab toml file
-  debug('Appending config_eldenring.toml');
-  try {
-    const me3ExeDir = path.dirname(getModEnginePath());
-    const tomlPath = path.join(me3ExeDir, 'config_eldenring.toml');
-    archive.file(tomlPath, { name: 'config_eldenring.toml' });
-  } catch (err) {
-    const msg = `An error occured while appending config_eldenring.toml: ${errToString(err)}`;
-    error(msg);
-    throw err;
-  }
-
   // grab config.json from appdata
   debug('Appending config.json');
   try {
@@ -195,13 +183,6 @@ export const template: MenuItemConstructorOptions[] = [
         label: 'EMM Folder',
         click: () => {
           void shell.openPath(path.dirname(INSTALL_DIR));
-        },
-      },
-      {
-        label: 'me3 Folder',
-        click: () => {
-          const me3Path = getModEnginePath();
-          if (me3Path) void shell.openPath(path.dirname(me3Path));
         },
       },
       {

@@ -6,11 +6,6 @@ const TEXT_INPUT_STYLE = { flex: 7 };
 const BUTTON_STYLE = { flex: 1 };
 
 const Settings = () => {
-  const { data: me3Path } = useQuery({
-    queryKey: ['me3-path'],
-    queryFn: () => window.electronAPI.getME3Path(),
-    staleTime: Infinity,
-  });
   const { data: modsPath } = useQuery({
     queryKey: ['mods-path'],
     queryFn: () => window.electronAPI.getModsPath(),
@@ -23,29 +18,14 @@ const Settings = () => {
   });
   const queryClient = useQueryClient();
 
-  const handleBrowse = async (field: string) => {
+  const handleBrowseMods = async () => {
     const path = await window.electronAPI.browse('directory', 'Select Folder');
     if (!path) {
       sendLog({ level: 'warning', message: 'No path selected' });
       return;
     }
-    if (field === 'me3') {
-      queryClient.setQueryData(['me3-path'], path);
-      window.electronAPI.updateME3Path(path);
-    } else {
-      queryClient.setQueryData(['mods-path'], path);
-      window.electronAPI.updateModsFolder(path);
-    }
-  };
-
-  const handleBrowseME3Exe = async () => {
-    const path = await window.electronAPI.browse('exe', 'Select ME3 Executable (me3.exe)');
-    if (!path) {
-      sendLog({ level: 'warning', message: 'No path selected' });
-      return;
-    }
-    queryClient.setQueryData(['me3-path'], path);
-    window.electronAPI.updateME3Path(path);
+    queryClient.setQueryData(['mods-path'], path);
+    window.electronAPI.updateModsFolder(path);
   };
 
   return (
@@ -61,24 +41,7 @@ const Settings = () => {
         <Button
           style={BUTTON_STYLE}
           onClick={() => {
-            void handleBrowse('mods');
-          }}
-        >
-          Browse
-        </Button>
-      </Group>
-      <Group align={'flex-end'} justify={'space-between'}>
-        <TextInput
-          label="Mod Engine 3 Path (me3.exe)"
-          placeholder="Auto-detected or browse to me3.exe"
-          style={TEXT_INPUT_STYLE}
-          value={me3Path ?? ''}
-          disabled
-        />
-        <Button
-          style={BUTTON_STYLE}
-          onClick={() => {
-            void handleBrowseME3Exe();
+            void handleBrowseMods();
           }}
         >
           Browse
@@ -138,7 +101,6 @@ const Settings = () => {
           onClick={() => {
             void window.electronAPI.importSettings().then((result) => {
               if (!result) return;
-              queryClient.setQueryData(['me3-path'], result.modEnginePath);
               queryClient.setQueryData(['mods-path'], result.modFolderPath);
               queryClient.setQueryData(['launcher-settings'], {
                 noBootBoost: result.noBootBoost,

@@ -1,11 +1,9 @@
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { ExportedSettings } from 'types';
 import {
-  getModEnginePath,
   getModsFolder,
   getEldenRingFolder,
   getLauncherSettings,
-  setModEnginePath,
   setModsFolder,
   setEldenRingFolder,
   setLauncherSettings,
@@ -21,7 +19,6 @@ export const exportSettings = (destPath: string): void => {
     const launcher = getLauncherSettings();
     const settings: ExportedSettings = {
       version: 1,
-      modEnginePath: getModEnginePath(),
       modFolderPath: getModsFolder(),
       eldenRingFolder: getEldenRingFolder(),
       noBootBoost: launcher.noBootBoost,
@@ -42,7 +39,6 @@ const isValidExportedSettings = (obj: unknown): obj is ExportedSettings => {
   const o = obj as Record<string, unknown>;
   return (
     o['version'] === 1 &&
-    typeof o['modEnginePath'] === 'string' &&
     typeof o['modFolderPath'] === 'string' &&
     typeof o['eldenRingFolder'] === 'string' &&
     typeof o['noBootBoost'] === 'boolean' &&
@@ -58,14 +54,6 @@ export const importSettings = (srcPath: string): ExportedSettings => {
     const parsed: unknown = JSON.parse(raw);
     if (!isValidExportedSettings(parsed)) {
       throw new Error('File is not a valid settings export');
-    }
-
-    // Only apply path settings if the paths actually exist on this machine.
-    // Paths from another machine may not be valid here, so we skip and warn.
-    if (parsed.modEnginePath && existsSync(parsed.modEnginePath)) {
-      setModEnginePath(parsed.modEnginePath);
-    } else if (parsed.modEnginePath) {
-      warning(`Imported ME3 path does not exist on this machine, skipping: ${parsed.modEnginePath}`);
     }
 
     if (parsed.modFolderPath && existsSync(parsed.modFolderPath)) {
