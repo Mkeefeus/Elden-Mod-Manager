@@ -12,6 +12,7 @@ const { debug, error } = logger;
 
 const getBundledME3Executable = (): string | null => {
   const platform = process.platform;
+  debug(`Detecting ME3 executable for platform: ${platform}`);
   if (platform !== 'linux' && platform !== 'win32') {
     return null;
   }
@@ -20,7 +21,8 @@ const getBundledME3Executable = (): string | null => {
   const binaryName = platform === 'win32' ? 'me3.exe' : 'me3';
 
   // In packaged builds, extra resources are copied under process.resourcesPath.
-  const packagedCandidate = join(process.resourcesPath, 'me3', platformDir, 'bin', binaryName);
+  const packagedCandidate = join(process.resourcesPath, 'me3', platformDir, binaryName);
+  debug(`Checking for ME3 executable at: ${packagedCandidate}`);
   if (existsSync(packagedCandidate)) {
     debug(`ME3 found in packaged resources: ${packagedCandidate}`);
     return packagedCandidate;
@@ -28,11 +30,12 @@ const getBundledME3Executable = (): string | null => {
 
   // In development, allow testing with project-local staged resources.
   const devCandidates = [
-    join(app.getAppPath(), 'resources', 'me3', platformDir, 'bin', binaryName),
-    join(process.cwd(), 'resources', 'me3', platformDir, 'bin', binaryName),
+    join(app.getAppPath(), 'resources', 'me3', platformDir, binaryName),
+    join(process.cwd(), 'resources', 'me3', platformDir, binaryName),
   ];
 
   for (const candidate of devCandidates) {
+    debug(`Checking for ME3 executable at: ${candidate}`);
     if (existsSync(candidate)) {
       debug(`ME3 found in dev resources: ${candidate}`);
       return candidate;
