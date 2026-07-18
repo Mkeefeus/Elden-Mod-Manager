@@ -3,6 +3,8 @@ import { MakerSquirrel } from '@electron-forge/maker-squirrel';
 import { MakerZIP } from '@electron-forge/maker-zip';
 import { MakerDeb } from '@electron-forge/maker-deb';
 import { MakerRpm } from '@electron-forge/maker-rpm';
+import { rename } from 'node:fs/promises';
+import path from 'node:path';
 // import { MakerFlatpak } from '@electron-forge/maker-flatpak';
 import { VitePlugin } from '@electron-forge/plugin-vite';
 import { FusesPlugin } from '@electron-forge/plugin-fuses';
@@ -10,6 +12,14 @@ import { FuseV1Options, FuseVersion } from '@electron/fuses';
 import dotenv from 'dotenv';
 
 dotenv.config();
+
+const appVersion = process.env.npm_package_version ?? '0.0.0';
+
+const normalizePlatform = (platform: string): string => {
+  if (platform === 'win32') return 'windows';
+  if (platform === 'darwin') return 'macos';
+  return platform;
+};
 
 const config: ForgeConfig = {
   packagerConfig: {
@@ -113,6 +123,39 @@ const config: ForgeConfig = {
       [FuseV1Options.OnlyLoadAppFromAsar]: true,
     }),
   ],
+  hooks: {
+    postMake: async (_forgeConfig, makeResults) => {
+      for (const makeResult of makeResults) {
+        const normalizedPlatform = normalizePlatform(makeResult.platform);
+        const usedNames = new Set<string>();
+
+        for (let i = 0; i < makeResult.artifacts.length; i += 1) {
+          const artifactPath = makeResult.artifacts[i];
+          const currentBaseName = path.basename(artifactPath);
+          const artifactDir = path.dirname(artifactPath);
+          const detectedExt = path.extname(currentBaseName).replace('.', '').toLowerCase();
+          const extension = detectedExt || currentBaseName.toLowerCase();
+
+          const baseName = `eldenmodmanager-${appVersion}-${normalizedPlatform}-${makeResult.arch}`;
+          let nextName = `${baseName}.${extension}`;
+          let collisionIndex = 2;
+
+          while (usedNames.has(nextName)) {
+            nextName = `${baseName}-${collisionIndex}.${extension}`;
+            collisionIndex += 1;
+          }
+
+          usedNames.add(nextName);
+
+          const nextPath = path.join(artifactDir, nextName);
+          if (nextPath !== artifactPath) {
+            await rename(artifactPath, nextPath);
+            makeResult.artifacts[i] = nextPath;
+          }
+        }
+      }
+    },
+  },
 };
 
 export default config;
