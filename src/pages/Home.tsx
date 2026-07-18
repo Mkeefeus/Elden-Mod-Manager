@@ -18,7 +18,7 @@ import { errToString } from '@utils/utilities';
 import { decode } from 'he';
 
 const quickActions: { label: string; variant: string }[] = [
-  { label: 'Play', variant: 'filled' },
+  { label: 'Play (Current Profile: %s)', variant: 'filled' },
   { label: 'Play Vanilla', variant: 'light' },
 ];
 
@@ -64,6 +64,11 @@ const Home = () => {
   const theme = useMantineTheme();
   const pageSize = useElementSize();
   const contentSize = useElementSize();
+  const { data: activeProfile } = useQuery({
+    queryKey: ['active-profile'],
+    queryFn: () => window.electronAPI.getActiveProfile(),
+    staleTime: Infinity,
+  });
 
   const cleanHTML = (html: string) => {
     // Remove newlines and all <p> tags
@@ -138,7 +143,7 @@ const Home = () => {
                 handleQuckAction(index);
               }}
             >
-              {action.label}
+              {action.label.replace('%s', activeProfile?.name ?? 'Unknown')}
             </Button>
           ))}
         </Group>

@@ -7,30 +7,6 @@ import { useQuery } from '@tanstack/react-query';
 import { sendLog } from '~/utils/rendererLogger';
 import { useQueryClient } from '@tanstack/react-query';
 
-const PLACEHOLDER_TOOLS: Tool[] = [
-  {
-    id: 'tool-1',
-    name: 'Regulation Viewer',
-    version: '0.1.0',
-    installDate: 1762923600000,
-    executablePath: '/path/to/regulation-viewer.exe',
-  },
-  {
-    id: 'tool-2',
-    name: 'Param Diff Helper',
-    version: '0.0.4',
-    installDate: 1762923600000,
-    executablePath: '/path/to/param-diff-helper.exe',
-  },
-  {
-    id: 'tool-3',
-    name: 'Save Archive Utility',
-    version: '0.2.0',
-    installDate: 1762923600000,
-    executablePath: '/path/to/save-archive-utility.exe',
-  },
-];
-
 const Tools = () => {
   const { showModal, hideModal } = useModal();
   // const [tools] = useState<Tool[]>(PLACEHOLDER_TOOLS); // Placeholder state - would be loaded from DB via useQuery
@@ -44,7 +20,7 @@ const Tools = () => {
         sendLog({ level: 'error', message: 'Failed to load tools' });
         return [] as Tool[];
       }
-      return [...dbTools, ...PLACEHOLDER_TOOLS]; // Add placeholder tools for now
+      return [...dbTools]; // Add placeholder tools for now
     },
     staleTime: 30_000, // or Infinity if you rely solely on invalidation
   });
