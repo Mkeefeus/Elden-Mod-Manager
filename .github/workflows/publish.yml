@@ -60,11 +60,24 @@ jobs:
           fi
 
           tmp_archive="$(mktemp --suffix=.tar.gz)"
+          tmp_extract_dir="$(mktemp -d)"
           curl -fL "$ME3_LINUX_URL" -o "$tmp_archive"
 
+          tar -xzf "$tmp_archive" -C "$tmp_extract_dir"
+
+          bin_dir="$(find "$tmp_extract_dir" -type d -name bin | head -n 1)"
+          if [ -z "$bin_dir" ]; then
+            echo "Could not find bin directory in Linux ME3 archive"
+            exit 1
+          fi
+
+          rm -rf resources/me3/linux
           mkdir -p resources/me3/linux
-          tar -xzf "$tmp_archive" -O ./bin/me3 > resources/me3/linux/me3
-          chmod +x resources/me3/linux/me3
+          cp -a "$bin_dir"/. resources/me3/linux/
+
+          if [ -f resources/me3/linux/me3 ]; then
+            chmod +x resources/me3/linux/me3
+          fi
 
       - name: Stage bundled ME3 binary (Windows)
         if: runner.os == 'Windows'
@@ -85,8 +98,16 @@ jobs:
           }
           Expand-Archive -Path $archivePath -DestinationPath $extractPath
 
+          $binDir = Get-ChildItem -Path $extractPath -Directory -Recurse | Where-Object { $_.Name -eq "bin" } | Select-Object -First 1
+          if (-not $binDir) {
+            Write-Error "Could not find bin directory in Windows ME3 archive"
+          }
+
+          if (Test-Path "resources/me3/win32") {
+            Remove-Item -Path "resources/me3/win32" -Recurse -Force
+          }
           New-Item -ItemType Directory -Path "resources/me3/win32" -Force | Out-Null
-          Copy-Item -Path (Join-Path $extractPath "bin/me3.exe") -Destination "resources/me3/win32/me3.exe" -Force
+          Copy-Item -Path (Join-Path $binDir.FullName "*") -Destination "resources/me3/win32" -Recurse -Force
 
       - name: Install Node dependencies
         run: pnpm install --frozen-lockfile
