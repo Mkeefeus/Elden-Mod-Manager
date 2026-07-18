@@ -191,7 +191,9 @@ export const handleDeleteTool = (toolId: string, force = false) => {
     throw new Error(`Tool with ID ${toolId} not found`);
   }
   if (toolToDelete.modUuid && !force) {
-    throw new Error(`Cannot delete tool with ID ${toolId} because it is associated with a mod`);
+    const msg = `Cannot delete tool ${toolToDelete.name} (ID: ${toolId}) because it is associated with a mod`;
+    error(msg);
+    throw new Error(msg);
   }
   tools.splice(toolIndex, 1);
   saveTools(tools);
@@ -202,7 +204,9 @@ export const handleEditTool = (toolId: string, updatedData: Partial<Tool>) => {
   const tools = getTools();
   const toolIndex = tools.findIndex((tool) => tool.id === toolId);
   if (toolIndex === -1) {
-    throw new Error(`Tool with ID ${toolId} not found`);
+    const msg = `Tool with ID ${toolId} not found`;
+    error(msg);
+    throw new Error(msg);
   }
   const toolToEdit = tools[toolIndex];
   const updatedTool = { ...toolToEdit, ...updatedData };
@@ -214,10 +218,14 @@ export const openToolExecutable = (toolId: string) => {
   const tools = getTools();
   const tool = tools.find((t) => t.id === toolId);
   if (!tool) {
-    throw new Error(`Tool with ID ${toolId} not found`);
+    const msg = `Tool with ID ${toolId} not found`;
+    error(msg);
+    throw new Error(msg);
   }
   if (!fs.existsSync(tool.executablePath)) {
-    throw new Error(`Executable path does not exist: ${tool.executablePath}`);
+    const msg = `Executable path does not exist: ${tool.executablePath}`;
+    error(msg);
+    throw new Error(msg);
   }
   if (process.platform === 'win32') {
     exec(`start "" "${tool.executablePath}"`);
@@ -237,11 +245,15 @@ export const openToolExecutable = (toolId: string) => {
 
 export const openToolFolder = async (executablePath: string) => {
   if (!fs.existsSync(executablePath)) {
-    throw new Error(`Executable path does not exist: ${executablePath}`);
+    const msg = `Executable path does not exist: ${executablePath}`;
+    error(msg);
+    throw new Error(msg);
   }
   const folderPath = path.dirname(executablePath);
   const result = await shell.openPath(folderPath);
   if (result) {
-    throw new Error(`Failed to open folder: ${result}`);
+    const msg = `Failed to open folder: ${result}`;
+    error(msg);
+    throw new Error(msg);
   }
 };

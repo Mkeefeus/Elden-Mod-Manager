@@ -13,16 +13,19 @@ const ConfirmDeleteModal = ({ title, onDelete, afterDelete }: ConfirmDeleteModal
   const [spinner, setSpinner] = useState(false);
 
   const cleanupModal = () => {
-    setSpinner(false);
     hideModal();
   };
 
   const handleDelete = async () => {
     setSpinner(true);
-    await onDelete();
-    cleanupModal();
-    if (afterDelete) {
-      afterDelete();
+    try {
+      await onDelete();
+      cleanupModal();
+      if (afterDelete) {
+        afterDelete();
+      }
+    } catch {
+      setSpinner(false);
     }
   };
 
