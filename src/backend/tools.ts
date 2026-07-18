@@ -2,7 +2,7 @@ import { Tool } from 'types';
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
-import { exec, spawn } from 'child_process';
+import { spawn } from 'child_process';
 import { getTools, saveTools } from './db/api';
 import { generateUUID } from '~/utils/utilities';
 import { logger } from '~/utils/mainLogger';
@@ -214,7 +214,7 @@ export const handleEditTool = (toolId: string, updatedData: Partial<Tool>) => {
   saveTools(tools);
 };
 
-export const openToolExecutable = (toolId: string) => {
+export const openToolExecutable = async (toolId: string) => {
   const tools = getTools();
   const tool = tools.find((t) => t.id === toolId);
   if (!tool) {
@@ -228,7 +228,12 @@ export const openToolExecutable = (toolId: string) => {
     throw new Error(msg);
   }
   if (process.platform === 'win32') {
-    exec(`start "" "${tool.executablePath}"`);
+    const result = await shell.openPath(tool.executablePath);
+    if (result) {
+      const msg = `Failed to launch tool executable: ${result}`;
+      error(msg);
+      throw new Error(msg);
+    }
   } else if (process.platform === 'linux') {
     if (tool.executablePath.toLowerCase().endsWith('.exe')) {
       launchToolViaProton(tool.executablePath);

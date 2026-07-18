@@ -313,7 +313,7 @@ const registerToolHandlers = () => {
     return handleEditTool(toolId, updatedData);
   });
   ipcMain.on('launch-tool', (_, toolId: string) => {
-    openToolExecutable(toolId);
+    void openToolExecutable(toolId);
   });
   ipcMain.on('open-tool-folder', (_, executablePath: string) => {
     void openToolFolder(executablePath);
