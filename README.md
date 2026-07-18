@@ -27,8 +27,6 @@ A user-friendly GUI for managing mods for Elden Ring, running on top of [me3](ht
 4. **Profiles** – Create different profiles for different characters or mod setups
 5. **Settings** – Configure paths, game launching options, and other preferences from the Settings tab
 
-For detailed mod import instructions and configuration options, see the in-app help or visit the [Issues](https://github.com/Mkeefeus/Elden-Mod-Manager/issues) page for FAQs.
-
 ## Requirements
 
 - Steam version of Elden Ring
