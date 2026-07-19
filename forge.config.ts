@@ -153,7 +153,7 @@ const config: ForgeConfig = {
           }
 
           if (currentBaseName === 'RELEASES' || extension === 'nupkg') {
-            nextName = `${currentBaseName}${detectedExt ? `.${detectedExt}` : ''}`;
+            nextName = `${currentBaseName}`;
           }
 
           usedNames.add(nextName);
