@@ -152,8 +152,8 @@ const config: ForgeConfig = {
             collisionIndex += 1;
           }
 
-          if (currentBaseName === 'RELEASES') {
-            nextName = 'RELEASES';
+          if (currentBaseName === 'RELEASES' || extension === 'nupkg') {
+            nextName = `${currentBaseName}${detectedExt ? `.${detectedExt}` : ''}`;
           }
 
           usedNames.add(nextName);
