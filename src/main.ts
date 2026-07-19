@@ -14,7 +14,11 @@ if (check) {
   app.quit();
 }
 
-updateElectronApp({ repo: 'Mkeefeus/Elden-Mod-Manager', updateInterval: '5 minutes' });
+const isLinux = process.platform === 'linux';
+
+if (!isLinux) {
+  updateElectronApp({ repo: 'Mkeefeus/Elden-Mod-Manager', updateInterval: '5 minutes' });
+}
 
 let mainWindow: BrowserWindow | null;
 
@@ -27,7 +31,6 @@ Menu.setApplicationMenu(menu);
 const createWindow = () => {
   // Create the browser window.
   const savedState = getWindowState();
-  const isLinux = process.platform === 'linux';
 
   // On Linux, getBounds() unreliably reports x/y as 0,0 (X11/Wayland limitation),
   // so position/display restoration is skipped — size only is restored.
