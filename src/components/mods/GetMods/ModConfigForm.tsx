@@ -57,14 +57,52 @@ const deriveModName = (filename: string): string =>
     .replace(/\s+/g, ' ')
     .trim();
 
+const stripArchiveExtension = (filename: string): string => filename.replace(/\.(zip|7z|rar)$/i, '');
+const stripExeExtension = (filename: string): string => filename.replace(/\.exe$/i, '');
+const getFilenameOnly = (pathOrName: string): string => pathOrName.split(/[/\\]/).pop() ?? pathOrName;
+
 const buildModIdentity = (name: string, version?: string): string =>
   `${name.trim().toLowerCase()}::${(version ?? '').trim().toLowerCase()}`;
 
 const getSuggestedModName = (download: DownloadState): string =>
   download.importTarget?.name ?? download.nexusSuggestedModName ?? deriveModName(download.filename);
 
-const getSuggestedModVersion = (download: DownloadState): string | undefined =>
-  download.importTarget?.version ?? download.nexusVersion;
+const SEMVER_REGEX = /^v?\d+(?:\.\d+){0,2}(?:-[\da-z\-.]+)?(?:\+[\da-z\-.]+)?$/i;
+const VERSION_IN_FILENAME_REGEX = /(?<![\da-z])(v?\d+(?:\.\d+){0,2}(?:-[\da-z\-.]+)?(?:\+[\da-z\-.]+)?)(?![\da-z])/i;
+
+const getSuggestedToolVersionFromExe = (exePath?: string): string | undefined => {
+  if (!exePath) return undefined;
+  const exeName = getFilenameOnly(exePath);
+  const stem = stripExeExtension(exeName);
+  const versionMatch = stem.match(VERSION_IN_FILENAME_REGEX)?.[1];
+  return versionMatch && SEMVER_REGEX.test(versionMatch) ? versionMatch : undefined;
+};
+
+const getSuggestedToolNameFromExe = (exePath?: string): string | undefined => {
+  if (!exePath) return undefined;
+  const exeName = getFilenameOnly(exePath);
+  const stem = stripExeExtension(exeName);
+  const version = getSuggestedToolVersionFromExe(exePath);
+
+  const withoutVersion = version ? stem.replace(version, ' ') : stem;
+  const normalized = withoutVersion.replace(/[-_]/g, ' ').replace(/\s+/g, ' ').trim();
+  return normalized || undefined;
+};
+
+const getSuggestedModVersion = (download: DownloadState): string | undefined => {
+  console.log(`Getting suggested mod version for download: ${download.filename}`);
+  if (download.importTarget?.version) return download.importTarget.version;
+  else if (download.nexusVersion) return download.nexusVersion;
+  else if (download.filename) {
+    const filenameStem = stripArchiveExtension(download.filename);
+    const versionMatch = filenameStem.match(VERSION_IN_FILENAME_REGEX)?.[1];
+    if (versionMatch && SEMVER_REGEX.test(versionMatch)) {
+      console.log(`Found version in filename: ${versionMatch}`);
+      return versionMatch;
+    }
+  }
+  return undefined;
+};
 
 const getSuggestedNexusModId = (download: DownloadState): number | undefined =>
   download.importTarget?.nexusModId ?? download.nexusModId;
@@ -144,6 +182,34 @@ const ModConfigForm = ({ download, onSuccess, onDismiss }: Props) => {
     form.values.modName,
     form.values.hasTool,
   ]);
+
+  const lastSuggestedToolNameRef = useRef(getSuggestedToolNameFromExe(form.values.exePath) ?? '');
+  const lastSuggestedToolVersionRef = useRef(getSuggestedToolVersionFromExe(form.values.exePath) ?? '');
+
+  useEffect(() => {
+    if (!form.values.hasTool) return;
+
+    const suggestedToolName = getSuggestedToolNameFromExe(form.values.exePath);
+    const suggestedToolVersion = getSuggestedToolVersionFromExe(form.values.exePath);
+
+    if (suggestedToolName) {
+      const currentToolName = (form.values.toolName ?? '').trim();
+      const lastSuggestedToolName = lastSuggestedToolNameRef.current.trim();
+      if (!currentToolName || currentToolName === lastSuggestedToolName) {
+        form.setFieldValue('toolName', suggestedToolName);
+      }
+      lastSuggestedToolNameRef.current = suggestedToolName;
+    }
+
+    if (suggestedToolVersion) {
+      const currentToolVersion = (form.values.toolVersion ?? '').trim();
+      const lastSuggestedToolVersion = lastSuggestedToolVersionRef.current.trim();
+      if (!currentToolVersion || currentToolVersion === lastSuggestedToolVersion) {
+        form.setFieldValue('toolVersion', suggestedToolVersion);
+      }
+      lastSuggestedToolVersionRef.current = suggestedToolVersion;
+    }
+  }, [form.values.hasTool, form.values.exePath, form.values.toolName, form.values.toolVersion]);
 
   useEffect(() => {
     form.setFieldValue('path', download.extractedPath ?? '');
