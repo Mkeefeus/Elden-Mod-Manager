@@ -1,12 +1,11 @@
 import { OpenDialogOptions, SaveDialogOptions, app, dialog } from 'electron';
 import { chmodSync, existsSync, readdirSync, readFileSync, writeFileSync } from 'fs';
-import { join, normalize, sep } from 'path';
+import { join } from 'path';
 import { logger } from '@utils/mainLogger';
 import { errToString } from '@utils/utilities';
 import { BrowseType } from 'types';
 import { randomUUID } from 'crypto';
 import Seven from 'node-7z';
-import { MOD_SUBFOLDERS } from './constants';
 
 // Resolve the path to the 7za binary at runtime so it works in both dev
 // (where Vite bundles the JS to .vite/build/ and __dirname is wrong for node_modules)
@@ -30,7 +29,7 @@ if (process.platform !== 'win32') {
   }
 }
 
-const { debug, error, warning } = logger;
+const { debug, error } = logger;
 
 const getBrowseFilters = (type: BrowseType) => {
   switch (type) {
@@ -87,7 +86,7 @@ export const saveFilePath = (defaultName: string, title?: string) => {
 
 export const extractModArchive = async (archivePath: string): Promise<string | undefined> => {
   debug(`Extracting archive: ${archivePath}`);
-  let tempPath = join(app.getPath('temp'), randomUUID());
+  const tempPath = join(app.getPath('temp'), randomUUID());
   try {
     debug(`Extracting archive to temp directory: ${tempPath} from ${archivePath}`);
     await new Promise<void>((resolve, reject) => {
@@ -104,33 +103,6 @@ export const extractModArchive = async (archivePath: string): Promise<string | u
     throw new Error(msg, { cause: err });
   }
   debug('Archive extracted successfully');
-  const files = readdirSync(tempPath, { recursive: true });
-  let validPath = '';
-  let subfolder = '';
-  let index = 0;
-  while (!validPath && !subfolder) {
-    if (index >= files.length) {
-      break;
-    }
-    const file = files[index] as string;
-    // Normalize to platform separators so splitting works on all OSes
-    const pathChunks = normalize(file).split(sep);
-    for (const chunk of pathChunks) {
-      if (MOD_SUBFOLDERS.includes(chunk) || chunk.includes('.dll')) {
-        subfolder = chunk;
-        validPath = pathChunks.slice(0, -1).join(sep);
-        break;
-      }
-    }
-    index++;
-  }
-  if (!validPath) {
-    const msg = 'Zip file does not appear to be a valid Elden Ring mod. Are you sure you selected the correct file?';
-    warning(msg);
-    return;
-  }
-  tempPath = join(tempPath, validPath);
-
   return tempPath;
 };
 
