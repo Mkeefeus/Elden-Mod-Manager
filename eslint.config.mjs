@@ -11,7 +11,16 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default tseslint.config(
   {
-    ignores: ['**/forge.config.ts', '**/vite.*.config.ts', '**/dist', '**/.vite', '**/node_modules', 'licenseFile.mjs'],
+    ignores: [
+      '**/forge.config.ts',
+      '**/vite.*.config.ts',
+      '**/dist',
+      '**/.vite',
+      '**/node_modules',
+      'licenseFile.mjs',
+      'resources/**',
+      'out/**',
+    ],
   },
   eslint.configs.recommended,
   tseslint.configs.recommendedTypeChecked,
