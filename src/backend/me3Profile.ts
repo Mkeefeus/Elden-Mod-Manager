@@ -3,6 +3,7 @@ import { CreateModPathFromName, errToString } from '@utils/utilities';
 import { logger } from '@utils/mainLogger';
 import { writeFileSync, mkdirSync, existsSync, readdirSync } from 'fs';
 import path from 'path';
+import { MOD_SUBFOLDERS } from './constants';
 import { getProfilesFolder, getActiveProfile, getModsFolder, loadMods } from './db/api';
 import { ME3_PROFILE_FILENAME } from './constants';
 
@@ -35,8 +36,6 @@ const translateDependents = (
 
   return translated.length > 0 ? translated : undefined;
 };
-
-const MOD_SUBFOLDERS = ['chr', 'obj', 'parts', 'event', 'map', 'menu', 'msg', 'mtd', 'param', 'remo', 'script', 'sfx'];
 
 const locateModSubdirectory = (mod: Mod): string | undefined => {
   const modPath = path.join(getModsFolder(), CreateModPathFromName(mod.name, mod.version));
