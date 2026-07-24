@@ -46,3 +46,16 @@ export function generateUUID(existingIDs?: string[]): string {
   }
   return uuid;
 }
+
+export const normalizePath = (inputPath: string): string => {
+  const isWindows = window.electronAPI.platform === 'win32';
+  let normalizedPath = inputPath;
+
+  if (isWindows) {
+    normalizedPath = normalizedPath.replace(/\//g, '\\');
+  } else {
+    normalizedPath = normalizedPath.replace(/\\/g, '/');
+  }
+
+  return normalizedPath;
+};

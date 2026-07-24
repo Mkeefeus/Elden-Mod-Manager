@@ -86,7 +86,7 @@ export const saveFilePath = (defaultName: string, title?: string) => {
 
 export const extractModArchive = async (archivePath: string): Promise<string | undefined> => {
   debug(`Extracting archive: ${archivePath}`);
-  const tempPath = join(app.getPath('temp'), randomUUID());
+  const tempPath = join(app.getPath('temp'), 'elden-mod-manager', randomUUID());
   try {
     debug(`Extracting archive to temp directory: ${tempPath} from ${archivePath}`);
     await new Promise<void>((resolve, reject) => {

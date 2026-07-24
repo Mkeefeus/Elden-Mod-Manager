@@ -1,6 +1,6 @@
 {
   "name": "elden-mod-manager",
-  "version": "0.4.6",
+  "version": "0.4.7",
   "description": "A mod manager for Elden Ring, built in Electron and React",
   "main": ".vite/build/main.js",
   "repository": {

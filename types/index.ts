@@ -165,3 +165,12 @@ export type ToolFormValues = {
   name: string;
   version: string;
 };
+
+type InitializerType = 'none' | 'delay' | 'function';
+
+export type ModConfigFormValues = AddModFormValues & {
+  finalizer: string;
+  initializerType: InitializerType;
+  initializerDelayMs: number;
+  initializerFunction: string;
+};

@@ -17,25 +17,17 @@ import {
 import { isNotEmpty, useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
 import { IconAlertCircle } from '@tabler/icons-react';
-import { AddModFormValues, DownloadState, NativeInitializerCondition } from 'types';
+import { AddModFormValues, DownloadState, ModConfigFormValues, NativeInitializerCondition } from 'types';
 import { sendLog } from '@utils/rendererLogger';
 import { sleep } from '@utils/utilities';
 import { useQueryClient } from '@tanstack/react-query';
+import { isKnownMod, processKnownMod } from '@utils/knownMods';
 
 interface Props {
   download: DownloadState;
   onSuccess: () => void;
   onDismiss: () => void;
 }
-
-type InitializerType = 'none' | 'delay' | 'function';
-
-type ModConfigFormValues = AddModFormValues & {
-  finalizer: string;
-  initializerType: InitializerType;
-  initializerDelayMs: number;
-  initializerFunction: string;
-};
 
 const INITIALIZER_OPTIONS = [
   { value: 'none', label: 'None' },
@@ -78,6 +70,12 @@ const getSuggestedToolVersionFromExe = (exePath?: string): string | undefined =>
   return versionMatch && SEMVER_REGEX.test(versionMatch) ? versionMatch : undefined;
 };
 
+const getSuggestedToolVersion = (exePath?: string, modVersion?: string): string | undefined => {
+  const exeVersion = getSuggestedToolVersionFromExe(exePath);
+  if (exeVersion) return exeVersion;
+  return modVersion?.trim() || undefined;
+};
+
 const getSuggestedToolNameFromExe = (exePath?: string): string | undefined => {
   if (!exePath) return undefined;
   const exeName = getFilenameOnly(exePath);
@@ -101,6 +99,7 @@ const getSuggestedModVersion = (download: DownloadState): string | undefined => 
       return versionMatch;
     }
   }
+
   return undefined;
 };
 
@@ -126,7 +125,7 @@ const ModConfigForm = ({ download, onSuccess, onDismiss }: Props) => {
       modName: getSuggestedModName(download),
       isDll: false,
       path: download.extractedPath ?? '',
-      delete: false,
+      delete: download.source === 'nexus' ? true : false,
       hasTool: false,
       toolName: '',
       toolVersion: '',
@@ -184,13 +183,15 @@ const ModConfigForm = ({ download, onSuccess, onDismiss }: Props) => {
   ]);
 
   const lastSuggestedToolNameRef = useRef(getSuggestedToolNameFromExe(form.values.exePath) ?? '');
-  const lastSuggestedToolVersionRef = useRef(getSuggestedToolVersionFromExe(form.values.exePath) ?? '');
+  const lastSuggestedToolVersionRef = useRef(
+    getSuggestedToolVersion(form.values.exePath, form.values.modVersion) ?? ''
+  );
 
   useEffect(() => {
     if (!form.values.hasTool) return;
 
     const suggestedToolName = getSuggestedToolNameFromExe(form.values.exePath);
-    const suggestedToolVersion = getSuggestedToolVersionFromExe(form.values.exePath);
+    const suggestedToolVersion = getSuggestedToolVersion(form.values.exePath, form.values.modVersion);
 
     if (suggestedToolName) {
       const currentToolName = (form.values.toolName ?? '').trim();
@@ -209,7 +210,7 @@ const ModConfigForm = ({ download, onSuccess, onDismiss }: Props) => {
       }
       lastSuggestedToolVersionRef.current = suggestedToolVersion;
     }
-  }, [form.values.hasTool, form.values.exePath, form.values.toolName, form.values.toolVersion]);
+  }, [form.values.hasTool, form.values.exePath, form.values.modVersion, form.values.toolName, form.values.toolVersion]);
 
   useEffect(() => {
     form.setFieldValue('path', download.extractedPath ?? '');
@@ -236,6 +237,9 @@ const ModConfigForm = ({ download, onSuccess, onDismiss }: Props) => {
       .then((mods) => setInstalledModKeys(mods.map((m) => buildModIdentity(m.name, m.version))))
       .catch(console.error);
 
+    if (download.nexusModId && isKnownMod(download.nexusModId)) {
+      return processKnownMod(download.nexusModId, form, download.extractedPath);
+    }
     if (download.extractedPath) {
       Promise.all([
         window.electronAPI.scanDir(download.extractedPath, 'dll'),
@@ -357,9 +361,21 @@ const ModConfigForm = ({ download, onSuccess, onDismiss }: Props) => {
           <Stack gap="sm">
             <TextInput label="Mod Name" withAsterisk {...form.getInputProps('modName')} />
 
-            <TextInput label="Version" placeholder="e.g. 1.0.0" {...form.getInputProps('modVersion')} />
+            <Group align="flex-end">
+              <TextInput withAsterisk label="Path" readOnly {...form.getInputProps('path')} style={{ flex: 4 }} />
+              <Button
+                style={{ flex: 1 }}
+                onClick={() => {
+                  void window.electronAPI.browse('directory', 'Select path', form.values.path).then((p) => {
+                    if (p) form.setFieldValue('path', p);
+                  });
+                }}
+              >
+                Browse
+              </Button>
+            </Group>
 
-            {download.source === 'local' && <TextInput label="Mod Path" readOnly {...form.getInputProps('path')} />}
+            <TextInput label="Version" placeholder="e.g. 1.0.0" {...form.getInputProps('modVersion')} />
 
             <Checkbox
               label="Is Native (has DLL)?"
