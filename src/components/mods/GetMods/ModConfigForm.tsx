@@ -165,7 +165,7 @@ const ModConfigForm = ({ download, onSuccess, onDismiss }: Props) => {
       return;
     }
 
-    if (form.values.modName.trim() === lastSuggestedModNameRef.current.trim()) {
+    if (form.values.modName === lastSuggestedModNameRef.current) {
       form.setFieldValue('modName', suggestedModName);
       if (form.values.hasTool) {
         form.setFieldValue('toolName', suggestedModName);
@@ -194,8 +194,8 @@ const ModConfigForm = ({ download, onSuccess, onDismiss }: Props) => {
     const suggestedToolVersion = getSuggestedToolVersion(form.values.exePath, form.values.modVersion);
 
     if (suggestedToolName) {
-      const currentToolName = (form.values.toolName ?? '').trim();
-      const lastSuggestedToolName = lastSuggestedToolNameRef.current.trim();
+      const currentToolName = form.values.toolName ?? '';
+      const lastSuggestedToolName = lastSuggestedToolNameRef.current;
       if (!currentToolName || currentToolName === lastSuggestedToolName) {
         form.setFieldValue('toolName', suggestedToolName);
       }
@@ -203,8 +203,8 @@ const ModConfigForm = ({ download, onSuccess, onDismiss }: Props) => {
     }
 
     if (suggestedToolVersion) {
-      const currentToolVersion = (form.values.toolVersion ?? '').trim();
-      const lastSuggestedToolVersion = lastSuggestedToolVersionRef.current.trim();
+      const currentToolVersion = form.values.toolVersion ?? '';
+      const lastSuggestedToolVersion = lastSuggestedToolVersionRef.current;
       if (!currentToolVersion || currentToolVersion === lastSuggestedToolVersion) {
         form.setFieldValue('toolVersion', suggestedToolVersion);
       }
