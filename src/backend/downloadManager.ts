@@ -1,12 +1,12 @@
 import { BrowserWindow, app, session } from 'electron';
 import { randomUUID } from 'crypto';
-import { rm } from 'fs/promises';
+import { chmod, rm } from 'fs/promises';
 import { join } from 'path';
 import { DownloadState, ImportInstallTarget } from 'types';
 import { extractModArchive } from './fileSystem';
 import { parseNexusMetadata, resolveNexusFileDetails } from './nexus';
 import { logger } from '@utils/mainLogger';
-import { errToString } from '@utils/utilities';
+import { errToString, sleep } from '@utils/utilities';
 
 const { debug, error } = logger;
 
@@ -175,6 +175,23 @@ export const cancelDownload = (id: string) => {
   debug(`Cancelled download: ${id}`);
 };
 
+export const safeRemove = async (targetPath: string) => {
+  let lastError: unknown;
+
+  for (let attempt = 1; attempt <= 5; attempt += 1) {
+    try {
+      await chmod(targetPath, 0o777).catch(() => undefined);
+      await rm(targetPath, { recursive: true, force: true, maxRetries: 0 });
+      return;
+    } catch (err) {
+      lastError = err;
+      await sleep(attempt * 300);
+    }
+  }
+
+  throw lastError;
+};
+
 export const dismissDownload = async (id: string) => {
   const entry = downloads.get(id);
   if (!entry) return;
@@ -187,7 +204,7 @@ export const dismissDownload = async (id: string) => {
   // Clean up temp folder
   const tempDir = join(app.getPath('temp'), 'elden-mod-manager', id);
   try {
-    await rm(tempDir, { recursive: true, force: true });
+    await safeRemove(tempDir);
   } catch (err) {
     error(`Failed to clean up temp dir for ${id}: ${errToString(err)}`);
   }
@@ -224,7 +241,7 @@ app.on('before-quit', () => {
     const tempDir = join(app.getPath('temp'), 'elden-mod-manager', id);
     // Only clean up nexus temp — local folder mods should not be deleted
     if (entry.source === 'nexus') {
-      rm(tempDir, { recursive: true, force: true }).catch(() => undefined);
+      safeRemove(tempDir).catch(() => undefined);
     }
   }
 });

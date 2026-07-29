@@ -4,8 +4,8 @@ import { errToString, CreateModPathFromName, generateUUID } from '@utils/utiliti
 import { AddModFormValues, Mod } from 'types';
 import { logger } from '@utils/mainLogger';
 import { getModsFolder, getProfiles, loadMods, saveMods, saveProfiles, setModsFolder } from './db/api';
-import { MOD_SUBFOLDERS } from './constants';
 import { handleAddTool, handleDeleteTool } from './tools';
+import { safeRemove } from './downloadManager';
 import { getMainWindow } from '~/main';
 
 const { debug, error, warning } = logger;
@@ -17,7 +17,7 @@ const normalizeOptionalString = (value: unknown): string | undefined => {
   return trimmedValue || undefined;
 };
 
-const validateMod = (path: string, isDll: boolean, hasTool: boolean) => {
+const validateMod = (path: string, isDll: boolean) => {
   debug(`Validating path: ${path}`);
   debug(`Reading directory: ${path}`);
   let files;
@@ -29,7 +29,6 @@ const validateMod = (path: string, isDll: boolean, hasTool: boolean) => {
     throw new Error(msg, { cause: err });
   }
   let hasDll;
-  let hasValidSubfolder;
   if (isDll) {
     debug('Mod is dll');
     hasDll = files.some((file) => extname(file) === '.dll');
@@ -38,22 +37,11 @@ const validateMod = (path: string, isDll: boolean, hasTool: boolean) => {
       warning(msg);
       return false;
     }
-  } else {
-    debug('Mod is not dll');
-    hasValidSubfolder = files.some((file) => MOD_SUBFOLDERS.includes(file));
-    if (!hasValidSubfolder && !hasTool) {
-      const msg =
-        'No valid subfolder was found in the directory, please select the folder that contains the mod files. It should have one or more of the following subfolders: chr, obj, parts, event, map, menu, msg, mtd, param, remo, script, or sfx.';
-      warning(msg);
-      return false;
-    } else if (!hasValidSubfolder && hasTool) {
-      debug('Mod does not have valid subfolder but has exe, skipping warning');
-    }
   }
   return true;
 };
 
-export const handleAddMod = (formData: AddModFormValues) => {
+export const handleAddMod = async (formData: AddModFormValues) => {
   const mods = loadMods();
   const uuid = generateUUID(mods.map((mod) => mod.uuid));
   const dllFileName = formData.dllPath ? formData.dllPath.split(/[/\\]/).pop() : undefined;
@@ -81,7 +69,7 @@ export const handleAddMod = (formData: AddModFormValues) => {
 
   const source = formData.path;
 
-  if (!validateMod(source, !!newMod.dllFile, !!newMod.exe)) {
+  if (!validateMod(source, !!newMod.dllFile)) {
     debug('Invalid path, cancelling mod addition');
     return;
   }
@@ -113,12 +101,11 @@ export const handleAddMod = (formData: AddModFormValues) => {
     debug(`Deleting mod source: ${formData.path}`);
     if (existsSync(formData.path)) {
       try {
-        rmSync(formData.path, { recursive: true });
+        await safeRemove(formData.path);
         debug('Mod source deleted');
       } catch (err) {
-        const msg = `An error occured while deleting mod source: ${errToString(err)}`;
-        error(msg);
-        throw new Error(msg, { cause: err });
+        // Non-fatal: the mod was already copied successfully, so just log and move on.
+        error(`An error occured while deleting mod source: ${errToString(err)}`);
       }
     }
   }
@@ -145,7 +132,7 @@ export const handleAddMod = (formData: AddModFormValues) => {
   return true;
 };
 
-export const handleDeleteMod = (mod: Mod) => {
+export const handleDeleteMod = async (mod: Mod) => {
   debug(`Deleting mod: ${mod.name}`);
   const mods = loadMods();
   if (!mods) {
@@ -171,7 +158,7 @@ export const handleDeleteMod = (mod: Mod) => {
   }
   if (foundPath) {
     try {
-      rmSync(installPath, { recursive: true });
+      await safeRemove(installPath);
     } catch (err) {
       const msg = `An error occured while deleting mod: ${errToString(err)}`;
       error(msg);

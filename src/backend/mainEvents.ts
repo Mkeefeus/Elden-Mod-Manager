@@ -201,8 +201,8 @@ const registerModHandlers = () => {
     if (!activeId) return false;
     return saveProfileMods(activeId, refs);
   });
-  ipcMain.handle('add-mod', (_, formData: AddModFormValues) => {
-    const result = handleAddMod(formData);
+  ipcMain.handle('add-mod', async (_, formData: AddModFormValues) => {
+    const result = await handleAddMod(formData);
     if (result) getMainWindow()?.webContents.send('mods-changed');
     return result;
   });
