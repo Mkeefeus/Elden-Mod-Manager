@@ -88,14 +88,14 @@ const getSuggestedToolNameFromExe = (exePath?: string): string | undefined => {
 };
 
 const getSuggestedModVersion = (download: DownloadState): string | undefined => {
-  console.log(`Getting suggested mod version for download: ${download.filename}`);
+  sendLog({ level: 'debug', message: `Getting suggested mod version for download: ${download.filename}` });
   if (download.importTarget?.version) return download.importTarget.version;
   else if (download.nexusVersion) return download.nexusVersion;
   else if (download.filename) {
     const filenameStem = stripArchiveExtension(download.filename);
     const versionMatch = filenameStem.match(VERSION_IN_FILENAME_REGEX)?.[1];
     if (versionMatch && SEMVER_REGEX.test(versionMatch)) {
-      console.log(`Found version in filename: ${versionMatch}`);
+      sendLog({ level: 'debug', message: `Found version in filename: ${versionMatch}` });
       return versionMatch;
     }
   }

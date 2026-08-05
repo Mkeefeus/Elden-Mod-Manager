@@ -40,7 +40,10 @@ const ModTableMenu = ({ mod }: ModTableMenuProps) => {
         message: `Deleted mod ${mod.name}`,
       });
       if (linkedTool) {
-        console.log(`Refreshing tools after deleting linked tool with ID: ${linkedTool}`);
+        sendLog({
+          level: 'debug',
+          message: `Refreshing tools after deleting linked tool with ID: ${linkedTool}`,
+        });
         await queryClient.invalidateQueries({ queryKey: ['tools'] });
       }
     };
