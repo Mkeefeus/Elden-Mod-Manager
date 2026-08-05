@@ -41,15 +41,22 @@ const ToolTableMenu = ({ tool, toolNames }: { tool: Tool; toolNames: string[] })
   };
 
   const handleRemoveTool = () => {
-    const onDelete = async () => {
+    const onDelete = async (deleteFiles: boolean) => {
       // Placeholder for delete/uninstall confirmation flow.
-      await window.electronAPI.deleteTool(tool.id);
+      await window.electronAPI.deleteTool(tool.id, deleteFiles);
       // invalidate the tools query to refresh the list after deletion
       void queryClient.invalidateQueries({ queryKey: ['tools'] });
     };
     showModal({
       title: 'Remove Tool',
-      content: <ConfirmDeleteModal title={tool.name} onDelete={onDelete} />,
+      content: (
+        <ConfirmDeleteModal
+          title={tool.name}
+          onDelete={onDelete}
+          showDeleteFilesOption
+          deleteFilesDescription="If checked, tool files will be removed from disk."
+        />
+      ),
     });
   };
 

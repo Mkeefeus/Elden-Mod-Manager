@@ -112,12 +112,16 @@ export const handleAddMod = async (formData: AddModFormValues) => {
 
   if (newMod.exe) {
     const executablePath = join(installPath, newMod.exe);
-    const toolId = handleAddTool({
-      name: newMod.name,
-      version: newMod.version,
-      executablePath,
-      modUuid: newMod.uuid,
-    });
+    const toolId = handleAddTool(
+      {
+        name: newMod.name,
+        version: newMod.version || '',
+        path: executablePath,
+        copy: false,
+        deleteSource: false,
+      },
+      newMod.uuid
+    );
 
     if (!toolId) {
       warning(`Failed to register tool for executable mod: ${newMod.name}`);

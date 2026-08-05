@@ -101,6 +101,7 @@ export type WindowState = {
 export type ExportedSettings = {
   version: 1;
   modFolderPath: string;
+  toolFolderPath?: string;
   eldenRingFolder: string;
   noBootBoost: boolean;
   showLogos: boolean;
@@ -164,6 +165,8 @@ export type ToolFormValues = {
   path: string;
   name: string;
   version: string;
+  copy: boolean;
+  deleteSource: boolean;
 };
 
 type InitializerType = 'none' | 'delay' | 'function';

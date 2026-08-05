@@ -11,6 +11,11 @@ const Settings = () => {
     queryFn: () => window.electronAPI.getModsPath(),
     staleTime: Infinity,
   });
+  const { data: toolsPath } = useQuery({
+    queryKey: ['tools-path'],
+    queryFn: () => window.electronAPI.getToolsPath(),
+    staleTime: Infinity,
+  });
   const { data: launcherSettings } = useQuery({
     queryKey: ['launcher-settings'],
     queryFn: () => window.electronAPI.getLauncherSettings(),
@@ -28,6 +33,16 @@ const Settings = () => {
     window.electronAPI.updateModsFolder(path);
   };
 
+  const handleBrowseTools = async () => {
+    const path = await window.electronAPI.browse('directory', 'Select Folder');
+    if (!path) {
+      sendLog({ level: 'warning', message: 'No path selected' });
+      return;
+    }
+    queryClient.setQueryData(['tools-path'], path);
+    window.electronAPI.updateToolsFolder(path);
+  };
+
   return (
     <Stack gap={'md'} flex={'1 0 0'}>
       <Group align={'flex-end'} justify={'space-between'}>
@@ -42,6 +57,23 @@ const Settings = () => {
           style={BUTTON_STYLE}
           onClick={() => {
             void handleBrowseMods();
+          }}
+        >
+          Browse
+        </Button>
+      </Group>
+      <Group align={'flex-end'} justify={'space-between'}>
+        <TextInput
+          label="Tools Folder Path"
+          placeholder="Select Tools Folder"
+          style={TEXT_INPUT_STYLE}
+          value={toolsPath ?? ''}
+          disabled
+        />
+        <Button
+          style={BUTTON_STYLE}
+          onClick={() => {
+            void handleBrowseTools();
           }}
         >
           Browse
@@ -102,6 +134,9 @@ const Settings = () => {
             void window.electronAPI.importSettings().then((result) => {
               if (!result) return;
               queryClient.setQueryData(['mods-path'], result.modFolderPath);
+              if (result.toolFolderPath) {
+                queryClient.setQueryData(['tools-path'], result.toolFolderPath);
+              }
               queryClient.setQueryData(['launcher-settings'], {
                 noBootBoost: result.noBootBoost,
                 showLogos: result.showLogos,

@@ -1,11 +1,11 @@
-import { Box, Stack, Group, TextInput, Button } from '@mantine/core';
+import { Box, Stack, Group, TextInput, Button, Checkbox } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { Tool, ToolFormValues } from 'types';
 
 type ToolInfoModalProps = {
   hideModal: () => void;
   toolNames: string[];
-  onSubmit: (values: { path: string; name: string; version: string }) => void | Promise<void>;
+  onSubmit: (values: ToolFormValues) => void | Promise<void>;
   submitText?: string;
   tool?: Tool;
 };
@@ -18,6 +18,8 @@ const ToolInfoModal = ({ hideModal, toolNames, onSubmit, submitText, tool }: Too
       path: tool?.executablePath || '',
       name: tool?.name || '',
       version: tool?.version || '',
+      copy: true,
+      deleteSource: true,
     },
     validate: {
       name: (value) => {
@@ -93,6 +95,18 @@ const ToolInfoModal = ({ hideModal, toolNames, onSubmit, submitText, tool }: Too
               <Button type="submit" disabled={!form.values.path}>
                 {submitText || 'Submit'}
               </Button>
+              <Checkbox
+                label="Copy to data directory"
+                description="Copy the tool to the app's tools directory"
+                {...form.getInputProps('copy', { type: 'checkbox' })}
+              ></Checkbox>
+              {form.values.copy && (
+                <Checkbox
+                  label="Delete source"
+                  description="Delete the original tool file after copying"
+                  {...form.getInputProps('deleteSource', { type: 'checkbox' })}
+                ></Checkbox>
+              )}
             </>
           )}
         </Stack>

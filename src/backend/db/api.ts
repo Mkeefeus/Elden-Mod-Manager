@@ -103,6 +103,34 @@ export const setModsFolder = (path: string) => {
   }
 };
 
+export const getToolsDirectory = (): string => {
+  debug('Getting Tool Folder Path');
+  try {
+    const rawPath = store.get('toolFolderPath');
+    // Normalize Windows-style backslashes when running on Linux/macOS
+    const path = process.platform !== 'win32' ? rawPath.replace(/\\/g, '/') : rawPath;
+    debug(`Tool Folder Path: ${path}`);
+    return path;
+  } catch (err) {
+    const msg = `An error occured while getting Tool Folder Path: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg, { cause: err });
+  }
+};
+
+export const setToolsDirectory = (path: string): boolean => {
+  debug(`Saving Tool Folder Path: ${path}`);
+  try {
+    store.set('toolFolderPath', path);
+    debug('Tool Folder Path saved');
+    return true;
+  } catch (err) {
+    const msg = `An error occured while saving Tool Folder Path: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg, { cause: err });
+  }
+};
+
 export const isFirstRun = () => {
   debug('Checking if first run');
   try {

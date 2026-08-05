@@ -10,6 +10,8 @@ import {
   saveProfileMods,
   clearPromptedModsFolder,
   setModsFolder,
+  getToolsDirectory,
+  setToolsDirectory,
   getProfiles,
   getLauncherSettings,
   setLauncherSettings,
@@ -24,6 +26,7 @@ import {
   Mod,
   ProfileModRef,
   Tool,
+  ToolFormValues,
 } from 'types';
 import { join, normalize, sep } from 'path';
 import { CreateModPathFromName, errToString } from '@utils/utilities';
@@ -55,7 +58,14 @@ import { getMainWindow } from '../main';
 import { getActiveDownloads, cancelDownload, dismissDownload, addLocalDownload } from './downloadManager';
 import { createOrFocusGetModsWindow, getGetModsWindow } from './getModsWindow';
 import { runStartupTasks } from './startup';
-import { handleAddTool, handleDeleteTool, handleEditTool, openToolExecutable, openToolFolder } from './tools';
+import {
+  handleAddTool,
+  handleDeleteTool,
+  handleEditTool,
+  openToolExecutable,
+  openToolFolder,
+  updateToolsFolder,
+} from './tools';
 
 const { debug, error, info } = logger;
 
@@ -231,6 +241,7 @@ const registerSettingsHandlers = () => {
     handleLog(log, event.sender);
   });
   ipcMain.handle('get-mods-path', () => getModsFolder());
+  ipcMain.handle('get-tools-path', () => getToolsDirectory());
   ipcMain.handle('check-mods-folder-prompt', () => getPromptedModsFolder());
   ipcMain.on('clear-prompted-mods-folder', () => {
     clearPromptedModsFolder();
@@ -240,6 +251,12 @@ const registerSettingsHandlers = () => {
   });
   ipcMain.on('update-mods-folder', (_, path: string) => {
     updateModsFolder(path);
+  });
+  ipcMain.on('save-tools-folder', (_, path: string) => {
+    setToolsDirectory(path);
+  });
+  ipcMain.on('update-tools-folder', (_, path: string) => {
+    updateToolsFolder(path);
   });
   ipcMain.handle('get-active-profile', () => getActiveProfile());
   ipcMain.on('update-active-profile-settings', (_, fields: ActiveProfileSettingsPatch) => {
@@ -303,11 +320,11 @@ const registerToolHandlers = () => {
   ipcMain.handle('get-tools', () => {
     return getTools();
   });
-  ipcMain.handle('add-tool', (_, toolData: Partial<Tool>) => {
+  ipcMain.handle('add-tool', (_, toolData: ToolFormValues) => {
     return handleAddTool(toolData);
   });
-  ipcMain.handle('delete-tool', (_, toolId: string) => {
-    return handleDeleteTool(toolId);
+  ipcMain.handle('delete-tool', (_, toolId: string, deleteFiles?: boolean) => {
+    return handleDeleteTool(toolId, false, deleteFiles);
   });
   ipcMain.handle('edit-tool', (_, toolId: string, updatedData: Partial<Tool>) => {
     return handleEditTool(toolId, updatedData);

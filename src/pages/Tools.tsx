@@ -27,10 +27,12 @@ const Tools = () => {
 
   const handleAddTool = async (values: ToolFormValues) => {
     // Placeholder for adding the tool - would save to state and persist
-    const sanitizedValues: Partial<Tool> = {
+    const sanitizedValues: ToolFormValues = {
       name: values.name.trim(),
       version: values.version.trim(),
-      executablePath: values.path.trim(),
+      path: values.path.trim(),
+      copy: values.copy,
+      deleteSource: values.deleteSource,
     };
     await window.electronAPI.addTool(sanitizedValues);
     void queryClient.invalidateQueries({ queryKey: ['tools'] });

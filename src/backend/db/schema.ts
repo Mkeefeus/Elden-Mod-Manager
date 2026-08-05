@@ -8,6 +8,7 @@ export type DBSchema = {
   tools: Tool[];
   eldenRingFolder: string;
   modFolderPath: string;
+  toolFolderPath: string;
   firstRun: boolean;
   promptedModsFolder: boolean;
   profiles: ModProfile[];
@@ -65,6 +66,10 @@ const schema: Schema<DBSchema> = {
   modFolderPath: {
     type: 'string',
     default: join(app.getPath('userData'), 'mods'),
+  },
+  toolFolderPath: {
+    type: 'string',
+    default: join(app.getPath('userData'), 'tools'),
   },
   firstRun: {
     type: 'boolean',

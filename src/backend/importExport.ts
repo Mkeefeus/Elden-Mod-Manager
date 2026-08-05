@@ -2,9 +2,11 @@ import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { ExportedSettings } from 'types';
 import {
   getModsFolder,
+  getToolsDirectory,
   getEldenRingFolder,
   getLauncherSettings,
   setModsFolder,
+  setToolsDirectory,
   setEldenRingFolder,
   setLauncherSettings,
 } from './db/api';
@@ -20,6 +22,7 @@ export const exportSettings = (destPath: string): void => {
     const settings: ExportedSettings = {
       version: 1,
       modFolderPath: getModsFolder(),
+      toolFolderPath: getToolsDirectory(),
       eldenRingFolder: getEldenRingFolder(),
       noBootBoost: launcher.noBootBoost,
       showLogos: launcher.showLogos,
@@ -40,6 +43,7 @@ const isValidExportedSettings = (obj: unknown): obj is ExportedSettings => {
   return (
     o['version'] === 1 &&
     typeof o['modFolderPath'] === 'string' &&
+    (o['toolFolderPath'] === undefined || typeof o['toolFolderPath'] === 'string') &&
     typeof o['eldenRingFolder'] === 'string' &&
     typeof o['noBootBoost'] === 'boolean' &&
     typeof o['showLogos'] === 'boolean' &&
@@ -60,6 +64,12 @@ export const importSettings = (srcPath: string): ExportedSettings => {
       setModsFolder(parsed.modFolderPath);
     } else if (parsed.modFolderPath) {
       warning(`Imported mods folder does not exist on this machine, skipping: ${parsed.modFolderPath}`);
+    }
+
+    if (parsed.toolFolderPath && existsSync(parsed.toolFolderPath)) {
+      setToolsDirectory(parsed.toolFolderPath);
+    } else if (parsed.toolFolderPath) {
+      warning(`Imported tools folder does not exist on this machine, skipping: ${parsed.toolFolderPath}`);
     }
 
     if (parsed.eldenRingFolder && existsSync(parsed.eldenRingFolder)) {

@@ -15,6 +15,7 @@ import {
   ProfileImportAnalysis,
   ImportModResult,
   Tool,
+  ToolFormValues,
 } from 'types';
 
 interface IElectronAPI {
@@ -31,8 +32,8 @@ interface IElectronAPI {
 
   // --- Tools ---
   getTools: () => Promise<Tool[]>;
-  addTool: (tool: Partial<Tool>) => Promise<void>;
-  deleteTool: (id: string) => Promise<void>;
+  addTool: (tool: ToolFormValues) => Promise<void>;
+  deleteTool: (id: string, deleteFiles?: boolean) => Promise<void>;
   editTool: (id: string, updatedData: Partial<Tool>) => Promise<void>;
   launchTool: (id: string) => void;
   openToolFolder: (executablePath: string) => void;
@@ -61,7 +62,9 @@ interface IElectronAPI {
 
   // --- Settings ---
   getModsPath: () => Promise<string>;
+  getToolsPath: () => Promise<string>;
   updateModsFolder: (path: string) => void;
+  updateToolsFolder: (path: string) => void;
   getLauncherSettings: () => Promise<{ noBootBoost: boolean; showLogos: boolean; skipSteamInit: boolean }>;
   updateLauncherSettings: (fields: { noBootBoost?: boolean; showLogos?: boolean; skipSteamInit?: boolean }) => void;
 
@@ -96,6 +99,7 @@ interface IElectronAPI {
   scanDir: (dirPath: string, extension: string) => Promise<string | undefined>;
   checkModsFolderPrompt: () => Promise<boolean>;
   saveModsFolder: (path: string) => void;
+  saveToolsFolder: (path: string) => void;
   clearPromptedModsFolder: () => void;
 
   // --- App ---
@@ -135,7 +139,7 @@ const electronAPI: IElectronAPI = {
   // --- Tools ---
   getTools: () => ipcRenderer.invoke('get-tools'),
   addTool: (tool) => ipcRenderer.invoke('add-tool', tool),
-  deleteTool: (id) => ipcRenderer.invoke('delete-tool', id),
+  deleteTool: (id, deleteFiles) => ipcRenderer.invoke('delete-tool', id, deleteFiles),
   editTool: (id, updatedData) => ipcRenderer.invoke('edit-tool', id, updatedData),
   launchTool: (tool) => ipcRenderer.send('launch-tool', tool),
   openToolFolder: (executablePath) => ipcRenderer.send('open-tool-folder', executablePath),
@@ -156,7 +160,9 @@ const electronAPI: IElectronAPI = {
 
   // --- Settings ---
   getModsPath: () => ipcRenderer.invoke('get-mods-path'),
+  getToolsPath: () => ipcRenderer.invoke('get-tools-path'),
   updateModsFolder: (path) => ipcRenderer.send('update-mods-folder', path),
+  updateToolsFolder: (path) => ipcRenderer.send('update-tools-folder', path),
   getLauncherSettings: () => ipcRenderer.invoke('get-launcher-settings'),
   updateLauncherSettings: (fields) => ipcRenderer.send('update-launcher-settings', fields),
 
@@ -192,6 +198,7 @@ const electronAPI: IElectronAPI = {
   scanDir: (...args) => ipcRenderer.invoke('scan-dir', ...args),
   checkModsFolderPrompt: () => ipcRenderer.invoke('check-mods-folder-prompt'),
   saveModsFolder: (path) => ipcRenderer.send('save-mods-folder', path),
+  saveToolsFolder: (path) => ipcRenderer.send('save-tools-folder', path),
   clearPromptedModsFolder: () => ipcRenderer.send('clear-prompted-mods-folder'),
 
   // --- App ---

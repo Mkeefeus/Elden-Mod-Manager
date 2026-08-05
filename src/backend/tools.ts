@@ -1,15 +1,15 @@
-import { Tool } from 'types';
+import { Tool, ToolFormValues } from 'types';
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
 import { spawn } from 'child_process';
-import { getTools, saveTools } from './db/api';
-import { generateUUID } from '~/utils/utilities';
+import { getTools, getToolsDirectory, saveTools, setToolsDirectory } from './db/api';
+import { CreateModPathFromName, generateUUID } from '~/utils/utilities';
 import { logger } from '~/utils/mainLogger';
 import { getEldenRingInstallDir } from './steam';
 import { shell } from 'electron';
 
-const { info, error, debug } = logger;
+const { info, error, debug, warning } = logger;
 
 const STEAM_APP_ID = '1245620';
 
@@ -151,25 +151,58 @@ const launchToolViaProton = (executablePath: string) => {
   child.unref();
 };
 
-export const handleAddTool = (toolData: Partial<Tool>): string | false => {
+export const handleAddTool = (toolData: ToolFormValues, modID?: string): string | false => {
   try {
-    if (!toolData.name || !toolData.executablePath) {
+    if (!toolData.name || !toolData.path) {
       const msg = 'Tool must have a name and executable path';
       error(msg);
       throw new Error(msg);
     }
-    if (!fs.existsSync(toolData.executablePath)) {
-      const msg = `Executable path does not exist: ${toolData.executablePath}`;
+    if (!fs.existsSync(toolData.path)) {
+      const msg = `Executable path does not exist: ${toolData.path}`;
       error(msg);
       throw new Error(msg);
     }
+
+    let executablePath = toolData.path;
+    if (toolData.copy) {
+      const destinationDir = getToolsDirectory();
+      fs.mkdirSync(destinationDir, { recursive: true });
+
+      const sourceToolDir = path.dirname(toolData.path);
+      const sourceExecutableName = path.basename(toolData.path);
+      const copiedToolDir = path.join(destinationDir, CreateModPathFromName(toolData.name, toolData.version));
+      const copiedExecutablePath = path.join(copiedToolDir, sourceExecutableName);
+
+      if (fs.existsSync(copiedToolDir)) {
+        const msg = `A copied tool directory already exists at: ${copiedToolDir}`;
+        error(msg);
+        throw new Error(msg);
+      }
+
+      fs.cpSync(sourceToolDir, copiedToolDir, { recursive: true, force: false, errorOnExist: true });
+      if (!fs.existsSync(copiedExecutablePath)) {
+        const msg = `Copied tool executable not found at: ${copiedExecutablePath}`;
+        error(msg);
+        throw new Error(msg);
+      }
+      executablePath = copiedExecutablePath;
+
+      if (toolData.deleteSource) {
+        fs.rmSync(sourceToolDir, { recursive: true, force: true });
+      }
+    }
+
     const tools = getTools();
+    const uuids = tools.map((tool) => tool.id);
+    const newUUID = generateUUID(uuids);
+
     const newTool: Tool = {
       name: toolData.name,
-      executablePath: toolData.executablePath,
+      executablePath,
       version: toolData.version || undefined,
-      id: generateUUID(tools.map((tool) => tool.id)),
-      modUuid: toolData.modUuid || undefined,
+      id: newUUID,
+      modUuid: modID || undefined,
       installDate: Date.now(),
     };
     tools.push(newTool);
@@ -183,7 +216,61 @@ export const handleAddTool = (toolData: Partial<Tool>): string | false => {
   }
 };
 
-export const handleDeleteTool = (toolId: string, force = false) => {
+export const updateToolsFolder = (newPath: string) => {
+  debug(`Updating tools folder to: ${newPath}`);
+  try {
+    const currentPath = getToolsDirectory();
+    if (currentPath === newPath) {
+      debug('tools folder unchanged');
+      return;
+    }
+
+    fs.mkdirSync(newPath, { recursive: true });
+    if (fs.readdirSync(newPath).length > 0) {
+      warning('Destination path is not empty, please select an empty folder');
+      return;
+    }
+
+    if (fs.existsSync(currentPath)) {
+      const contents = fs.readdirSync(currentPath);
+      debug(`Moving tools contents to: ${newPath}`);
+      contents.forEach((entry) => {
+        fs.renameSync(path.join(currentPath, entry), path.join(newPath, entry));
+      });
+    }
+
+    const normalizedCurrentPath = path.resolve(currentPath);
+    const normalizedCurrentPrefix = `${normalizedCurrentPath}${path.sep}`;
+    const tools = getTools();
+    let updatedPathCount = 0;
+
+    const updatedTools = tools.map((tool) => {
+      const normalizedToolPath = path.resolve(tool.executablePath);
+      if (!normalizedToolPath.startsWith(normalizedCurrentPrefix)) {
+        return tool;
+      }
+
+      const relativeToolPath = path.relative(normalizedCurrentPath, normalizedToolPath);
+      const updatedExecutablePath = path.join(newPath, relativeToolPath);
+      updatedPathCount += 1;
+      return { ...tool, executablePath: updatedExecutablePath };
+    });
+
+    if (updatedPathCount > 0) {
+      saveTools(updatedTools);
+      debug(`Updated ${updatedPathCount} tool executable path(s) to new tools folder`);
+    }
+
+    setToolsDirectory(newPath);
+    debug(`tools folder updated to: ${newPath}`);
+  } catch (err) {
+    const msg = `An error occured while updating tools folder: ${err instanceof Error ? err.message : String(err)}`;
+    error(msg);
+    throw new Error(msg, { cause: err });
+  }
+};
+
+export const handleDeleteTool = (toolId: string, force = false, deleteFiles = false) => {
   const tools = getTools();
   const toolIndex = tools.findIndex((tool) => tool.id === toolId);
   const toolToDelete = tools[toolIndex];
@@ -195,6 +282,36 @@ export const handleDeleteTool = (toolId: string, force = false) => {
     error(msg);
     throw new Error(msg);
   }
+
+  if (deleteFiles && fs.existsSync(toolToDelete.executablePath)) {
+    try {
+      const toolExecutablePath = path.resolve(toolToDelete.executablePath);
+      const managedToolsDir = path.resolve(getToolsDirectory());
+      const managedToolsPrefix = `${managedToolsDir}${path.sep}`;
+
+      if (toolExecutablePath.startsWith(managedToolsPrefix)) {
+        const relativePath = path.relative(managedToolsDir, toolExecutablePath);
+        const topLevelDir = relativePath.split(path.sep)[0];
+        const topLevelPath = path.join(managedToolsDir, topLevelDir);
+
+        if (topLevelDir && fs.existsSync(topLevelPath) && fs.statSync(topLevelPath).isDirectory()) {
+          fs.rmSync(topLevelPath, { recursive: true, force: true });
+          info(`Deleted tool directory from disk: ${topLevelPath}`);
+        } else {
+          fs.rmSync(toolExecutablePath, { force: true });
+          info(`Deleted tool executable from disk: ${toolExecutablePath}`);
+        }
+      } else {
+        fs.rmSync(toolExecutablePath, { force: true });
+        info(`Deleted external tool executable from disk: ${toolExecutablePath}`);
+      }
+    } catch (err) {
+      const msg = `Failed to delete tool files for ${toolToDelete.name}: ${err instanceof Error ? err.message : String(err)}`;
+      error(msg);
+      throw new Error(msg, { cause: err });
+    }
+  }
+
   tools.splice(toolIndex, 1);
   saveTools(tools);
   info(`Deleted tool: ${toolToDelete.name}`);
