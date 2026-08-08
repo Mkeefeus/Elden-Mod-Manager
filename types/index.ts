@@ -167,6 +167,7 @@ export type ToolFormValues = {
   version: string;
   copy: boolean;
   deleteSource: boolean;
+  cleanupPath?: string;
 };
 
 type InitializerType = 'none' | 'delay' | 'function';

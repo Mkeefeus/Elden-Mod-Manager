@@ -189,7 +189,8 @@ export const handleAddTool = (toolData: ToolFormValues, modID?: string): string 
       executablePath = copiedExecutablePath;
 
       if (toolData.deleteSource) {
-        fs.rmSync(sourceToolDir, { recursive: true, force: true });
+        const cleanupPath = toolData.cleanupPath?.trim() || sourceToolDir;
+        fs.rmSync(cleanupPath, { recursive: true, force: true });
       }
     }
 
