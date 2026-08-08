@@ -1,4 +1,4 @@
-import { Button, Divider, Group, ScrollArea, Stack } from '@mantine/core';
+import { Button, Divider, Group, Menu, ScrollArea, Stack } from '@mantine/core';
 import ToolTable from '@components/tools/ToolTable';
 import { useModal } from '~/providers/ModalProvider';
 import ToolInfoModal from '~/components/tools/ToolInfoModal';
@@ -11,6 +11,8 @@ const Tools = () => {
   const { showModal, hideModal } = useModal();
   // const [tools] = useState<Tool[]>(PLACEHOLDER_TOOLS); // Placeholder state - would be loaded from DB via useQuery
   const queryClient = useQueryClient();
+
+  type AddToolSource = 'archive' | 'file';
 
   const { data: tools = [] } = useQuery({
     queryKey: ['tools'],
@@ -26,6 +28,9 @@ const Tools = () => {
   });
 
   const handleAddTool = async (values: ToolFormValues) => {
+    const cleanupPathValue = (values as ToolFormValues & { cleanupPath?: string }).cleanupPath;
+    const cleanupPath = typeof cleanupPathValue === 'string' ? cleanupPathValue.trim() : undefined;
+
     // Placeholder for adding the tool - would save to state and persist
     const sanitizedValues: ToolFormValues = {
       name: values.name.trim(),
@@ -33,21 +38,25 @@ const Tools = () => {
       path: values.path.trim(),
       copy: values.copy,
       deleteSource: values.deleteSource,
+      ...(cleanupPath ? { cleanupPath } : {}),
     };
     await window.electronAPI.addTool(sanitizedValues);
     void queryClient.invalidateQueries({ queryKey: ['tools'] });
     hideModal();
   };
 
-  const showToolInfoModal = () => {
+  const showToolInfoModal = (source: AddToolSource) => {
+    const sourceLabel = source === 'archive' ? 'Archive' : 'File';
+
     showModal({
-      title: 'Add Tool',
+      title: `Add Tool from ${sourceLabel}`,
       content: (
         <ToolInfoModal
           hideModal={hideModal}
-          toolNames={tools.map((tool) => tool.name)}
+          tools={tools}
+          type={source}
           onSubmit={handleAddTool}
-          submitText="Add Tool"
+          submitText={`Add Tool from ${sourceLabel}`}
         />
       ),
     });
@@ -61,9 +70,17 @@ const Tools = () => {
       <Stack gap="xs" style={{ flexShrink: 0 }}>
         <Divider />
         <Group gap="sm">
-          <Button variant="filled" onClick={showToolInfoModal}>
-            Add Tool
-          </Button>
+          <Menu shadow="md" width={220}>
+            <Menu.Target>
+              <Button variant="filled">Add Tool</Button>
+            </Menu.Target>
+
+            <Menu.Dropdown>
+              <Menu.Label>Add Tool</Menu.Label>
+              <Menu.Item onClick={() => showToolInfoModal('archive')}>From Archive</Menu.Item>
+              <Menu.Item onClick={() => showToolInfoModal('file')}>From File</Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
         </Group>
       </Stack>
     </Stack>
