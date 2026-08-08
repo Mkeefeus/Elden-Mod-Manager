@@ -53,6 +53,15 @@ export type AddModFormValues = {
   nexusGameDomain?: string;
 };
 
+export type EditModFormValues = {
+  modName: string;
+  modVersion?: string;
+  hasTool: boolean;
+  toolName?: string;
+  toolVersion?: string;
+  toolPath?: string;
+};
+
 export type NewsComponentProps = {
   title: string;
   body: string;

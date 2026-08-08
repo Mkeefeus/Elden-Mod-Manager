@@ -1,10 +1,10 @@
 import { readdirSync, existsSync, cpSync, rmSync, renameSync } from 'fs';
 import { extname, join } from 'path';
 import { errToString, CreateModPathFromName, generateUUID } from '@utils/utilities';
-import { AddModFormValues, Mod } from 'types';
+import { AddModFormValues, EditModFormValues, Mod } from 'types';
 import { logger } from '@utils/mainLogger';
 import { getModsFolder, getProfiles, loadMods, saveMods, saveProfiles, setModsFolder } from './db/api';
-import { handleAddTool, handleDeleteTool } from './tools';
+import { handleAddTool, handleDeleteTool, handleEditTool } from './tools';
 import { safeRemove } from './downloadManager';
 import { getMainWindow } from '~/main';
 
@@ -132,6 +132,91 @@ export const handleAddMod = async (formData: AddModFormValues) => {
   debug('Saving new mod to DB');
   const newMods = [...mods, newMod];
   saveMods(newMods);
+
+  return true;
+};
+
+export const handleEditMod = (uuid: string, formData: EditModFormValues): boolean => {
+  const mods = loadMods();
+  const modIndex = mods.findIndex((m) => m.uuid === uuid);
+  if (modIndex === -1) {
+    warning(`Mod with ID ${uuid} not found`);
+    return false;
+  }
+  const existingMod = mods[modIndex];
+
+  const updatedName = formData.modName.trim();
+  const updatedVersion = normalizeOptionalString(formData.modVersion);
+
+  if (!updatedName) {
+    warning('Mod name cannot be empty');
+    return false;
+  }
+
+  const oldInstallPath = join(getModsFolder(), CreateModPathFromName(existingMod.name, existingMod.version));
+  const newInstallPath = join(getModsFolder(), CreateModPathFromName(updatedName, updatedVersion));
+
+  if (newInstallPath !== oldInstallPath) {
+    if (existsSync(newInstallPath)) {
+      warning(`Cannot rename mod: a mod folder already exists at ${newInstallPath}`);
+      return false;
+    }
+    if (existsSync(oldInstallPath)) {
+      debug(`Renaming mod folder from ${oldInstallPath} to ${newInstallPath}`);
+      renameSync(oldInstallPath, newInstallPath);
+    } else {
+      warning(`Mod folder not found at ${oldInstallPath}, updating DB entry only`);
+    }
+  }
+
+  let toolId = existingMod.toolId;
+  if (!formData.hasTool) {
+    if (toolId) {
+      debug(`Removing linked tool for mod: ${updatedName}`);
+      handleDeleteTool(toolId, true, false);
+      toolId = undefined;
+    }
+  } else {
+    const toolName = normalizeOptionalString(formData.toolName) ?? updatedName;
+    const toolVersion = normalizeOptionalString(formData.toolVersion);
+    const toolPath = normalizeOptionalString(formData.toolPath);
+
+    if (toolId) {
+      handleEditTool(toolId, {
+        name: toolName,
+        version: toolVersion,
+        ...(toolPath ? { executablePath: toolPath } : {}),
+      });
+    } else if (toolPath) {
+      const createdToolId = handleAddTool(
+        {
+          name: toolName,
+          version: toolVersion || '',
+          path: toolPath,
+          copy: false,
+          deleteSource: false,
+        },
+        uuid
+      );
+      if (!createdToolId) {
+        warning(`Failed to register tool for mod: ${updatedName}`);
+      }
+      toolId = createdToolId || undefined;
+    } else {
+      warning('An executable path is required to link a new tool');
+    }
+  }
+
+  const updatedMod: Mod = {
+    ...existingMod,
+    name: updatedName,
+    version: updatedVersion,
+    toolId,
+  };
+  mods[modIndex] = updatedMod;
+
+  debug(`Saving edited mod to DB: ${updatedName}`);
+  saveMods(mods);
 
   return true;
 };

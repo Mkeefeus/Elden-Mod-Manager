@@ -4,6 +4,7 @@ import { contextBridge, ipcRenderer } from 'electron';
 import {
   Mod,
   AddModFormValues,
+  EditModFormValues,
   BrowseType,
   ModProfile,
   ProfileModRef,
@@ -24,6 +25,7 @@ interface IElectronAPI {
   saveMods: (mods: Mod[]) => Promise<boolean>;
   saveProfileMods: (mods: ProfileModRef[]) => Promise<boolean>;
   addMod: (formData: AddModFormValues) => Promise<boolean>;
+  editMod: (uuid: string, formData: EditModFormValues) => Promise<boolean>;
   deleteMod: (mod: Mod) => Promise<void>;
   openModFolder: (mod: Mod) => void;
   listIniFiles: (mod: Mod) => Promise<string[]>;
@@ -130,6 +132,7 @@ const electronAPI: IElectronAPI = {
   saveMods: (...args) => ipcRenderer.invoke('set-mods', ...args),
   saveProfileMods: (...args) => ipcRenderer.invoke('save-profile-mods', ...args),
   addMod: (...args) => ipcRenderer.invoke('add-mod', ...args),
+  editMod: (...args) => ipcRenderer.invoke('edit-mod', ...args),
   deleteMod: (...args) => ipcRenderer.invoke('delete-mod', ...args),
   openModFolder: (mod) => ipcRenderer.send('open-mod-folder', mod),
   listIniFiles: (mod) => ipcRenderer.invoke('list-ini-files', mod),

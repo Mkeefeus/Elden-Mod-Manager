@@ -4,6 +4,7 @@ import { Mod } from 'types';
 import { useModal } from '@providers/ModalProvider';
 import ConfirmDeleteModal from '@components/shared/ConfirmDeleteModal';
 import EditNativeModModal from './EditNativeModModal';
+import EditModModal from './EditModModal';
 import IniEditorModal from './IniEditorModal';
 import { useMods } from '@providers/ModsProvider';
 import MoreMenuTrigger from '../shared/MoreMenuTrigger';
@@ -80,6 +81,13 @@ const ModTableMenu = ({ mod }: ModTableMenuProps) => {
     });
   };
 
+  const handleEditMod = () => {
+    showModal({
+      title: `Edit Mod — ${mod.name}`,
+      content: <EditModModal mod={mod} close={hideModal} />,
+    });
+  };
+
   return (
     <Table.Td>
       <Menu shadow="md" width={200}>
@@ -87,11 +95,8 @@ const ModTableMenu = ({ mod }: ModTableMenuProps) => {
           <MoreMenuTrigger ariaLabel={`Open actions for ${mod.name}`} />
         </Menu.Target>
         <Menu.Dropdown>
-          {mod.dllFile && (
-            <Menu.Item onClick={handleEditProperties} disabled={!mod.enabled}>
-              Edit Profile Settings
-            </Menu.Item>
-          )}
+          <Menu.Item onClick={handleEditMod}>Edit Mod</Menu.Item>
+          {mod.dllFile && <Menu.Item onClick={handleEditProperties}>Edit Advanced DLL Settings</Menu.Item>}
           {hasIniFiles && <Menu.Item onClick={handleEditIniFiles}>Edit INI Files</Menu.Item>}
           {linkedTool && (
             <Menu.Item color="blue" onClick={() => handleOpenTool()}>

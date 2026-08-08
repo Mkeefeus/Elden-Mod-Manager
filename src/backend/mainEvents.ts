@@ -20,6 +20,7 @@ import {
 import {
   AddModFormValues,
   BrowseType,
+  EditModFormValues,
   ImportInstallTarget,
   ImportModResult,
   LogEntry,
@@ -42,7 +43,7 @@ import {
   writeIniFile,
   saveFilePath,
 } from './fileSystem';
-import { handleAddMod, handleDeleteMod, updateModsFolder } from './mods';
+import { handleAddMod, handleDeleteMod, handleEditMod, updateModsFolder } from './mods';
 import { exportSettings, importSettings } from './importExport';
 import {
   handleCreateProfile,
@@ -217,6 +218,11 @@ const registerModHandlers = () => {
     return result;
   });
   ipcMain.handle('delete-mod', (_, mod: Mod) => handleDeleteMod(mod));
+  ipcMain.handle('edit-mod', (_, uuid: string, formData: EditModFormValues) => {
+    const result = handleEditMod(uuid, formData);
+    if (result) getMainWindow()?.webContents.send('mods-changed');
+    return result;
+  });
   ipcMain.on('open-mod-folder', (_, mod: Mod) => {
     openInstalledModFolder(mod);
   });
