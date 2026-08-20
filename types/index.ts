@@ -34,6 +34,17 @@ export type Mod = {
   nexusGameDomain?: string;
 };
 
+export type EditModFormValues = {
+  name: string;
+  version?: string;
+  isDll: boolean;
+  dllPath?: string;
+  hasTool: boolean;
+  toolName?: string;
+  toolVersion?: string;
+  exePath?: string;
+};
+
 export type AddModFormValues = {
   modName: string;
   isDll: boolean;

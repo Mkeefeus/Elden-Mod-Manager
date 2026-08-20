@@ -383,6 +383,7 @@ const ModConfigForm = ({ download, onSuccess, onDismiss }: Props) => {
               onChange={(e) => {
                 form.setFieldValue('isDll', e.currentTarget.checked);
                 if (!e.currentTarget.checked) {
+                  form.setFieldValue('dllPath', '');
                   form.setFieldValue('loadEarly', false);
                   form.setFieldValue('finalizer', '');
                   form.setFieldValue('initializerType', 'none');
@@ -466,6 +467,11 @@ const ModConfigForm = ({ download, onSuccess, onDismiss }: Props) => {
               {...form.getInputProps('hasTool', { type: 'checkbox' })}
               onChange={(e) => {
                 form.setFieldValue('hasTool', e.currentTarget.checked);
+                if (!e.currentTarget.checked) {
+                  form.setFieldValue('exePath', '');
+                  form.setFieldValue('toolName', '');
+                  form.setFieldValue('toolVersion', '');
+                }
                 if (e.currentTarget.checked && form.values.path) {
                   void window.electronAPI.scanDir(form.values.path, 'exe').then((found) => {
                     if (found) form.setFieldValue('exePath', found);
