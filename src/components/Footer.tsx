@@ -64,12 +64,14 @@ const Footer = () => {
           leftSection={<IconArrowUpCircle size={16} />}
           onClick={() => {
             void (async () => {
-              const ready = await window.electronAPI.isUpdateReady();
-              if (ready) {
+              // Only offer the in-app update path on builds that can actually
+              // apply one; everywhere else send the user to the release page.
+              const autoUpdatable = await window.electronAPI.canAutoUpdate();
+              if (autoUpdatable) {
                 showModal({
                   title: 'Update Available',
                   content: <UpdateAvailableModal version={update.version} url={update.url} />,
-                  size: 'sm',
+                  size: 'md',
                 });
               } else {
                 window.electronAPI.openExternalLink(update.url);

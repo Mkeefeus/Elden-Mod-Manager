@@ -55,7 +55,7 @@ import {
   completeProfileImport,
 } from './profiles';
 import { ProfileImportAnalysis } from 'types';
-import { getMainWindow, installUpdate, isUpdateReady } from '../main';
+import { canAutoUpdate, downloadAndInstallUpdate, getMainWindow } from '../main';
 import { getActiveDownloads, cancelDownload, dismissDownload, addLocalDownload } from './downloadManager';
 import { createOrFocusGetModsWindow, getGetModsWindow } from './getModsWindow';
 import { runStartupTasks } from './startup';
@@ -321,8 +321,8 @@ const registerIniEditorHandlers = () => {
 
 const registerUpdateHandlers = () => {
   ipcMain.handle('get-latest-version', getLatestVersion);
-  ipcMain.handle('is-update-ready', () => isUpdateReady());
-  ipcMain.handle('install-update', () => installUpdate());
+  ipcMain.handle('can-auto-update', () => canAutoUpdate());
+  ipcMain.handle('download-and-install-update', () => downloadAndInstallUpdate());
 };
 
 const registerToolHandlers = () => {

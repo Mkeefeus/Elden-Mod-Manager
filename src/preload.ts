@@ -10,6 +10,7 @@ import {
   ProfileModRef,
   LogEntry,
   LatestRelease,
+  UpdateResult,
   DownloadState,
   ExportedSettings,
   ImportInstallTarget,
@@ -109,8 +110,8 @@ interface IElectronAPI {
   openExternalLink: (href: string) => void;
   launchGame: (modded: boolean) => void;
   getLatestVersion: () => Promise<LatestRelease | null>;
-  isUpdateReady: () => Promise<boolean>;
-  installUpdate: () => Promise<boolean>;
+  canAutoUpdate: () => Promise<boolean>;
+  downloadAndInstallUpdate: () => Promise<UpdateResult>;
   log: (log: LogEntry) => void;
 
   // --- Main to renderer ---
@@ -212,8 +213,8 @@ const electronAPI: IElectronAPI = {
   openExternalLink: (href) => ipcRenderer.send('open-external-link', href),
   launchGame: (...args) => ipcRenderer.send('launch-game', ...args),
   getLatestVersion: () => ipcRenderer.invoke('get-latest-version'),
-  isUpdateReady: () => ipcRenderer.invoke('is-update-ready'),
-  installUpdate: () => ipcRenderer.invoke('install-update'),
+  canAutoUpdate: () => ipcRenderer.invoke('can-auto-update'),
+  downloadAndInstallUpdate: () => ipcRenderer.invoke('download-and-install-update'),
   log: (...args) => ipcRenderer.send('log', ...args),
 
   // --- Main to renderer ---

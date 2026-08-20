@@ -11,6 +11,16 @@ export interface LatestRelease {
   url: string;
 }
 
+/**
+ * Result of a user-initiated update download. On success the app restarts
+ * immediately, so the renderer usually never observes `ok: true`.
+ */
+export interface UpdateResult {
+  ok: boolean;
+  reason?: 'unsupported' | 'in-progress' | 'not-available' | 'timeout' | 'error';
+  message?: string;
+}
+
 export type NativeInitializerCondition = { delay: { ms: number } } | { function: string };
 
 export type Dependent = {
