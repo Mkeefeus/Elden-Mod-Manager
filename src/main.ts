@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Menu, screen } from 'electron';
+import { app, autoUpdater, BrowserWindow, Menu, screen } from 'electron';
 import path from 'path';
 import '@backend/mainEvents';
 import { template } from './menu';
@@ -16,9 +16,31 @@ if (check) {
 
 const isLinux = process.platform === 'linux';
 
+// Updates are downloaded in the background but not applied automatically;
+// the user triggers the restart/install by clicking the update notification
+// in the footer (see installUpdate below).
+let updateReady = false;
+
 if (!isLinux) {
-  updateElectronApp({ repo: 'Mkeefeus/Elden-Mod-Manager', updateInterval: '5 minutes' });
+  updateElectronApp({
+    repo: 'Mkeefeus/Elden-Mod-Manager',
+    updateInterval: '5 minutes',
+    notifyUser: false,
+  });
+  autoUpdater.on('update-downloaded', () => {
+    updateReady = true;
+  });
 }
+
+export const isUpdateReady = () => updateReady;
+
+export const installUpdate = () => {
+  if (updateReady) {
+    autoUpdater.quitAndInstall();
+    return true;
+  }
+  return false;
+};
 
 let mainWindow: BrowserWindow | null;
 

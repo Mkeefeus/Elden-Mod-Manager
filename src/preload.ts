@@ -109,6 +109,8 @@ interface IElectronAPI {
   openExternalLink: (href: string) => void;
   launchGame: (modded: boolean) => void;
   getLatestVersion: () => Promise<LatestRelease | null>;
+  isUpdateReady: () => Promise<boolean>;
+  installUpdate: () => Promise<boolean>;
   log: (log: LogEntry) => void;
 
   // --- Main to renderer ---
@@ -210,6 +212,8 @@ const electronAPI: IElectronAPI = {
   openExternalLink: (href) => ipcRenderer.send('open-external-link', href),
   launchGame: (...args) => ipcRenderer.send('launch-game', ...args),
   getLatestVersion: () => ipcRenderer.invoke('get-latest-version'),
+  isUpdateReady: () => ipcRenderer.invoke('is-update-ready'),
+  installUpdate: () => ipcRenderer.invoke('install-update'),
   log: (...args) => ipcRenderer.send('log', ...args),
 
   // --- Main to renderer ---

@@ -5,8 +5,11 @@ import { Button, Group, Text } from '@mantine/core';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { IconArrowUpCircle } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
+import { useModal } from '@providers/ModalProvider';
+import UpdateAvailableModal from './UpdateAvailableModal';
 
 const Footer = () => {
+  const { showModal } = useModal();
   const { data: update } = useQuery({
     queryKey: ['latest-release'],
     queryFn: () => window.electronAPI.getLatestVersion(),
@@ -26,6 +29,21 @@ const Footer = () => {
   ];
   return (
     <Group justify="space-between" px={'md'} style={{ height: '100%' }}>
+      <style>
+        {`
+          @keyframes update-notification-pulse {
+            0%, 100% {
+              box-shadow: 0 0 0 0 var(--mantine-color-blue-6, #228be6);
+            }
+            50% {
+              box-shadow: 0 0 0 6px transparent;
+            }
+          }
+          .update-notification-pulse {
+            animation: update-notification-pulse 4s ease-in-out infinite;
+          }
+        `}
+      </style>
       <Group gap={'lg'}>
         {links.map((link) => (
           <Button
@@ -42,9 +60,23 @@ const Footer = () => {
       {update && (
         <Button
           variant="outline"
+          className="update-notification-pulse"
           leftSection={<IconArrowUpCircle size={16} />}
-          onClick={() => window.electronAPI.openExternalLink(update.url)}
-          title={`v${update.version} is available — click to open release notes`}
+          onClick={() => {
+            void (async () => {
+              const ready = await window.electronAPI.isUpdateReady();
+              if (ready) {
+                showModal({
+                  title: 'Update Available',
+                  content: <UpdateAvailableModal version={update.version} url={update.url} />,
+                  size: 'sm',
+                });
+              } else {
+                window.electronAPI.openExternalLink(update.url);
+              }
+            })();
+          }}
+          title={`v${update.version} is available — click to update`}
         >
           v{update.version} available
         </Button>
