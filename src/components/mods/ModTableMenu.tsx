@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Menu, Table } from '@mantine/core';
-import { Mod } from 'types';
+import { EditModFormValues, Mod } from 'types';
 import { useModal } from '@providers/ModalProvider';
 import ConfirmDeleteModal from '@components/shared/ConfirmDeleteModal';
+import EditModModal from './EditModModal';
 import EditNativeModModal from './EditNativeModModal';
 import IniEditorModal from './IniEditorModal';
 import { useMods } from '@providers/ModsProvider';
@@ -17,7 +18,7 @@ type ModTableMenuProps = {
 };
 
 const ModTableMenu = ({ mod }: ModTableMenuProps) => {
-  const { loadMods } = useMods();
+  const { mods, loadMods } = useMods();
   const { showModal, hideModal } = useModal();
   const [hasIniFiles, setHasIniFiles] = useState(false);
   const [linkedTool, setLinkedTool] = useState<string | null>(null);
@@ -65,6 +66,24 @@ const ModTableMenu = ({ mod }: ModTableMenuProps) => {
     window.electronAPI.openModFolder(mod);
   };
 
+  const handleEditMod = () => {
+    const onSubmit = async (values: EditModFormValues) => {
+      const result = await window.electronAPI.editMod(mod, values);
+      if (result) {
+        sendLog({
+          level: 'info',
+          message: `Updated mod ${values.name}`,
+        });
+        void loadMods();
+        void queryClient.invalidateQueries({ queryKey: ['tools'] });
+      }
+    };
+    showModal({
+      title: `Edit Mod — ${mod.name}`,
+      content: <EditModModal mod={mod} mods={mods} onSubmit={onSubmit} close={hideModal} />,
+    });
+  };
+
   const handleEditProperties = () => {
     showModal({
       title: `Profile Settings — ${mod.name}`,
@@ -87,6 +106,7 @@ const ModTableMenu = ({ mod }: ModTableMenuProps) => {
           <MoreMenuTrigger ariaLabel={`Open actions for ${mod.name}`} />
         </Menu.Target>
         <Menu.Dropdown>
+          <Menu.Item onClick={handleEditMod}>Edit Mod</Menu.Item>
           {mod.dllFile && (
             <Menu.Item onClick={handleEditProperties} disabled={!mod.enabled}>
               Edit Profile Settings
