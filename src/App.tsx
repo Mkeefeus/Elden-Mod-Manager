@@ -59,48 +59,48 @@ window.electronAPI.invalidateCache(async (key) => {
 const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <AppShell
-        header={{ height: { base: 60, md: 70, lg: 80 } }}
-        footer={{ height: { base: 60, md: 70, lg: 80 } }}
-        navbar={{
-          width: 250,
-          breakpoint: 'sm',
-        }}
-      >
-        <AppShell.Header
-          style={{
-            borderBottom: '1px solid var(--mantine-color-gold-7)',
-            display: 'flex',
-            alignItems: 'center',
+      <ModalProvider>
+        <Modal />
+        <AppShell
+          header={{ height: { base: 60, md: 70, lg: 80 } }}
+          footer={{ height: { base: 60, md: 70, lg: 80 } }}
+          navbar={{
+            width: 250,
+            breakpoint: 'sm',
           }}
         >
-          <Group h="100%" px="md">
-            <Title
-              style={{
-                letterSpacing: '0.12em',
-                textTransform: 'uppercase',
-                fontSize: 'clamp(1rem, 2vw, 1.4rem)',
-              }}
-            >
-              Elden Mod Manager
-            </Title>
-          </Group>
-        </AppShell.Header>
-        <AppShell.Navbar p="md">
-          <AppNavbar />
-        </AppShell.Navbar>
-        <AppShell.Main display={'flex'} style={{ flexDirection: 'column' }}>
-          <ModsProvider>
-            <ModalProvider>
-              <Modal />
+          <AppShell.Header
+            style={{
+              borderBottom: '1px solid var(--mantine-color-gold-7)',
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
+            <Group h="100%" px="md">
+              <Title
+                style={{
+                  letterSpacing: '0.12em',
+                  textTransform: 'uppercase',
+                  fontSize: 'clamp(1rem, 2vw, 1.4rem)',
+                }}
+              >
+                Elden Mod Manager
+              </Title>
+            </Group>
+          </AppShell.Header>
+          <AppShell.Navbar p="md">
+            <AppNavbar />
+          </AppShell.Navbar>
+          <AppShell.Main display={'flex'} style={{ flexDirection: 'column' }}>
+            <ModsProvider>
               <Outlet />
-            </ModalProvider>
-          </ModsProvider>
-        </AppShell.Main>
-        <AppShell.Footer>
-          <Footer />
-        </AppShell.Footer>
-      </AppShell>
+            </ModsProvider>
+          </AppShell.Main>
+          <AppShell.Footer>
+            <Footer />
+          </AppShell.Footer>
+        </AppShell>
+      </ModalProvider>
     </QueryClientProvider>
   );
 };
