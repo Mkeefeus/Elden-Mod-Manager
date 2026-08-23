@@ -1,0 +1,8 @@
+Vendored from https://github.com/ValvePython/vdf
+Commit: d76292623e326fb165fe3bdb684832cdf30959d4 (master)
+License: MIT — see LICENSE in this directory.
+
+__init__.py and vdict.py are unmodified copies of the upstream source, used
+here for reading/writing Steam's binary shortcuts.vdf format from
+../../install-steamdeck.sh (embedded inline in that script so it stays a
+single self-contained file for distribution — see the script for details).

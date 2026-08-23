@@ -66,9 +66,7 @@ done
 [ -z "$LOCAL_ZIP" ] || [ -z "$LOCAL_DIR" ] || die "--zip and --dir are mutually exclusive"
 
 require_cmd python3
-if [ -z "$LOCAL_ZIP" ] && [ -z "$LOCAL_DIR" ]; then
-  require_cmd curl
-fi
+require_cmd curl
 
 TMP_DIR=$(mktemp -d)
 STEAM_WAS_RUNNING=0
@@ -205,123 +203,74 @@ if command -v steam >/dev/null 2>&1 && pgrep -x steam >/dev/null 2>&1; then
   fi
 fi
 
-VDF_SCRIPT='
-import struct, sys, binascii, os
+# Steam's binary shortcuts.vdf format is handled via the vendored
+# ValvePython/vdf library (MIT license; see vendor/vdf/NOTICE in this repo).
+# Downloaded here at runtime rather than embedded/bundled, so this script
+# stays a single plain file you can curl and run directly.
+VDF_LIB_DIR="$TMP_DIR/vdf_lib"
+mkdir -p "$VDF_LIB_DIR/vdf"
+VDF_RAW_BASE="https://raw.githubusercontent.com/$REPO_OWNER/$REPO_NAME/steam-deck/vendor/vdf"
+log "Downloading vdf library..."
+curl -sL -o "$VDF_LIB_DIR/vdf/__init__.py" "$VDF_RAW_BASE/__init__.py" || die "Failed to download vendor/vdf/__init__.py"
+curl -sL -o "$VDF_LIB_DIR/vdf/vdict.py" "$VDF_RAW_BASE/vdict.py" || die "Failed to download vendor/vdf/vdict.py"
 
-TYPE_OBJECT = 0x00
-TYPE_STRING = 0x01
-TYPE_INT32 = 0x02
-TYPE_END = 0x08
-
-def read_cstring(data, pos):
-    end = data.index(b"\x00", pos)
-    return data[pos:end].decode("utf-8", errors="replace"), end + 1
-
-def parse_object(data, pos):
-    entries = []
-    while True:
-        type_byte = data[pos]
-        pos += 1
-        if type_byte == TYPE_END:
-            return entries, pos
-        key, pos = read_cstring(data, pos)
-        if type_byte == TYPE_OBJECT:
-            value, pos = parse_object(data, pos)
-        elif type_byte == TYPE_STRING:
-            value, pos = read_cstring(data, pos)
-        elif type_byte == TYPE_INT32:
-            value = struct.unpack("<i", data[pos:pos + 4])[0]
-            pos += 4
-        else:
-            raise ValueError(f"Unknown VDF type byte {type_byte:#x} at offset {pos - 1}")
-        entries.append([key, type_byte, value])
-
-def serialize_object(entries):
-    out = bytearray()
-    for key, type_byte, value in entries:
-        out.append(type_byte)
-        out += key.encode("utf-8") + b"\x00"
-        if type_byte == TYPE_OBJECT:
-            out += serialize_object(value)
-        elif type_byte == TYPE_STRING:
-            out += value.encode("utf-8") + b"\x00"
-        elif type_byte == TYPE_INT32:
-            out += struct.pack("<i", value)
-    out.append(TYPE_END)
-    return bytes(out)
-
-def serialize_file(root_key, entries):
-    out = bytearray([TYPE_OBJECT])
-    out += root_key.encode("utf-8") + b"\x00"
-    out += serialize_object(entries)
-    return bytes(out)
+SHORTCUT_SCRIPT='
+import sys, os, binascii
+import vdf
 
 def generate_appid(exe, name):
     crc = binascii.crc32((exe + name).encode("utf-8")) & 0xffffffff
     top = crc | 0x80000000
     return top - 0x100000000 if top >= 0x80000000 else top
 
-def find_entry_key(entries, app_name):
-    for key, type_byte, value in entries:
-        if type_byte != TYPE_OBJECT:
-            continue
-        for field_key, field_type, field_value in value:
-            if field_key == "AppName" and field_type == TYPE_STRING and field_value == app_name:
-                return key
-    return None
-
 def build_entry(app_name, exe_value, start_dir_value):
-    return [
-        ["appid", TYPE_INT32, generate_appid(exe_value, app_name)],
-        ["AppName", TYPE_STRING, app_name],
-        ["Exe", TYPE_STRING, exe_value],
-        ["StartDir", TYPE_STRING, start_dir_value],
-        ["icon", TYPE_STRING, ""],
-        ["ShortcutPath", TYPE_STRING, ""],
-        ["LaunchOptions", TYPE_STRING, ""],
-        ["IsHidden", TYPE_INT32, 0],
-        ["AllowDesktopConfig", TYPE_INT32, 1],
-        ["AllowOverlay", TYPE_INT32, 1],
-        ["OpenVR", TYPE_INT32, 0],
-        ["Devkit", TYPE_INT32, 0],
-        ["DevkitGameID", TYPE_STRING, ""],
-        ["DevkitOverrideAppID", TYPE_INT32, 0],
-        ["LastPlayTime", TYPE_INT32, 0],
-        ["FlatpakAppID", TYPE_STRING, ""],
-        ["tags", TYPE_OBJECT, []],
-    ]
+    return {
+        "appid": generate_appid(exe_value, app_name),
+        "AppName": app_name,
+        "Exe": exe_value,
+        "StartDir": start_dir_value,
+        "icon": "",
+        "ShortcutPath": "",
+        "LaunchOptions": "",
+        "IsHidden": 0,
+        "AllowDesktopConfig": 1,
+        "AllowOverlay": 1,
+        "OpenVR": 0,
+        "Devkit": 0,
+        "DevkitGameID": "",
+        "DevkitOverrideAppID": 0,
+        "LastPlayTime": 0,
+        "FlatpakAppID": "",
+        "tags": {},
+    }
 
 def main():
     vdf_path, app_name, exe_path, start_dir = sys.argv[1:5]
-    exe_value = f"\"{exe_path}\""
-    start_dir_value = f"\"{start_dir}\""
+    exe_value = "\"" + exe_path + "\""
+    start_dir_value = "\"" + start_dir + "\""
 
     if os.path.exists(vdf_path) and os.path.getsize(vdf_path) > 0:
         with open(vdf_path, "rb") as f:
-            data = f.read()
-        pos = 0
-        if data[pos] != TYPE_OBJECT:
-            raise ValueError("Unexpected root type in shortcuts.vdf")
-        pos += 1
-        root_key, pos = read_cstring(data, pos)
-        entries, pos = parse_object(data, pos)
+            data = vdf.binary_loads(f.read(), mapper=dict, merge_duplicate_keys=True)
     else:
-        root_key = "shortcuts"
-        entries = []
+        data = {"shortcuts": {}}
 
-    existing_key = find_entry_key(entries, app_name)
-    new_entry = build_entry(app_name, exe_value, start_dir_value)
+    shortcuts = data.setdefault("shortcuts", {})
 
+    existing_key = None
+    for key, entry in shortcuts.items():
+        if isinstance(entry, dict) and entry.get("AppName") == app_name:
+            existing_key = key
+            break
+
+    entry = build_entry(app_name, exe_value, start_dir_value)
     if existing_key is not None:
-        for i, (key, _type_byte, _value) in enumerate(entries):
-            if key == existing_key:
-                entries[i] = [key, TYPE_OBJECT, new_entry]
-                break
+        shortcuts[existing_key] = entry
     else:
-        entries.append([str(len(entries)), TYPE_OBJECT, new_entry])
+        shortcuts[str(len(shortcuts))] = entry
 
     with open(vdf_path, "wb") as f:
-        f.write(serialize_file(root_key, entries))
+        f.write(vdf.binary_dumps(data))
 
 main()
 '
@@ -339,7 +288,7 @@ for userdata_dir in "${USERDATA_DIRS[@]}"; do
   fi
 
   log "Registering non-Steam game in $vdf_path"
-  if ! python3 -c "$VDF_SCRIPT" "$vdf_path" "$APP_DISPLAY_NAME" "$WRAPPER_PATH" "$INSTALL_DIR/"; then
+  if ! PYTHONPATH="$VDF_LIB_DIR" python3 -c "$SHORTCUT_SCRIPT" "$vdf_path" "$APP_DISPLAY_NAME" "$WRAPPER_PATH" "$INSTALL_DIR/"; then
     log "Failed to update $vdf_path"
     if [ -n "$backup_path" ]; then
       cp "$backup_path" "$vdf_path"
