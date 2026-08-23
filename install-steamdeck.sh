@@ -100,7 +100,7 @@ else
     ZIP_PATH="$LOCAL_ZIP"
   else
     log "Querying latest release from GitHub..."
-    RELEASE_JSON=$(curl -sL "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/releases/latest")
+    RELEASE_JSON=$(curl -fsSL "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/releases/latest") || die "Failed to query latest release from GitHub API"
 
     DOWNLOAD_URL=$(printf '%s' "$RELEASE_JSON" | python3 -c '
 import json, re, sys
@@ -116,7 +116,7 @@ for asset in data.get("assets", []):
 
     ZIP_PATH="$TMP_DIR/release.zip"
     log "Downloading $DOWNLOAD_URL"
-    curl -sL -o "$ZIP_PATH" "$DOWNLOAD_URL" || die "Download failed"
+    curl -fL --progress-bar -o "$ZIP_PATH" "$DOWNLOAD_URL" || die "Download failed for $DOWNLOAD_URL"
   fi
 
   EXTRACT_DIR="$TMP_DIR/extracted"
@@ -202,8 +202,8 @@ VDF_LIB_DIR="$TMP_DIR/vdf_lib"
 mkdir -p "$VDF_LIB_DIR/vdf"
 VDF_RAW_BASE="https://raw.githubusercontent.com/$REPO_OWNER/$REPO_NAME/steam-deck/vendor/vdf"
 log "Downloading vdf library..."
-curl -sL -o "$VDF_LIB_DIR/vdf/__init__.py" "$VDF_RAW_BASE/__init__.py" || die "Failed to download vendor/vdf/__init__.py"
-curl -sL -o "$VDF_LIB_DIR/vdf/vdict.py" "$VDF_RAW_BASE/vdict.py" || die "Failed to download vendor/vdf/vdict.py"
+curl -fsSL -o "$VDF_LIB_DIR/vdf/__init__.py" "$VDF_RAW_BASE/__init__.py" || die "Failed to download vendor/vdf/__init__.py"
+curl -fsSL -o "$VDF_LIB_DIR/vdf/vdict.py" "$VDF_RAW_BASE/vdict.py" || die "Failed to download vendor/vdf/vdict.py"
 
 # Reads (and, in "write" mode, updates) a shortcuts.vdf's entry for
 # app_name, matched by AppName. Reused for both the up-front "does anything
