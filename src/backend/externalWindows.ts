@@ -88,10 +88,14 @@ let cachedLinuxTool: 'xdotool' | 'wmctrl' | 'none' | null = null;
 
 const getLinuxWindowTool = async (): Promise<'xdotool' | 'wmctrl' | 'none'> => {
   if (cachedLinuxTool) return cachedLinuxTool;
-  if (await commandExists('xdotool')) {
-    cachedLinuxTool = 'xdotool';
-  } else if (await commandExists('wmctrl')) {
+  // Prefer wmctrl: it lists windows unconditionally (no pattern needed) and
+  // reads the modern _NET_WM_NAME property. xdotool's --name only matches
+  // the legacy WM_NAME, so many windows (including our own enumerate-all
+  // trick below) can silently fail to match on it.
+  if (await commandExists('wmctrl')) {
     cachedLinuxTool = 'wmctrl';
+  } else if (await commandExists('xdotool')) {
+    cachedLinuxTool = 'xdotool';
   } else {
     cachedLinuxTool = 'none';
   }
@@ -110,7 +114,11 @@ const readProcExe = async (pid: string): Promise<string | null> => {
 /** Returns xdotool/wmctrl window ids whose owning process's executable basename matches `exeName`. */
 const findLinuxWindowIds = async (exeName: string, tool: 'xdotool' | 'wmctrl'): Promise<string[]> => {
   if (tool === 'xdotool') {
-    const { stdout } = await runCommand('xdotool', ['search', '--onlyvisible', '--name', '']);
+    // No --onlyvisible: under XWayland, windows don't reliably get flagged
+    // as "visible" the way xdotool expects from a native X11 session, so
+    // --onlyvisible filters out everything. We're matching by owning
+    // process anyway, so including hidden/withdrawn windows here is fine.
+    const { stdout } = await runCommand('xdotool', ['search', 'onlyvisible', '--class', "'.*'"]);
     const windowIds = stdout
       .split('\n')
       .map((line) => line.trim())

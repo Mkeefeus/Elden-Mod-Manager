@@ -73,10 +73,13 @@ STEAM_WAS_RUNNING=0
 
 cleanup() {
   rm -rf "$TMP_DIR"
-  if [ "$STEAM_WAS_RUNNING" -eq 1 ] && command -v steam >/dev/null 2>&1; then
-    log "Relaunching Steam..."
-    nohup steam >/dev/null 2>&1 &
-    disown
+  # Not relaunching Steam ourselves: Steam has a known upstream bug where it
+  # re-requests screen-sharing/PipeWire permission on every launch regardless
+  # of how it's started (https://github.com/ValveSoftware/steam-for-linux/issues/8098),
+  # so there's no launch mechanism from here that avoids it. Leave restarting
+  # it to the user.
+  if [ "$STEAM_WAS_RUNNING" -eq 1 ]; then
+    log "Steam was closed to update shortcuts.vdf safely — please reopen it yourself."
   fi
 }
 trap cleanup EXIT
@@ -149,6 +152,7 @@ fi
 
 [ -f "$EXECUTABLE_PATH" ] || die "Executable not found at $EXECUTABLE_PATH after extraction — unexpected release layout."
 chmod +x "$EXECUTABLE_PATH"
+chmod +x "$INSTALL_DIR"/resources/me3/linux/me3
 
 # --- 3. Write the launch wrapper --------------------------------------------
 
@@ -190,19 +194,6 @@ if [ "${#USERDATA_DIRS[@]}" -eq 0 ]; then
   exit 0
 fi
 
-if command -v steam >/dev/null 2>&1 && pgrep -x steam >/dev/null 2>&1; then
-  STEAM_WAS_RUNNING=1
-  log "Closing Steam..."
-  steam -shutdown >/dev/null 2>&1 || true
-  for _ in $(seq 1 30); do
-    pgrep -x steam >/dev/null 2>&1 || break
-    sleep 1
-  done
-  if pgrep -x steam >/dev/null 2>&1; then
-    die "Steam did not shut down in time — aborting shortcut registration so it doesn't overwrite our changes. Close Steam manually and re-run this script."
-  fi
-fi
-
 # Steam's binary shortcuts.vdf format is handled via the vendored
 # ValvePython/vdf library (MIT license; see vendor/vdf/NOTICE in this repo).
 # Downloaded here at runtime rather than embedded/bundled, so this script
@@ -214,6 +205,10 @@ log "Downloading vdf library..."
 curl -sL -o "$VDF_LIB_DIR/vdf/__init__.py" "$VDF_RAW_BASE/__init__.py" || die "Failed to download vendor/vdf/__init__.py"
 curl -sL -o "$VDF_LIB_DIR/vdf/vdict.py" "$VDF_RAW_BASE/vdict.py" || die "Failed to download vendor/vdf/vdict.py"
 
+# Reads (and, in "write" mode, updates) a shortcuts.vdf's entry for
+# app_name, matched by AppName. Reused for both the up-front "does anything
+# actually need to change" check and the real update, so the two can never
+# disagree about what counts as "up to date".
 SHORTCUT_SCRIPT='
 import sys, os, binascii
 import vdf
@@ -244,24 +239,40 @@ def build_entry(app_name, exe_value, start_dir_value):
         "tags": {},
     }
 
+def load_shortcuts(vdf_path):
+    if os.path.exists(vdf_path) and os.path.getsize(vdf_path) > 0:
+        with open(vdf_path, "rb") as f:
+            return vdf.binary_loads(f.read(), mapper=dict, merge_duplicate_keys=True)
+    return {"shortcuts": {}}
+
+def find_entry(shortcuts, app_name):
+    for key, entry in shortcuts.items():
+        if isinstance(entry, dict) and entry.get("AppName") == app_name:
+            return key, entry
+    return None, None
+
 def main():
-    vdf_path, app_name, exe_path, start_dir = sys.argv[1:5]
+    mode, vdf_path, app_name, exe_path, start_dir = sys.argv[1:6]
     exe_value = "\"" + exe_path + "\""
     start_dir_value = "\"" + start_dir + "\""
 
-    if os.path.exists(vdf_path) and os.path.getsize(vdf_path) > 0:
-        with open(vdf_path, "rb") as f:
-            data = vdf.binary_loads(f.read(), mapper=dict, merge_duplicate_keys=True)
-    else:
-        data = {"shortcuts": {}}
-
+    data = load_shortcuts(vdf_path)
     shortcuts = data.setdefault("shortcuts", {})
+    existing_key, existing_entry = find_entry(shortcuts, app_name)
 
-    existing_key = None
-    for key, entry in shortcuts.items():
-        if isinstance(entry, dict) and entry.get("AppName") == app_name:
-            existing_key = key
-            break
+    up_to_date = (
+        existing_entry is not None
+        and existing_entry.get("Exe") == exe_value
+        and existing_entry.get("StartDir") == start_dir_value
+    )
+
+    if mode == "check":
+        print("up_to_date" if up_to_date else "needs_update")
+        return
+
+    if up_to_date:
+        print("unchanged")
+        return
 
     entry = build_entry(app_name, exe_value, start_dir_value)
     if existing_key is not None:
@@ -271,11 +282,41 @@ def main():
 
     with open(vdf_path, "wb") as f:
         f.write(vdf.binary_dumps(data))
+    print("updated")
 
 main()
 '
 
+DIRS_NEEDING_UPDATE=()
 for userdata_dir in "${USERDATA_DIRS[@]}"; do
+  vdf_path="$userdata_dir/config/shortcuts.vdf"
+  status=$(PYTHONPATH="$VDF_LIB_DIR" python3 -c "$SHORTCUT_SCRIPT" check "$vdf_path" "$APP_DISPLAY_NAME" "$WRAPPER_PATH" "$INSTALL_DIR/" 2>/dev/null) || status="needs_update"
+  if [ "$status" != "up_to_date" ]; then
+    DIRS_NEEDING_UPDATE+=("$userdata_dir")
+  fi
+done
+
+if [ "${#DIRS_NEEDING_UPDATE[@]}" -eq 0 ]; then
+  log "Non-Steam game shortcut already up to date — nothing to do."
+  exit 0
+fi
+
+log "Shortcut needs to be added/updated for ${#DIRS_NEEDING_UPDATE[@]} Steam profile(s)."
+
+if command -v steam >/dev/null 2>&1 && pgrep -x steam >/dev/null 2>&1; then
+  STEAM_WAS_RUNNING=1
+  log "Closing Steam..."
+  steam -shutdown >/dev/null 2>&1 || true
+  for _ in $(seq 1 30); do
+    pgrep -x steam >/dev/null 2>&1 || break
+    sleep 1
+  done
+  if pgrep -x steam >/dev/null 2>&1; then
+    die "Steam did not shut down in time — aborting shortcut registration so it doesn't overwrite our changes. Close Steam manually and re-run this script."
+  fi
+fi
+
+for userdata_dir in "${DIRS_NEEDING_UPDATE[@]}"; do
   config_dir="$userdata_dir/config"
   mkdir -p "$config_dir"
   vdf_path="$config_dir/shortcuts.vdf"
@@ -288,7 +329,7 @@ for userdata_dir in "${USERDATA_DIRS[@]}"; do
   fi
 
   log "Registering non-Steam game in $vdf_path"
-  if ! PYTHONPATH="$VDF_LIB_DIR" python3 -c "$SHORTCUT_SCRIPT" "$vdf_path" "$APP_DISPLAY_NAME" "$WRAPPER_PATH" "$INSTALL_DIR/"; then
+  if ! PYTHONPATH="$VDF_LIB_DIR" python3 -c "$SHORTCUT_SCRIPT" write "$vdf_path" "$APP_DISPLAY_NAME" "$WRAPPER_PATH" "$INSTALL_DIR/"; then
     log "Failed to update $vdf_path"
     if [ -n "$backup_path" ]; then
       cp "$backup_path" "$vdf_path"

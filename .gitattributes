@@ -1,0 +1,4 @@
+# Scripts that run on Linux (Steam Deck) must keep LF line endings — a CRLF
+# shebang line (`#!/bin/bash\r`) fails with "bad interpreter: No such file
+# or directory" since the OS reads the interpreter path literally.
+*.sh text eol=lf
