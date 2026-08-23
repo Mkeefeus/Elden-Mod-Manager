@@ -1,15 +1,13 @@
 import { BrowserWindow, dialog } from 'electron';
 import path from 'path';
 import { dismissDownload, getActiveDownloads } from './downloadManager';
-
-let getModsWindow: BrowserWindow | null = null;
-
-export const getGetModsWindow = () => getModsWindow;
+import { getWindow, registerWindow } from './windowManager';
 
 export const createOrFocusGetModsWindow = () => {
-  if (getModsWindow && !getModsWindow.isDestroyed()) {
-    getModsWindow.focus();
-    return getModsWindow;
+  const existing = getWindow('getMods');
+  if (existing) {
+    existing.focus();
+    return existing;
   }
 
   const window = new BrowserWindow({
@@ -24,7 +22,7 @@ export const createOrFocusGetModsWindow = () => {
     // icon: 'public/256x256.png',
   });
 
-  getModsWindow = window;
+  registerWindow('getMods', window);
 
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
     void window.loadURL(`${MAIN_WINDOW_VITE_DEV_SERVER_URL}#/get-mods`);
@@ -51,9 +49,6 @@ export const createOrFocusGetModsWindow = () => {
   window.on('closed', () => {
     for (const download of getActiveDownloads()) {
       void dismissDownload(download.id);
-    }
-    if (getModsWindow === window) {
-      getModsWindow = null;
     }
   });
 

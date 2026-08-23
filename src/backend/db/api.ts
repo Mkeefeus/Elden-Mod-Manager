@@ -237,17 +237,21 @@ export const getLauncherSettings = () => ({
   noBootBoost: store.get('noBootBoost'),
   showLogos: store.get('showLogos'),
   skipSteamInit: store.get('skipSteamInit'),
+  minimizeWindowsOnLaunch: store.get('minimizeWindowsOnLaunch'),
 });
 
 export const setLauncherSettings = (fields: {
   noBootBoost?: boolean;
   showLogos?: boolean;
   skipSteamInit?: boolean;
+  minimizeWindowsOnLaunch?: boolean;
 }) => {
   debug(`Updating launcher settings: ${JSON.stringify(fields)}`);
   if (fields.noBootBoost !== undefined) store.set('noBootBoost', fields.noBootBoost);
   if (fields.showLogos !== undefined) store.set('showLogos', fields.showLogos);
   if (fields.skipSteamInit !== undefined) store.set('skipSteamInit', fields.skipSteamInit);
+  if (fields.minimizeWindowsOnLaunch !== undefined)
+    store.set('minimizeWindowsOnLaunch', fields.minimizeWindowsOnLaunch);
 };
 
 export const getActiveProfile = (): ModProfile | undefined => {

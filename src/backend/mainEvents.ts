@@ -55,9 +55,10 @@ import {
   completeProfileImport,
 } from './profiles';
 import { ProfileImportAnalysis } from 'types';
-import { canAutoUpdate, downloadAndInstallUpdate, getMainWindow } from '../main';
+import { canAutoUpdate, downloadAndInstallUpdate } from '../main';
 import { getActiveDownloads, cancelDownload, dismissDownload, addLocalDownload } from './downloadManager';
-import { createOrFocusGetModsWindow, getGetModsWindow } from './getModsWindow';
+import { createOrFocusGetModsWindow } from './getModsWindow';
+import { getMainWindow, getGetModsWindow } from './windowManager';
 import { runStartupTasks } from './startup';
 import {
   handleAddTool,

@@ -27,6 +27,7 @@ export const exportSettings = (destPath: string): void => {
       noBootBoost: launcher.noBootBoost,
       showLogos: launcher.showLogos,
       skipSteamInit: launcher.skipSteamInit,
+      minimizeWindowsOnLaunch: launcher.minimizeWindowsOnLaunch,
     };
     writeFileSync(destPath, JSON.stringify(settings, null, 2), 'utf-8');
     debug('Settings exported successfully');
@@ -47,7 +48,8 @@ const isValidExportedSettings = (obj: unknown): obj is ExportedSettings => {
     typeof o['eldenRingFolder'] === 'string' &&
     typeof o['noBootBoost'] === 'boolean' &&
     typeof o['showLogos'] === 'boolean' &&
-    typeof o['skipSteamInit'] === 'boolean'
+    typeof o['skipSteamInit'] === 'boolean' &&
+    typeof o['minimizeWindowsOnLaunch'] === 'boolean'
   );
 };
 
@@ -82,6 +84,7 @@ export const importSettings = (srcPath: string): ExportedSettings => {
       noBootBoost: parsed.noBootBoost,
       showLogos: parsed.showLogos,
       skipSteamInit: parsed.skipSteamInit,
+      minimizeWindowsOnLaunch: parsed.minimizeWindowsOnLaunch,
     });
     debug('Settings imported successfully');
     return parsed;

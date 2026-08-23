@@ -113,6 +113,16 @@ const Settings = () => {
           window.electronAPI.updateLauncherSettings({ skipSteamInit: checked });
         }}
       />
+      <Switch
+        label="Minimize Windows on Launch"
+        description="Minimize Elden Mod Manager and any open tool windows when launching the game (default: off)"
+        checked={launcherSettings?.minimizeWindowsOnLaunch ?? false}
+        onChange={(e) => {
+          const checked = e.currentTarget.checked;
+          queryClient.setQueryData(['launcher-settings'], { ...launcherSettings!, minimizeWindowsOnLaunch: checked });
+          window.electronAPI.updateLauncherSettings({ minimizeWindowsOnLaunch: checked });
+        }}
+      />
       <Divider mt="sm" />
       <Text size="sm" fw={500} c="dimmed">
         Backup
@@ -141,6 +151,7 @@ const Settings = () => {
                 noBootBoost: result.noBootBoost,
                 showLogos: result.showLogos,
                 skipSteamInit: result.skipSteamInit,
+                minimizeWindowsOnLaunch: result.minimizeWindowsOnLaunch,
               });
               sendLog({ level: 'info', message: 'Settings imported successfully' });
             });
