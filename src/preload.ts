@@ -69,8 +69,18 @@ interface IElectronAPI {
   getToolsPath: () => Promise<string>;
   updateModsFolder: (path: string) => void;
   updateToolsFolder: (path: string) => void;
-  getLauncherSettings: () => Promise<{ noBootBoost: boolean; showLogos: boolean; skipSteamInit: boolean }>;
-  updateLauncherSettings: (fields: { noBootBoost?: boolean; showLogos?: boolean; skipSteamInit?: boolean }) => void;
+  getLauncherSettings: () => Promise<{
+    noBootBoost: boolean;
+    showLogos: boolean;
+    skipSteamInit: boolean;
+    minimizeWindowsOnLaunch: boolean;
+  }>;
+  updateLauncherSettings: (fields: {
+    noBootBoost?: boolean;
+    showLogos?: boolean;
+    skipSteamInit?: boolean;
+    minimizeWindowsOnLaunch?: boolean;
+  }) => void;
 
   // --- Get Mods Window ---
   openGetModsWindow: () => void;

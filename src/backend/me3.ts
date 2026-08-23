@@ -1,12 +1,16 @@
 import { spawn } from 'child_process';
 import { existsSync } from 'fs';
-import { dirname, join } from 'path';
+import { basename, dirname, join } from 'path';
 import { app } from 'electron';
 import { logger } from '@utils/mainLogger';
-import { getProfilesFolder, getActiveProfile, getLauncherSettings } from './db/api';
+import { getProfilesFolder, getActiveProfile, getLauncherSettings, getTools } from './db/api';
 import { errToString } from '@utils/utilities';
 import { ME3_PROFILE_FILENAME } from './constants';
 import { writeMe3Profile } from './me3Profile';
+import { minimizeAllWindows } from './windowManager';
+import { focusWindowByExecutable, minimizeWindowsByExecutables } from './externalWindows';
+
+const ELDEN_RING_EXECUTABLE = 'eldenring.exe';
 
 const { debug, error } = logger;
 
@@ -82,11 +86,20 @@ export const launchEldenRingModded = () => {
       process.env['ME3_PROTON_LAUNCH_VERB'] = 'run';
     }
     debug(`Running: ${launchCommand} ${args.join(' ')}`);
+
+    if (launcherSettings.minimizeWindowsOnLaunch) {
+      minimizeAllWindows();
+      const toolExecutables = getTools().map((tool) => basename(tool.executablePath));
+      void minimizeWindowsByExecutables(toolExecutables);
+    }
+
     const proc = spawn(launchCommand, args, {
       detached: true,
       stdio: 'ignore',
     });
     proc.unref();
+
+    void focusWindowByExecutable(ELDEN_RING_EXECUTABLE);
   } catch (err) {
     const msg = `An error occured while launching game with mods: ${errToString(err)}`;
     error(msg);

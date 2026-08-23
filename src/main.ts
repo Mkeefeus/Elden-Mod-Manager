@@ -6,7 +6,7 @@ import check from './electron-squirrel-startup';
 import { getWindowState, setWindowState } from '@backend/db/api';
 import { logger } from './utils/mainLogger';
 import { initDownloadManager } from '@backend/downloadManager';
-import { getGetModsWindow } from '@backend/getModsWindow';
+import { registerWindow, closeWindow, getGetModsWindow } from '@backend/windowManager';
 import { type UpdateResult } from 'types';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -105,9 +105,6 @@ export const downloadAndInstallUpdate = (): Promise<UpdateResult> => {
   });
 };
 
-let mainWindow: BrowserWindow | null;
-
-export const getMainWindow = () => mainWindow;
 const menu = Menu.buildFromTemplate(template);
 // app.setPath('temp', path.join(app.getPath('temp'), 'elden-mod-manager'));
 
@@ -141,7 +138,7 @@ const createWindow = () => {
     windowY = isOnScreen ? savedState.y : bounds.y + Math.floor((bounds.height - savedState.height) / 2);
   }
 
-  mainWindow = new BrowserWindow({
+  const window = new BrowserWindow({
     minWidth: 1280,
     minHeight: 720,
     width: savedState.width,
@@ -154,14 +151,15 @@ const createWindow = () => {
     webPreferences: { preload: path.join(__dirname, 'preload.js') },
   });
 
-  mainWindow.once('ready-to-show', () => {
-    mainWindow?.show();
+  registerWindow('main', window);
+
+  window.once('ready-to-show', () => {
+    window.show();
   });
 
   // Persist window state on resize/move (debounced) and on close
   const saveState = (source: string) => {
-    if (!mainWindow) return;
-    const winBounds = mainWindow.getBounds();
+    const winBounds = window.getBounds();
     logger.debug(`Saving window state due to ${source}`);
     if (isLinux) {
       // Only save size on Linux — position is unreliable
@@ -184,19 +182,18 @@ const createWindow = () => {
     saveTimeout = setTimeout(() => saveState(source), 500);
   };
 
-  mainWindow.on('resize', () => saveStateDebounced('resize'));
-  mainWindow.on('moved', () => saveStateDebounced('move'));
-  mainWindow.on('close', () => {
+  window.on('resize', () => saveStateDebounced('resize'));
+  window.on('moved', () => saveStateDebounced('move'));
+  window.on('close', () => {
     saveState('close');
-    const gmWin = getGetModsWindow();
-    if (gmWin && !gmWin.isDestroyed()) gmWin.destroy();
+    closeWindow('getMods', { force: true });
   });
 
   // and load the index.html of the app.
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-    mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL).catch(console.error);
+    window.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL).catch(console.error);
   } else {
-    mainWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`)).catch(console.error);
+    window.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`)).catch(console.error);
   }
 };
 

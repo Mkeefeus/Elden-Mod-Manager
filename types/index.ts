@@ -127,6 +127,7 @@ export type ExportedSettings = {
   noBootBoost: boolean;
   showLogos: boolean;
   skipSteamInit: boolean;
+  minimizeWindowsOnLaunch: boolean;
 };
 
 export type ImportInstallTarget = {

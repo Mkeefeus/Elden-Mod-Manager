@@ -16,6 +16,7 @@ export type DBSchema = {
   noBootBoost: boolean;
   showLogos: boolean;
   skipSteamInit: boolean;
+  minimizeWindowsOnLaunch: boolean;
   windowState: WindowState;
   nexusApiKey?: string;
 };
@@ -139,6 +140,10 @@ const schema: Schema<DBSchema> = {
     default: false,
   },
   skipSteamInit: {
+    type: 'boolean',
+    default: false,
+  },
+  minimizeWindowsOnLaunch: {
     type: 'boolean',
     default: false,
   },
