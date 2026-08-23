@@ -120,6 +120,15 @@ jobs:
       - name: Install Node dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Set version from dispatch tag
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG="${{ inputs.tag }}"
+          VERSION="${TAG#v}"
+          npm version --no-git-tag-version --allow-same-version "$VERSION"
+
       - name: Publish
         run: pnpm run publish
         env:
