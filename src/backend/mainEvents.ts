@@ -23,8 +23,10 @@ import {
   EditModFormValues,
   ImportInstallTarget,
   ImportModResult,
+  LauncherSettings,
   LogEntry,
   Mod,
+  ProfileImportAnalysis,
   ProfileModRef,
   Tool,
   ToolFormValues,
@@ -54,7 +56,6 @@ import {
   analyzeProfileImport,
   completeProfileImport,
 } from './profiles';
-import { ProfileImportAnalysis } from 'types';
 import { canAutoUpdate, downloadAndInstallUpdate, getMainWindow } from '../main';
 import { getActiveDownloads, cancelDownload, dismissDownload, addLocalDownload } from './downloadManager';
 import { createOrFocusGetModsWindow, getGetModsWindow } from './getModsWindow';
@@ -75,12 +76,6 @@ type ActiveProfileSettingsPatch = {
   startOnline?: boolean;
   disableArxan?: boolean;
   noMemPatch?: boolean;
-};
-
-type LauncherSettingsPatch = {
-  noBootBoost?: boolean;
-  showLogos?: boolean;
-  skipSteamInit?: boolean;
 };
 
 const getInstalledModPath = (mod: Pick<Mod, 'name' | 'version'>) =>
@@ -270,7 +265,7 @@ const registerSettingsHandlers = () => {
     updateActiveProfile(fields);
   });
   ipcMain.handle('get-launcher-settings', () => getLauncherSettings());
-  ipcMain.on('update-launcher-settings', (_, fields: LauncherSettingsPatch) => {
+  ipcMain.on('update-launcher-settings', (_, fields: Partial<LauncherSettings>) => {
     setLauncherSettings(fields);
   });
   ipcMain.handle('export-settings', () => {
