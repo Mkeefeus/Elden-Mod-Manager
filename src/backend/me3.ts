@@ -78,6 +78,7 @@ export const launchEldenRingModded = () => {
     if (launcherSettings.noBootBoost) args.push('--no-boot-boost');
     if (launcherSettings.showLogos) args.push('--show-logos');
     if (launcherSettings.skipSteamInit) args.push('--skip-steam-init');
+    if (launcherSettings.overrideExe) args.push('--exe', launcherSettings.overrideExe);
     if (process.platform === 'linux' && activeProfile?.overrideProtonVerb) {
       process.env['ME3_PROTON_LAUNCH_VERB'] = 'run';
     }

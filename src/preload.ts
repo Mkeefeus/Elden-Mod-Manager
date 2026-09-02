@@ -18,6 +18,7 @@ import {
   ImportModResult,
   Tool,
   ToolFormValues,
+  LauncherSettings,
 } from 'types';
 
 interface IElectronAPI {
@@ -69,8 +70,8 @@ interface IElectronAPI {
   getToolsPath: () => Promise<string>;
   updateModsFolder: (path: string) => void;
   updateToolsFolder: (path: string) => void;
-  getLauncherSettings: () => Promise<{ noBootBoost: boolean; showLogos: boolean; skipSteamInit: boolean }>;
-  updateLauncherSettings: (fields: { noBootBoost?: boolean; showLogos?: boolean; skipSteamInit?: boolean }) => void;
+  getLauncherSettings: () => Promise<LauncherSettings>;
+  updateLauncherSettings: (fields: Partial<LauncherSettings>) => void;
 
   // --- Get Mods Window ---
   openGetModsWindow: () => void;

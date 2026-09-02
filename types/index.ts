@@ -199,3 +199,10 @@ export type ModConfigFormValues = AddModFormValues & {
   initializerDelayMs: number;
   initializerFunction: string;
 };
+
+export type LauncherSettings = {
+  noBootBoost: boolean;
+  showLogos: boolean;
+  skipSteamInit: boolean;
+  overrideExe?: string;
+};

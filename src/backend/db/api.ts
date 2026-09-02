@@ -1,7 +1,7 @@
 import { errToString } from '@utils/utilities';
 import { logger } from '@utils/mainLogger';
 import store from './init';
-import { Mod, ModProfile, ProfileModRef, Tool, WindowState } from 'types';
+import { LauncherSettings, Mod, ModProfile, ProfileModRef, Tool, WindowState } from 'types';
 import { join } from 'path';
 import { app } from 'electron';
 
@@ -233,21 +233,35 @@ export const getProfilesFolder = () => {
   return join(app.getPath('userData'), 'profiles');
 };
 
-export const getLauncherSettings = () => ({
-  noBootBoost: store.get('noBootBoost'),
-  showLogos: store.get('showLogos'),
-  skipSteamInit: store.get('skipSteamInit'),
-});
+export const getLauncherSettings = (): LauncherSettings => {
+  try {
+    store.get('noBootBoost');
+    store.get('showLogos');
+    store.get('skipSteamInit');
+    const overrideExe = store.get('overrideExe');
+    return {
+      noBootBoost: store.get('noBootBoost'),
+      showLogos: store.get('showLogos'),
+      skipSteamInit: store.get('skipSteamInit'),
+      overrideExe: overrideExe !== undefined ? overrideExe : undefined,
+    };
+  } catch (err) {
+    const msg = `An error occured while getting launcher settings: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg, { cause: err });
+  }
+};
 
-export const setLauncherSettings = (fields: {
-  noBootBoost?: boolean;
-  showLogos?: boolean;
-  skipSteamInit?: boolean;
-}) => {
+export const setLauncherSettings = (fields: Partial<LauncherSettings>) => {
   debug(`Updating launcher settings: ${JSON.stringify(fields)}`);
   if (fields.noBootBoost !== undefined) store.set('noBootBoost', fields.noBootBoost);
   if (fields.showLogos !== undefined) store.set('showLogos', fields.showLogos);
   if (fields.skipSteamInit !== undefined) store.set('skipSteamInit', fields.skipSteamInit);
+  if (fields.overrideExe !== undefined) {
+    store.set('overrideExe', fields.overrideExe);
+  } else if (fields.overrideExe === undefined) {
+    store.delete('overrideExe');
+  }
 };
 
 export const getActiveProfile = (): ModProfile | undefined => {

@@ -16,6 +16,7 @@ export type DBSchema = {
   noBootBoost: boolean;
   showLogos: boolean;
   skipSteamInit: boolean;
+  overrideExe?: string;
   windowState: WindowState;
   nexusApiKey?: string;
 };
@@ -141,6 +142,10 @@ const schema: Schema<DBSchema> = {
   skipSteamInit: {
     type: 'boolean',
     default: false,
+  },
+  overrideExe: {
+    type: 'string',
+    default: undefined,
   },
   windowState: {
     type: 'object',
