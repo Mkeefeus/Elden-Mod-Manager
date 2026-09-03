@@ -32,7 +32,7 @@ const Settings = () => {
     } else {
       setOverrideExe(false);
     }
-  }, []);
+  }, [launcherSettings]);
 
   const handleBrowseMods = async () => {
     const path = await window.electronAPI.browse('directory', 'Select Folder');
