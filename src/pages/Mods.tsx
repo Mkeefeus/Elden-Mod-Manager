@@ -1,4 +1,5 @@
 import { Button, Collapse, Divider, Group, ScrollArea, Stack, Switch, Text, TextInput } from '@mantine/core';
+import { useDebouncedCallback } from '@mantine/hooks';
 import ModTable from '@components/mods/ModTable';
 import { useEffect, useState } from 'react';
 import { ModProfile } from 'types';
@@ -13,6 +14,8 @@ const Mods = () => {
   const queryClient = useQueryClient();
   const [advancedOpen, setAdvancedOpen] = useState<boolean>(false);
   const [useCustomSavefile, setUseCustomSavefile] = useState<boolean>(false);
+  // Local copy of the save file name so typing isn't driven by the (async) query cache
+  const [savefileInput, setSavefileInput] = useState<string>('');
 
   const { data: activeProfile } = useQuery({
     queryKey: ['active-profile'],
@@ -20,22 +23,38 @@ const Mods = () => {
     staleTime: Infinity,
   });
 
-  useEffect(() => {
-    if (activeProfile?.savefile) setUseCustomSavefile(true);
-  }, [activeProfile]);
-
   const updateActiveProfile = (patch: Partial<ModProfile>) => {
-    queryClient.setQueryData(['active-profile'], { ...activeProfile!, ...patch });
+    queryClient.setQueryData<ModProfile>(['active-profile'], (prev) => prev && { ...prev, ...patch });
     window.electronAPI.updateActiveProfileSettings(patch);
   };
 
+  const persistSavefile = useDebouncedCallback((savefile: string) => updateActiveProfile({ savefile }), {
+    delay: 300,
+    flushOnUnmount: true,
+  });
+
+  useEffect(() => {
+    setUseCustomSavefile(!!activeProfile?.savefile);
+  }, [activeProfile?.uuid]);
+
+  useEffect(() => {
+    // Don't clobber in-progress typing with a value that's about to be overwritten
+    if (!persistSavefile.isPending()) setSavefileInput(activeProfile?.savefile ?? '');
+  }, [activeProfile?.savefile]);
+
   const handleCustomSavefileToggle = (enabled: boolean) => {
+    persistSavefile.cancel();
     setUseCustomSavefile(enabled);
     if (!enabled) {
       updateActiveProfile({ savefile: '' });
     } else {
       updateActiveProfile({
-        savefile: activeProfile && activeProfile.savefile ? activeProfile.savefile : 'ModdedSave.sl2',
+        savefile:
+          activeProfile && activeProfile.savefile
+            ? activeProfile.savefile
+            : activeProfile
+              ? `emm-${activeProfile.name.replace(/\s+/g, '-').toLowerCase()}.sl2`
+              : 'ModdedSave.sl2',
       });
     }
   };
@@ -113,8 +132,27 @@ const Mods = () => {
               <TextInput
                 description="Override the default save file name, e.g. MyModdedSave.sl2"
                 placeholder="Leave blank to use the default save"
-                value={activeProfile?.savefile ?? ''}
-                onChange={(e) => updateActiveProfile({ savefile: e.currentTarget.value })}
+                value={savefileInput}
+                onChange={(e) => {
+                  const input = e.currentTarget;
+                  const value = input.value.replace(/\s/g, '-');
+                  if (value !== input.value) {
+                    // Swap in place (same length) so the cursor doesn't jump to the end
+                    const cursor = input.selectionStart;
+                    input.value = value;
+                    input.setSelectionRange(cursor, cursor);
+                  }
+                  setSavefileInput(value);
+                  persistSavefile(value);
+                }}
+                onBlur={() => {
+                  if (savefileInput && !savefileInput.toLowerCase().endsWith('.sl2')) {
+                    const value = `${savefileInput}.sl2`;
+                    setSavefileInput(value);
+                    persistSavefile(value);
+                  }
+                  persistSavefile.flush();
+                }}
                 style={{ maxWidth: 400 }}
               />
             )}

@@ -18,6 +18,7 @@ export type DBSchema = {
   skipSteamInit: boolean;
   overrideExe?: string;
   windowState: WindowState;
+  lastPage: string;
   nexusApiKey?: string;
 };
 
@@ -157,6 +158,10 @@ const schema: Schema<DBSchema> = {
       displayId: { type: 'number' },
     },
     default: { width: 1280, height: 720, x: 0, y: 0, displayId: 0 },
+  },
+  lastPage: {
+    type: 'string',
+    default: '/',
   },
 };
 

@@ -16,6 +16,7 @@ import {
   getLauncherSettings,
   setLauncherSettings,
   getTools,
+  setLastPage,
 } from './db/api';
 import {
   AddModFormValues,
@@ -183,6 +184,9 @@ const registerWindowHandlers = () => {
     const win = getGetModsWindow();
     if (!win || win.isDestroyed()) return;
     win.webContents.send('set-import-queue', mods);
+  });
+  ipcMain.on('set-last-page', (_, route: string) => {
+    setLastPage(route);
   });
 };
 

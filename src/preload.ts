@@ -114,6 +114,7 @@ interface IElectronAPI {
   canAutoUpdate: () => Promise<boolean>;
   downloadAndInstallUpdate: () => Promise<UpdateResult>;
   log: (log: LogEntry) => void;
+  setLastPage: (route: string) => void;
 
   // --- Main to renderer ---
   notify: (callback: (log: LogEntry) => void) => void;
@@ -217,6 +218,7 @@ const electronAPI: IElectronAPI = {
   canAutoUpdate: () => ipcRenderer.invoke('can-auto-update'),
   downloadAndInstallUpdate: () => ipcRenderer.invoke('download-and-install-update'),
   log: (...args) => ipcRenderer.send('log', ...args),
+  setLastPage: (route) => ipcRenderer.send('set-last-page', route),
 
   // --- Main to renderer ---
   notify: (callback) => ipcRenderer.on('notify', (_event, value) => callback(value as LogEntry)),

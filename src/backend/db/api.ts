@@ -314,6 +314,29 @@ export const setWindowState = (state: WindowState) => {
   }
 };
 
+export const getLastPage = (): string => {
+  debug('Getting last page');
+  try {
+    return store.get('lastPage');
+  } catch (err) {
+    const msg = `An error occured while getting last page: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg, { cause: err });
+  }
+};
+
+export const setLastPage = (route: string) => {
+  debug(`Setting last page: ${route}`);
+  try {
+    store.set('lastPage', route);
+    return true;
+  } catch (err) {
+    const msg = `An error occured while setting last page: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg, { cause: err });
+  }
+};
+
 export const getTools = (): Tool[] => {
   debug('Loading tools from DB');
   try {
