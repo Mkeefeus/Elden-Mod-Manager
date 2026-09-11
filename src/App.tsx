@@ -1,4 +1,5 @@
 import { AppShell, Group, NavLink, Title } from '@mantine/core';
+import { useEffect } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { pages } from './pages';
 import Footer from '@components/Footer';
@@ -57,6 +58,15 @@ window.electronAPI.invalidateCache(async (key) => {
 });
 
 const App = () => {
+  const location = useLocation();
+
+  // Remember the current page so the next launch opens on it (see createWindow in main.ts)
+  useEffect(() => {
+    if (pages.some((page) => page.route === location.pathname)) {
+      window.electronAPI.setLastPage(location.pathname);
+    }
+  }, [location.pathname]);
+
   return (
     <QueryClientProvider client={queryClient}>
       <ModalProvider>

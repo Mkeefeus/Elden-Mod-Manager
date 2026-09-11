@@ -3,7 +3,7 @@ import path from 'path';
 import '@backend/mainEvents';
 import { template } from './menu';
 import check from './electron-squirrel-startup';
-import { getWindowState, setWindowState } from '@backend/db/api';
+import { getLastPage, getWindowState, setWindowState } from '@backend/db/api';
 import { logger } from './utils/mainLogger';
 import { initDownloadManager } from '@backend/downloadManager';
 import { getGetModsWindow } from '@backend/getModsWindow';
@@ -192,11 +192,14 @@ const createWindow = () => {
     if (gmWin && !gmWin.isDestroyed()) gmWin.destroy();
   });
 
-  // and load the index.html of the app.
+  // and load the index.html of the app, opening on the page the user was last on.
+  const lastPage = getLastPage();
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-    mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL).catch(console.error);
+    mainWindow.loadURL(`${MAIN_WINDOW_VITE_DEV_SERVER_URL}#${lastPage}`).catch(console.error);
   } else {
-    mainWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`)).catch(console.error);
+    mainWindow
+      .loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`), { hash: lastPage })
+      .catch(console.error);
   }
 };
 

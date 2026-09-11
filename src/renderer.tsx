@@ -28,7 +28,7 @@
 
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { RouterProvider, createHashRouter, RouteObject } from 'react-router-dom';
+import { Navigate, RouterProvider, createHashRouter, RouteObject } from 'react-router-dom';
 import App from './App';
 import GetMods from './pages/GetMods';
 import '@mantine/core/styles.css';
@@ -51,7 +51,8 @@ const childRoutes: RouteObject[] = pages.map((page) => {
 const browserRouter = createHashRouter([
   {
     element: <App />,
-    children: childRoutes,
+    // Unknown routes (e.g. a remembered page that no longer exists) fall back to Home
+    children: [...childRoutes, { path: '*', element: <Navigate to="/" replace /> }],
   },
   {
     path: '/get-mods',
