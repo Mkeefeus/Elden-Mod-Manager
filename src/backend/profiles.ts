@@ -90,12 +90,12 @@ export const handleCreateProfile = (name: string): ModProfile => {
       createdAt: Date.now(),
       mods: [],
       savefile: activeProfile.savefile ?? '',
-      startOnline: activeProfile.startOnline ?? false,
-      disableArxan: activeProfile.disableArxan ?? false,
-      noMemPatch: activeProfile.noMemPatch ?? false,
-      noBootBoost: activeProfile.noBootBoost ?? false,
-      showLogos: activeProfile.showLogos ?? false,
-      skipSteamInit: activeProfile.skipSteamInit ?? false,
+      startOnline: activeProfile.startOnline,
+      disableArxan: activeProfile.disableArxan,
+      noMemPatch: activeProfile.noMemPatch,
+      noBootBoost: activeProfile.noBootBoost,
+      showLogos: activeProfile.showLogos,
+      skipSteamInit: activeProfile.skipSteamInit,
       overrideExe: activeProfile.overrideExe,
     };
     const profiles = getProfiles();

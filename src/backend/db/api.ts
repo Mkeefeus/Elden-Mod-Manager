@@ -183,15 +183,51 @@ export const clearPromptedModsFolder = () => {
   }
 };
 
-export const getProfiles = (): ModProfile[] => {
-  debug('Getting profiles');
+// Defaults for the ModProfile settings that are typed as required booleans but, per the store
+// schema (see schema.ts), aren't guaranteed to actually be present on every stored profile — a
+// profile can predate a given setting, or predate the migration meant to backfill it.
+const DEFAULT_PROFILE_SETTINGS: Pick<
+  ModProfile,
+  'startOnline' | 'disableArxan' | 'noMemPatch' | 'noBootBoost' | 'showLogos' | 'skipSteamInit'
+> = {
+  startOnline: false,
+  disableArxan: false,
+  noMemPatch: false,
+  noBootBoost: false,
+  showLogos: false,
+  skipSteamInit: false,
+};
+
+const withProfileDefaults = (profile: ModProfile): ModProfile => ({
+  ...DEFAULT_PROFILE_SETTINGS,
+  ...profile,
+});
+
+/**
+ * Profiles exactly as stored, with no defaulting applied — a setting missing from the store stays
+ * missing here, even though `ModProfile` claims it's always a `boolean`. This exists only for code
+ * that needs to tell "genuinely missing" apart from "present" — i.e. a migration deciding whether
+ * it still has something to backfill (see db/migrations). Everything else should use getProfiles().
+ */
+export const getRawProfiles = (): ModProfile[] => {
+  debug('Getting raw profiles');
   try {
     return store.get('profiles');
   } catch (err) {
-    const msg = `An error occured while getting profiles: ${errToString(err)}`;
+    const msg = `An error occured while getting raw profiles: ${errToString(err)}`;
     error(msg);
     throw new Error(msg, { cause: err });
   }
+};
+
+/**
+ * Profiles with any missing settings filled in with their defaults (see DEFAULT_PROFILE_SETTINGS),
+ * so every `ModProfile` handed out from here actually satisfies its type — callers never need to
+ * fall back on a possibly-missing setting themselves.
+ */
+export const getProfiles = (): ModProfile[] => {
+  debug('Getting profiles');
+  return getRawProfiles().map(withProfileDefaults);
 };
 
 export const saveProfiles = (profiles: ModProfile[]) => {

@@ -1,6 +1,6 @@
 import { logger } from '@utils/mainLogger';
 import store from '../init';
-import { getProfiles, saveProfiles } from '../api';
+import { getRawProfiles, saveProfiles } from '../api';
 import { Migration } from './types';
 
 const { debug } = logger;
@@ -13,6 +13,10 @@ const { debug } = logger;
  *
  * These fields are deliberately left out of the store schema's `required` list (see schema.ts) so
  * old configs can still load before this migration gets a chance to run.
+ *
+ * Reads `getRawProfiles()`, not `getProfiles()`: the latter fills in defaults for any missing
+ * setting (see db/api.ts), which would make every profile look already-migrated and this
+ * migration would never run — it needs to see a genuinely missing field to know it has work to do.
  */
 export const launcherSettingsToProfiles: Migration = {
   id: 'launcher-settings-to-profiles',
@@ -20,7 +24,7 @@ export const launcherSettingsToProfiles: Migration = {
   userNotice:
     'Launcher settings (Disable Boot Boost, Show Intro Logos, Skip Steam Init, Override Elden Ring Executable) used to apply to every profile — now each profile has its own. Your old settings were copied onto all of them, so check Show Advanced on the Mods page to make sure they still look right for each profile.',
   run: () => {
-    const profiles = getProfiles();
+    const profiles = getRawProfiles();
     const needsMigration = profiles.some((p) => p.noBootBoost === undefined);
     if (!needsMigration) return false;
 
