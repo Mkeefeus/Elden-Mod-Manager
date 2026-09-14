@@ -59,6 +59,7 @@ import { canAutoUpdate, downloadAndInstallUpdate, getMainWindow } from '../main'
 import { getActiveDownloads, cancelDownload, dismissDownload, addLocalDownload } from './downloadManager';
 import { createOrFocusGetModsWindow, getGetModsWindow } from './getModsWindow';
 import { runStartupTasks } from './startup';
+import { getMigrationNotices } from './db/migrations';
 import {
   handleAddTool,
   handleDeleteTool,
@@ -270,6 +271,7 @@ const registerSettingsHandlers = () => {
     if (!src) return undefined;
     return importSettings(src);
   });
+  ipcMain.handle('get-migration-notices', () => getMigrationNotices());
 };
 
 const registerProfileHandlers = () => {

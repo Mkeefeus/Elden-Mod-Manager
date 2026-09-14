@@ -17,6 +17,8 @@ const { debug } = logger;
 export const launcherSettingsToProfiles: Migration = {
   id: 'launcher-settings-to-profiles',
   description: 'Copy account-wide launcher settings onto every profile',
+  userNotice:
+    'Launcher settings (Disable Boot Boost, Show Intro Logos, Skip Steam Init, Override Elden Ring Executable) used to apply to every profile — now each profile has its own. Your old settings were copied onto all of them, so check Show Advanced on the Mods page to make sure they still look right for each profile.',
   run: () => {
     const profiles = getProfiles();
     const needsMigration = profiles.some((p) => p.noBootBoost === undefined);

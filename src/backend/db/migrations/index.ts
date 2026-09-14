@@ -16,11 +16,17 @@ const { debug, error } = logger;
  */
 const migrations: Migration[] = [launcherSettingsToProfiles];
 
+// User-facing messages from migrations that actually ran this session — see getMigrationNotices.
+const appliedNotices: string[] = [];
+
 export const runMigrations = () => {
   for (const migration of migrations) {
     try {
       const didMigrate = migration.run();
-      if (didMigrate) debug(`Migration applied: ${migration.id} (${migration.description})`);
+      if (didMigrate) {
+        debug(`Migration applied: ${migration.id} (${migration.description})`);
+        if (migration.userNotice) appliedNotices.push(migration.userNotice);
+      }
     } catch (err) {
       const msg = `An error occured while running migration "${migration.id}": ${errToString(err)}`;
       error(msg);
@@ -28,3 +34,11 @@ export const runMigrations = () => {
     }
   }
 };
+
+/**
+ * Messages from migrations that ran this session, meant to be shown to the user once the
+ * renderer is ready (see `get-migration-notices` in mainEvents.ts). Read once at startup by the
+ * renderer, so there's no need to track whether they've been "seen" — they only exist for the one
+ * session in which their migration actually ran.
+ */
+export const getMigrationNotices = (): string[] => appliedNotices;

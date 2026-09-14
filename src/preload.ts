@@ -91,6 +91,10 @@ interface IElectronAPI {
   exportSettings: () => Promise<boolean>;
   importSettings: () => Promise<ExportedSettings | undefined>;
 
+  // --- Migrations ---
+  /** User-facing messages from any data migrations that ran this session — see db/migrations. */
+  getMigrationNotices: () => Promise<string[]>;
+
   // --- File System ---
   browse: (type: BrowseType, title?: string, startingDir?: string) => Promise<string | undefined>;
   extractArchive: (archivePath: string) => Promise<string>;
@@ -192,6 +196,7 @@ const electronAPI: IElectronAPI = {
   // --- Import / Export ---
   exportSettings: () => ipcRenderer.invoke('export-settings'),
   importSettings: () => ipcRenderer.invoke('import-settings'),
+  getMigrationNotices: () => ipcRenderer.invoke('get-migration-notices'),
 
   // --- File System ---
   browse: (...args) => ipcRenderer.invoke('browse', ...args),
