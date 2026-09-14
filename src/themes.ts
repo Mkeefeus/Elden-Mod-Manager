@@ -28,6 +28,9 @@ export const theme: MantineThemeOverride = createTheme({
   primaryColor: 'gold',
   primaryShade: 5,
   colors: { gold },
+  // Switches/checkboxes/radios default to a plain arrow cursor otherwise, which reads as
+  // non-interactive even though their whole label is clickable.
+  cursorType: 'pointer',
   headings: {
     fontFamily: 'Cinzel, serif',
   },

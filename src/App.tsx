@@ -1,11 +1,12 @@
-import { AppShell, Group, NavLink, Title } from '@mantine/core';
+import { AppShell, Group, NavLink, Stack, Text, Title } from '@mantine/core';
 import { useEffect } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { pages } from './pages';
 import Footer from '@components/Footer';
-import ModalProvider from '@providers/ModalProvider';
+import ModalProvider, { useModal } from '@providers/ModalProvider';
 import ModsProvider from '@providers/ModsProvider';
 import Modal from '@components/shared/Modal';
+import AcknowledgeModal from '@components/shared/AcknowledgeModal';
 import '@utils/rendererLogger';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { IconHome2, IconPuzzle, IconSettings, IconInfoCircle, IconTools } from '@tabler/icons-react';
@@ -36,6 +37,35 @@ const AppNavbar = () => {
       ))}
     </>
   );
+};
+
+// One-time heads-up for any data migration that ran this session (see db/migrations). Rendered
+// inside ModalProvider so it can use useModal(); shows nothing once there's nothing to say.
+const MigrationNoticeChecker = () => {
+  const { showModal, hideModal } = useModal();
+
+  useEffect(() => {
+    void window.electronAPI.getMigrationNotices().then((notices) => {
+      if (notices.length === 0) return;
+      showModal({
+        title: 'Heads Up',
+        content: (
+          <AcknowledgeModal
+            hideModal={hideModal}
+            message={
+              <Stack gap="sm">
+                {notices.map((notice, index) => (
+                  <Text key={index}>{notice}</Text>
+                ))}
+              </Stack>
+            }
+          />
+        ),
+      });
+    });
+  }, []);
+
+  return null;
 };
 
 const queryClient = new QueryClient({
@@ -71,6 +101,7 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <ModalProvider>
         <Modal />
+        <MigrationNoticeChecker />
         <AppShell
           header={{ height: { base: 60, md: 70, lg: 80 } }}
           footer={{ height: { base: 60, md: 70, lg: 80 } }}

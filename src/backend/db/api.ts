@@ -1,7 +1,7 @@
 import { errToString } from '@utils/utilities';
 import { logger } from '@utils/mainLogger';
 import store from './init';
-import { LauncherSettings, Mod, ModProfile, ProfileModRef, Tool, WindowState } from 'types';
+import { Mod, ModProfile, ProfileModRef, ProfileSettingsPatch, Tool, WindowState } from 'types';
 import { join } from 'path';
 import { app } from 'electron';
 
@@ -183,15 +183,51 @@ export const clearPromptedModsFolder = () => {
   }
 };
 
-export const getProfiles = (): ModProfile[] => {
-  debug('Getting profiles');
+// Defaults for the ModProfile settings that are typed as required booleans but, per the store
+// schema (see schema.ts), aren't guaranteed to actually be present on every stored profile — a
+// profile can predate a given setting, or predate the migration meant to backfill it.
+const DEFAULT_PROFILE_SETTINGS: Pick<
+  ModProfile,
+  'startOnline' | 'disableArxan' | 'noMemPatch' | 'noBootBoost' | 'showLogos' | 'skipSteamInit'
+> = {
+  startOnline: false,
+  disableArxan: false,
+  noMemPatch: false,
+  noBootBoost: false,
+  showLogos: false,
+  skipSteamInit: false,
+};
+
+const withProfileDefaults = (profile: ModProfile): ModProfile => ({
+  ...DEFAULT_PROFILE_SETTINGS,
+  ...profile,
+});
+
+/**
+ * Profiles exactly as stored, with no defaulting applied — a setting missing from the store stays
+ * missing here, even though `ModProfile` claims it's always a `boolean`. This exists only for code
+ * that needs to tell "genuinely missing" apart from "present" — i.e. a migration deciding whether
+ * it still has something to backfill (see db/migrations). Everything else should use getProfiles().
+ */
+export const getRawProfiles = (): ModProfile[] => {
+  debug('Getting raw profiles');
   try {
     return store.get('profiles');
   } catch (err) {
-    const msg = `An error occured while getting profiles: ${errToString(err)}`;
+    const msg = `An error occured while getting raw profiles: ${errToString(err)}`;
     error(msg);
     throw new Error(msg, { cause: err });
   }
+};
+
+/**
+ * Profiles with any missing settings filled in with their defaults (see DEFAULT_PROFILE_SETTINGS),
+ * so every `ModProfile` handed out from here actually satisfies its type — callers never need to
+ * fall back on a possibly-missing setting themselves.
+ */
+export const getProfiles = (): ModProfile[] => {
+  debug('Getting profiles');
+  return getRawProfiles().map(withProfileDefaults);
 };
 
 export const saveProfiles = (profiles: ModProfile[]) => {
@@ -233,46 +269,13 @@ export const getProfilesFolder = () => {
   return join(app.getPath('userData'), 'profiles');
 };
 
-export const getLauncherSettings = (): LauncherSettings => {
-  try {
-    store.get('noBootBoost');
-    store.get('showLogos');
-    store.get('skipSteamInit');
-    const overrideExe = store.get('overrideExe');
-    return {
-      noBootBoost: store.get('noBootBoost'),
-      showLogos: store.get('showLogos'),
-      skipSteamInit: store.get('skipSteamInit'),
-      overrideExe: overrideExe !== undefined ? overrideExe : undefined,
-    };
-  } catch (err) {
-    const msg = `An error occured while getting launcher settings: ${errToString(err)}`;
-    error(msg);
-    throw new Error(msg, { cause: err });
-  }
-};
-
-export const setLauncherSettings = (fields: Partial<LauncherSettings>) => {
-  debug(`Updating launcher settings: ${JSON.stringify(fields)}`);
-  if (fields.noBootBoost !== undefined) store.set('noBootBoost', fields.noBootBoost);
-  if (fields.showLogos !== undefined) store.set('showLogos', fields.showLogos);
-  if (fields.skipSteamInit !== undefined) store.set('skipSteamInit', fields.skipSteamInit);
-  if (fields.overrideExe !== undefined) {
-    store.set('overrideExe', fields.overrideExe);
-  } else if (fields.overrideExe === undefined) {
-    store.delete('overrideExe');
-  }
-};
-
 export const getActiveProfile = (): ModProfile | undefined => {
   const profiles = getProfiles();
   const activeId = getActiveProfileId();
   return profiles.find((p) => p.uuid === activeId);
 };
 
-export const updateActiveProfile = (
-  fields: Partial<Pick<ModProfile, 'savefile' | 'startOnline' | 'disableArxan' | 'noMemPatch'>>
-) => {
+export const updateActiveProfile = (fields: ProfileSettingsPatch) => {
   debug(`Updating active profile fields: ${JSON.stringify(fields)}`);
   try {
     const profiles = getProfiles();
@@ -314,9 +317,36 @@ export const setWindowState = (state: WindowState) => {
   }
 };
 
+// Matches schema.ts's `lastPage` default — used when "remember last page" is turned off.
+const DEFAULT_LAST_PAGE = '/';
+
+export const getRememberLastPage = (): boolean => {
+  debug('Getting remember last page setting');
+  try {
+    return store.get('rememberLastPage');
+  } catch (err) {
+    const msg = `An error occured while getting remember last page setting: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg, { cause: err });
+  }
+};
+
+export const setRememberLastPage = (value: boolean) => {
+  debug(`Setting remember last page: ${value}`);
+  try {
+    store.set('rememberLastPage', value);
+    return true;
+  } catch (err) {
+    const msg = `An error occured while setting remember last page: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg, { cause: err });
+  }
+};
+
 export const getLastPage = (): string => {
   debug('Getting last page');
   try {
+    if (!getRememberLastPage()) return DEFAULT_LAST_PAGE;
     return store.get('lastPage');
   } catch (err) {
     const msg = `An error occured while getting last page: ${errToString(err)}`;

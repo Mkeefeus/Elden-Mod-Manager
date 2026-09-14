@@ -18,7 +18,7 @@ import {
   ImportModResult,
   Tool,
   ToolFormValues,
-  LauncherSettings,
+  ProfileSettingsPatch,
 } from 'types';
 
 interface IElectronAPI {
@@ -51,12 +51,7 @@ interface IElectronAPI {
   applyProfile: (uuid: string) => Promise<void>;
   deleteProfile: (uuid: string) => Promise<string>;
   renameProfile: (uuid: string, name: string) => void;
-  updateActiveProfileSettings: (fields: {
-    savefile?: string;
-    startOnline?: boolean;
-    disableArxan?: boolean;
-    noMemPatch?: boolean;
-  }) => void;
+  updateActiveProfileSettings: (fields: ProfileSettingsPatch) => void;
   exportProfile: (uuid: string) => void;
   analyzeProfileImport: (srcPath: string) => Promise<ProfileImportAnalysis>;
   completeProfileImport: (
@@ -70,8 +65,8 @@ interface IElectronAPI {
   getToolsPath: () => Promise<string>;
   updateModsFolder: (path: string) => void;
   updateToolsFolder: (path: string) => void;
-  getLauncherSettings: () => Promise<LauncherSettings>;
-  updateLauncherSettings: (fields: Partial<LauncherSettings>) => void;
+  getRememberLastPage: () => Promise<boolean>;
+  updateRememberLastPage: (value: boolean) => void;
 
   // --- Get Mods Window ---
   openGetModsWindow: () => void;
@@ -97,6 +92,10 @@ interface IElectronAPI {
   // --- Import / Export ---
   exportSettings: () => Promise<boolean>;
   importSettings: () => Promise<ExportedSettings | undefined>;
+
+  // --- Migrations ---
+  /** User-facing messages from any data migrations that ran this session — see db/migrations. */
+  getMigrationNotices: () => Promise<string[]>;
 
   // --- File System ---
   browse: (type: BrowseType, title?: string, startingDir?: string) => Promise<string | undefined>;
@@ -173,8 +172,8 @@ const electronAPI: IElectronAPI = {
   getToolsPath: () => ipcRenderer.invoke('get-tools-path'),
   updateModsFolder: (path) => ipcRenderer.send('update-mods-folder', path),
   updateToolsFolder: (path) => ipcRenderer.send('update-tools-folder', path),
-  getLauncherSettings: () => ipcRenderer.invoke('get-launcher-settings'),
-  updateLauncherSettings: (fields) => ipcRenderer.send('update-launcher-settings', fields),
+  getRememberLastPage: () => ipcRenderer.invoke('get-remember-last-page'),
+  updateRememberLastPage: (value) => ipcRenderer.send('update-remember-last-page', value),
 
   // --- Get Mods Window ---
   openGetModsWindow: () => ipcRenderer.send('open-get-mods-window'),
@@ -201,6 +200,7 @@ const electronAPI: IElectronAPI = {
   // --- Import / Export ---
   exportSettings: () => ipcRenderer.invoke('export-settings'),
   importSettings: () => ipcRenderer.invoke('import-settings'),
+  getMigrationNotices: () => ipcRenderer.invoke('get-migration-notices'),
 
   // --- File System ---
   browse: (...args) => ipcRenderer.invoke('browse', ...args),

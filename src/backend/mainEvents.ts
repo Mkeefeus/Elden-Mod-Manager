@@ -13,10 +13,10 @@ import {
   getToolsDirectory,
   setToolsDirectory,
   getProfiles,
-  getLauncherSettings,
-  setLauncherSettings,
   getTools,
   setLastPage,
+  getRememberLastPage,
+  setRememberLastPage,
 } from './db/api';
 import {
   AddModFormValues,
@@ -24,11 +24,11 @@ import {
   EditModFormValues,
   ImportInstallTarget,
   ImportModResult,
-  LauncherSettings,
   LogEntry,
   Mod,
   ProfileImportAnalysis,
   ProfileModRef,
+  ProfileSettingsPatch,
   Tool,
   ToolFormValues,
 } from 'types';
@@ -61,6 +61,7 @@ import { canAutoUpdate, downloadAndInstallUpdate, getMainWindow } from '../main'
 import { getActiveDownloads, cancelDownload, dismissDownload, addLocalDownload } from './downloadManager';
 import { createOrFocusGetModsWindow, getGetModsWindow } from './getModsWindow';
 import { runStartupTasks } from './startup';
+import { getMigrationNotices } from './db/migrations';
 import {
   handleAddTool,
   handleDeleteTool,
@@ -71,13 +72,6 @@ import {
 } from './tools';
 
 const { debug, error, info } = logger;
-
-type ActiveProfileSettingsPatch = {
-  savefile?: string;
-  startOnline?: boolean;
-  disableArxan?: boolean;
-  noMemPatch?: boolean;
-};
 
 const getInstalledModPath = (mod: Pick<Mod, 'name' | 'version'>) =>
   join(getModsFolder(), CreateModPathFromName(mod.name, mod.version));
@@ -265,12 +259,8 @@ const registerSettingsHandlers = () => {
     updateToolsFolder(path);
   });
   ipcMain.handle('get-active-profile', () => getActiveProfile());
-  ipcMain.on('update-active-profile-settings', (_, fields: ActiveProfileSettingsPatch) => {
+  ipcMain.on('update-active-profile-settings', (_, fields: ProfileSettingsPatch) => {
     updateActiveProfile(fields);
-  });
-  ipcMain.handle('get-launcher-settings', () => getLauncherSettings());
-  ipcMain.on('update-launcher-settings', (_, fields: Partial<LauncherSettings>) => {
-    setLauncherSettings(fields);
   });
   ipcMain.handle('export-settings', () => {
     const dest = saveFilePath('emm-settings.json', 'Export Settings');
@@ -282,6 +272,11 @@ const registerSettingsHandlers = () => {
     const src = browse('binary', 'Import Settings');
     if (!src) return undefined;
     return importSettings(src);
+  });
+  ipcMain.handle('get-migration-notices', () => getMigrationNotices());
+  ipcMain.handle('get-remember-last-page', () => getRememberLastPage());
+  ipcMain.on('update-remember-last-page', (_, value: boolean) => {
+    setRememberLastPage(value);
   });
 };
 
