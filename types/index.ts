@@ -102,7 +102,25 @@ export type ModProfile = {
   disableArxan: boolean;
   noMemPatch: boolean;
   overrideProtonVerb?: boolean;
+  noBootBoost: boolean;
+  showLogos: boolean;
+  skipSteamInit: boolean;
+  overrideExe?: string;
 };
+
+export type ProfileSettingsPatch = Partial<
+  Pick<
+    ModProfile,
+    | 'savefile'
+    | 'startOnline'
+    | 'disableArxan'
+    | 'noMemPatch'
+    | 'noBootBoost'
+    | 'showLogos'
+    | 'skipSteamInit'
+    | 'overrideExe'
+  >
+>;
 
 export type Dependency = {
   licenses: string;
@@ -124,9 +142,6 @@ export type ExportedSettings = {
   modFolderPath: string;
   toolFolderPath?: string;
   eldenRingFolder: string;
-  noBootBoost: boolean;
-  showLogos: boolean;
-  skipSteamInit: boolean;
 };
 
 export type ImportInstallTarget = {
@@ -152,6 +167,10 @@ export type ProfileImportAnalysis = {
   startOnline: boolean;
   disableArxan: boolean;
   noMemPatch: boolean;
+  noBootBoost: boolean;
+  showLogos: boolean;
+  skipSteamInit: boolean;
+  overrideExe?: string;
   mods: ImportModResult[];
 };
 
@@ -198,11 +217,4 @@ export type ModConfigFormValues = AddModFormValues & {
   initializerType: InitializerType;
   initializerDelayMs: number;
   initializerFunction: string;
-};
-
-export type LauncherSettings = {
-  noBootBoost: boolean;
-  showLogos: boolean;
-  skipSteamInit: boolean;
-  overrideExe?: string;
 };

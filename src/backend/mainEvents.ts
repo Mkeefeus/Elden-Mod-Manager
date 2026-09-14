@@ -13,8 +13,6 @@ import {
   getToolsDirectory,
   setToolsDirectory,
   getProfiles,
-  getLauncherSettings,
-  setLauncherSettings,
   getTools,
   setLastPage,
 } from './db/api';
@@ -24,11 +22,11 @@ import {
   EditModFormValues,
   ImportInstallTarget,
   ImportModResult,
-  LauncherSettings,
   LogEntry,
   Mod,
   ProfileImportAnalysis,
   ProfileModRef,
+  ProfileSettingsPatch,
   Tool,
   ToolFormValues,
 } from 'types';
@@ -71,13 +69,6 @@ import {
 } from './tools';
 
 const { debug, error, info } = logger;
-
-type ActiveProfileSettingsPatch = {
-  savefile?: string;
-  startOnline?: boolean;
-  disableArxan?: boolean;
-  noMemPatch?: boolean;
-};
 
 const getInstalledModPath = (mod: Pick<Mod, 'name' | 'version'>) =>
   join(getModsFolder(), CreateModPathFromName(mod.name, mod.version));
@@ -265,12 +256,8 @@ const registerSettingsHandlers = () => {
     updateToolsFolder(path);
   });
   ipcMain.handle('get-active-profile', () => getActiveProfile());
-  ipcMain.on('update-active-profile-settings', (_, fields: ActiveProfileSettingsPatch) => {
+  ipcMain.on('update-active-profile-settings', (_, fields: ProfileSettingsPatch) => {
     updateActiveProfile(fields);
-  });
-  ipcMain.handle('get-launcher-settings', () => getLauncherSettings());
-  ipcMain.on('update-launcher-settings', (_, fields: Partial<LauncherSettings>) => {
-    setLauncherSettings(fields);
   });
   ipcMain.handle('export-settings', () => {
     const dest = saveFilePath('emm-settings.json', 'Export Settings');

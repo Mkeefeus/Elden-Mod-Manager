@@ -3,7 +3,7 @@ import { existsSync } from 'fs';
 import { dirname, join } from 'path';
 import { app } from 'electron';
 import { logger } from '@utils/mainLogger';
-import { getProfilesFolder, getActiveProfile, getLauncherSettings } from './db/api';
+import { getProfilesFolder, getActiveProfile } from './db/api';
 import { errToString } from '@utils/utilities';
 import { ME3_PROFILE_FILENAME } from './constants';
 import { writeMe3Profile } from './me3Profile';
@@ -72,14 +72,24 @@ export const launchEldenRingModded = () => {
     const profilePath = join(getProfilesFolder(), ME3_PROFILE_FILENAME);
     const args = ['launch', '-p', profilePath];
     const activeProfile = getActiveProfile();
-    if (activeProfile?.disableArxan) args.push('--disable-arxan');
-    if (activeProfile?.noMemPatch) args.push('--no-mem-patch');
-    const launcherSettings = getLauncherSettings();
-    if (launcherSettings.noBootBoost) args.push('--no-boot-boost');
-    if (launcherSettings.showLogos) args.push('--show-logos');
-    if (launcherSettings.skipSteamInit) args.push('--skip-steam-init');
-    if (launcherSettings.overrideExe) args.push('--exe', launcherSettings.overrideExe);
-    if (process.platform === 'linux' && activeProfile?.overrideProtonVerb) {
+    if (!activeProfile) {
+      const msg = 'No active profile found while launching game with mods.';
+      error(msg);
+      throw new Error(msg);
+    }
+    const booleanFlags: [boolean, string][] = [
+      [activeProfile.disableArxan, '--disable-arxan'],
+      [activeProfile.noMemPatch, '--no-mem-patch'],
+      [activeProfile.noBootBoost, '--no-boot-boost'],
+      [activeProfile.showLogos, '--show-logos'],
+      [activeProfile.skipSteamInit, '--skip-steam-init'],
+    ];
+    for (const [enabled, flag] of booleanFlags) {
+      if (enabled) args.push(flag);
+    }
+
+    if (activeProfile.overrideExe) args.push('--exe', activeProfile.overrideExe);
+    if (process.platform === 'linux' && activeProfile.overrideProtonVerb) {
       process.env['ME3_PROTON_LAUNCH_VERB'] = 'run';
     }
     debug(`Running: ${launchCommand} ${args.join(' ')}`);

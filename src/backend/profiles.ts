@@ -34,9 +34,13 @@ type ProfileExport = {
   startOnline: boolean;
   disableArxan: boolean;
   noMemPatch: boolean;
+  noBootBoost: boolean;
+  showLogos: boolean;
+  skipSteamInit: boolean;
+  overrideExe?: string;
 };
 
-const { debug } = logger;
+const { debug, error } = logger;
 
 const normalizeString = (value: string): string => value.trim().toLowerCase();
 
@@ -75,15 +79,24 @@ export const handleCreateProfile = (name: string): ModProfile => {
   debug(`Creating profile: ${name}`);
   try {
     const activeProfile = getActiveProfile();
+    if (!activeProfile) {
+      const msg = 'No active profile found while creating new profile.';
+      error(msg);
+      throw new Error(msg);
+    }
     const profile: ModProfile = {
       uuid: randomUUID(),
       name,
       createdAt: Date.now(),
       mods: [],
-      savefile: activeProfile?.savefile ?? '',
-      startOnline: activeProfile?.startOnline ?? false,
-      disableArxan: activeProfile?.disableArxan ?? false,
-      noMemPatch: activeProfile?.noMemPatch ?? false,
+      savefile: activeProfile.savefile ?? '',
+      startOnline: activeProfile.startOnline ?? false,
+      disableArxan: activeProfile.disableArxan ?? false,
+      noMemPatch: activeProfile.noMemPatch ?? false,
+      noBootBoost: activeProfile.noBootBoost ?? false,
+      showLogos: activeProfile.showLogos ?? false,
+      skipSteamInit: activeProfile.skipSteamInit ?? false,
+      overrideExe: activeProfile.overrideExe,
     };
     const profiles = getProfiles();
     profiles.push(profile);
@@ -189,6 +202,10 @@ export const handleExportProfile = (profile: ModProfile, destPath: string) => {
       startOnline: profile.startOnline,
       disableArxan: profile.disableArxan,
       noMemPatch: profile.noMemPatch,
+      noBootBoost: profile.noBootBoost,
+      showLogos: profile.showLogos,
+      skipSteamInit: profile.skipSteamInit,
+      overrideExe: profile.overrideExe,
     };
 
     writeFileSync(destPath, JSON.stringify(exportData, null, 2), 'utf-8');
@@ -256,6 +273,11 @@ export const analyzeProfileImport = (srcPath: string): ProfileImportAnalysis => 
       startOnline: parsed.startOnline,
       disableArxan: parsed.disableArxan,
       noMemPatch: parsed.noMemPatch,
+      // Fall back to defaults for profiles exported before these settings existed.
+      noBootBoost: parsed.noBootBoost ?? false,
+      showLogos: parsed.showLogos ?? false,
+      skipSteamInit: parsed.skipSteamInit ?? false,
+      overrideExe: parsed.overrideExe,
       mods,
     };
   } catch (err) {
@@ -311,6 +333,10 @@ export const completeProfileImport = (
       startOnline: analysis.startOnline,
       disableArxan: analysis.disableArxan,
       noMemPatch: analysis.noMemPatch,
+      noBootBoost: analysis.noBootBoost,
+      showLogos: analysis.showLogos,
+      skipSteamInit: analysis.skipSteamInit,
+      overrideExe: analysis.overrideExe,
     };
 
     profiles.push(profile);

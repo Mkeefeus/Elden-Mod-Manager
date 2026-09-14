@@ -13,10 +13,6 @@ export type DBSchema = {
   promptedModsFolder: boolean;
   profiles: ModProfile[];
   activeProfileId: string;
-  noBootBoost: boolean;
-  showLogos: boolean;
-  skipSteamInit: boolean;
-  overrideExe?: string;
   windowState: WindowState;
   lastPage: string;
   nexusApiKey?: string;
@@ -123,30 +119,19 @@ const schema: Schema<DBSchema> = {
         startOnline: { type: 'boolean' },
         disableArxan: { type: 'boolean' },
         noMemPatch: { type: 'boolean' },
+        overrideProtonVerb: { type: 'boolean' },
+        noBootBoost: { type: 'boolean' },
+        showLogos: { type: 'boolean' },
+        skipSteamInit: { type: 'boolean' },
+        overrideExe: { type: 'string' },
       },
-      required: ['uuid', 'name', 'createdAt', 'mods', 'savefile', 'startOnline', 'disableArxan', 'noMemPatch'],
+      required: ['uuid', 'name', 'createdAt', 'mods'],
     },
     default: [],
   },
   activeProfileId: {
     type: 'string',
     default: '',
-  },
-  noBootBoost: {
-    type: 'boolean',
-    default: false,
-  },
-  showLogos: {
-    type: 'boolean',
-    default: false,
-  },
-  skipSteamInit: {
-    type: 'boolean',
-    default: false,
-  },
-  overrideExe: {
-    type: 'string',
-    default: undefined,
   },
   windowState: {
     type: 'object',

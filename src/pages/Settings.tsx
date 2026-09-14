@@ -1,13 +1,11 @@
-import { TextInput, Button, Stack, Group, Switch, Divider, Text } from '@mantine/core';
+import { TextInput, Button, Stack, Group, Divider, Text } from '@mantine/core';
 import { sendLog } from '@utils/rendererLogger';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
 
 const TEXT_INPUT_STYLE = { flex: 7 };
 const BUTTON_STYLE = { flex: 1 };
 
 const Settings = () => {
-  const [overrideExe, setOverrideExe] = useState<boolean>(false);
   const { data: modsPath } = useQuery({
     queryKey: ['mods-path'],
     queryFn: () => window.electronAPI.getModsPath(),
@@ -18,21 +16,7 @@ const Settings = () => {
     queryFn: () => window.electronAPI.getToolsPath(),
     staleTime: Infinity,
   });
-  const { data: launcherSettings } = useQuery({
-    queryKey: ['launcher-settings'],
-    queryFn: () => window.electronAPI.getLauncherSettings(),
-    staleTime: Infinity,
-  });
   const queryClient = useQueryClient();
-
-  // Initialize overrideExe state based on launcherSettings
-  useEffect(() => {
-    if (launcherSettings?.overrideExe !== undefined) {
-      setOverrideExe(true);
-    } else {
-      setOverrideExe(false);
-    }
-  }, [launcherSettings]);
 
   const handleBrowseMods = async () => {
     const path = await window.electronAPI.browse('directory', 'Select Folder');
@@ -52,24 +36,6 @@ const Settings = () => {
     }
     queryClient.setQueryData(['tools-path'], path);
     window.electronAPI.updateToolsFolder(path);
-  };
-
-  const handleOverrideExeToggle = (enabled: boolean) => {
-    setOverrideExe(enabled);
-    if (!enabled) {
-      queryClient.setQueryData(['launcher-settings'], { ...launcherSettings!, overrideExe: undefined });
-      window.electronAPI.updateLauncherSettings({ overrideExe: undefined });
-    }
-  };
-
-  const handleBrowseOverrideExe = async () => {
-    const path = await window.electronAPI.browse('exe', 'Select Elden Ring Executable');
-    if (!path) {
-      sendLog({ level: 'warning', message: 'No path selected' });
-      return;
-    }
-    queryClient.setQueryData(['launcher-settings'], { ...launcherSettings!, overrideExe: path });
-    window.electronAPI.updateLauncherSettings({ overrideExe: path });
   };
 
   return (
@@ -110,65 +76,6 @@ const Settings = () => {
       </Group>
       <Divider mt="sm" />
       <Text size="sm" fw={500} c="dimmed">
-        Launcher Settings
-      </Text>
-      <Switch
-        label="Disable Boot Boost"
-        description="Don't cache decrypted BHD files — increases startup time (default: off)"
-        checked={launcherSettings?.noBootBoost ?? false}
-        onChange={(e) => {
-          const checked = e.currentTarget.checked;
-          queryClient.setQueryData(['launcher-settings'], { ...launcherSettings!, noBootBoost: checked });
-          window.electronAPI.updateLauncherSettings({ noBootBoost: checked });
-        }}
-      />
-      <Switch
-        label="Show Intro Logos"
-        description="Show game intro logos on launch (default: off)"
-        checked={launcherSettings?.showLogos ?? false}
-        onChange={(e) => {
-          const checked = e.currentTarget.checked;
-          queryClient.setQueryData(['launcher-settings'], { ...launcherSettings!, showLogos: checked });
-          window.electronAPI.updateLauncherSettings({ showLogos: checked });
-        }}
-      />
-      <Switch
-        label="Skip Steam Init"
-        description="Skip initializing Steam within the launcher (default: off)"
-        checked={launcherSettings?.skipSteamInit ?? false}
-        onChange={(e) => {
-          const checked = e.currentTarget.checked;
-          queryClient.setQueryData(['launcher-settings'], { ...launcherSettings!, skipSteamInit: checked });
-          window.electronAPI.updateLauncherSettings({ skipSteamInit: checked });
-        }}
-      />
-      <Switch
-        label="Override Elden Ring Executable"
-        description="Use a different eldenring.exe then the normal one in the steam directory. Useful for downpatching"
-        checked={overrideExe}
-        onChange={(e) => handleOverrideExeToggle(e.currentTarget.checked)}
-      />
-      {overrideExe && (
-        <Group align={'flex-end'} justify={'space-between'}>
-          <TextInput
-            label="Override Elden Ring Executable Path"
-            placeholder="Select Elden Ring Executable"
-            style={TEXT_INPUT_STYLE}
-            value={launcherSettings?.overrideExe ?? ''}
-            disabled
-          />
-          <Button
-            style={BUTTON_STYLE}
-            onClick={() => {
-              void handleBrowseOverrideExe();
-            }}
-          >
-            Browse
-          </Button>
-        </Group>
-      )}
-      <Divider mt="sm" />
-      <Text size="sm" fw={500} c="dimmed">
         Backup
       </Text>
       <Group>
@@ -191,11 +98,6 @@ const Settings = () => {
               if (result.toolFolderPath) {
                 queryClient.setQueryData(['tools-path'], result.toolFolderPath);
               }
-              queryClient.setQueryData(['launcher-settings'], {
-                noBootBoost: result.noBootBoost,
-                showLogos: result.showLogos,
-                skipSteamInit: result.skipSteamInit,
-              });
               sendLog({ level: 'info', message: 'Settings imported successfully' });
             });
           }}

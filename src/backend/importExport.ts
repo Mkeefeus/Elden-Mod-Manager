@@ -4,11 +4,9 @@ import {
   getModsFolder,
   getToolsDirectory,
   getEldenRingFolder,
-  getLauncherSettings,
   setModsFolder,
   setToolsDirectory,
   setEldenRingFolder,
-  setLauncherSettings,
 } from './db/api';
 import { logger } from '@utils/mainLogger';
 import { errToString } from '@utils/utilities';
@@ -18,15 +16,11 @@ const { debug, error, warning } = logger;
 export const exportSettings = (destPath: string): void => {
   debug(`Exporting settings to: ${destPath}`);
   try {
-    const launcher = getLauncherSettings();
     const settings: ExportedSettings = {
       version: 1,
       modFolderPath: getModsFolder(),
       toolFolderPath: getToolsDirectory(),
       eldenRingFolder: getEldenRingFolder(),
-      noBootBoost: launcher.noBootBoost,
-      showLogos: launcher.showLogos,
-      skipSteamInit: launcher.skipSteamInit,
     };
     writeFileSync(destPath, JSON.stringify(settings, null, 2), 'utf-8');
     debug('Settings exported successfully');
@@ -44,10 +38,7 @@ const isValidExportedSettings = (obj: unknown): obj is ExportedSettings => {
     o['version'] === 1 &&
     typeof o['modFolderPath'] === 'string' &&
     (o['toolFolderPath'] === undefined || typeof o['toolFolderPath'] === 'string') &&
-    typeof o['eldenRingFolder'] === 'string' &&
-    typeof o['noBootBoost'] === 'boolean' &&
-    typeof o['showLogos'] === 'boolean' &&
-    typeof o['skipSteamInit'] === 'boolean'
+    typeof o['eldenRingFolder'] === 'string'
   );
 };
 
@@ -78,11 +69,8 @@ export const importSettings = (srcPath: string): ExportedSettings => {
       warning(`Imported Elden Ring folder does not exist on this machine, skipping: ${parsed.eldenRingFolder}`);
     }
 
-    setLauncherSettings({
-      noBootBoost: parsed.noBootBoost,
-      showLogos: parsed.showLogos,
-      skipSteamInit: parsed.skipSteamInit,
-    });
+    // Note: launcher settings (boot boost, intro logos, steam init, override exe) used to live here
+    // but are now per-profile — see ModProfile / ProfileExport for exporting/importing those instead.
     debug('Settings imported successfully');
     return parsed;
   } catch (err) {
