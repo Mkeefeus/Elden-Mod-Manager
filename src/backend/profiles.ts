@@ -30,7 +30,7 @@ type ModExport = {
 type ProfileExport = {
   name: string;
   mods: ModExport[];
-  savefile: string;
+  savefile?: string;
   startOnline: boolean;
   disableArxan: boolean;
   noMemPatch: boolean;
@@ -89,7 +89,7 @@ export const handleCreateProfile = (name: string): ModProfile => {
       name,
       createdAt: Date.now(),
       mods: [],
-      savefile: activeProfile.savefile ?? '',
+      savefile: activeProfile.savefile,
       startOnline: activeProfile.startOnline,
       disableArxan: activeProfile.disableArxan,
       noMemPatch: activeProfile.noMemPatch,

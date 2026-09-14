@@ -14,7 +14,6 @@ export const runStartupTasks = () => {
       name: 'Default',
       createdAt: Date.now(),
       mods: [],
-      savefile: '',
       startOnline: false,
       disableArxan: false,
       noMemPatch: false,

@@ -124,7 +124,11 @@ const validateModContents = (mod: Mod): boolean | string => {
   return validatedModPath;
 };
 
-const generateMe3ProfileString = (mods: ResolvedProfileMod[], savefile: string, startOnline: boolean): string => {
+const generateMe3ProfileString = (
+  mods: ResolvedProfileMod[],
+  savefile: string | undefined,
+  startOnline: boolean
+): string => {
   const nativeMods = mods.filter((m) => !!m.dllFile);
   const packageMods = mods.filter((m) => !m.dllFile);
   const enabledModsByUuid = new Map(mods.map((mod) => [mod.uuid, mod]));
@@ -182,8 +186,8 @@ export const writeMe3Profile = () => {
       error(msg);
       throw new Error(msg);
     }
-    const sf = activeProfile.savefile ?? '';
-    const so = activeProfile.startOnline ?? false;
+    const sf = activeProfile.savefile;
+    const so = activeProfile.startOnline;
     const installedModsByUuid = new Map(loadMods().map((mod) => [mod.uuid, mod]));
     const enabledMods = activeProfile.mods
       .map<ResolvedProfileMod | undefined>((profileMod) => {

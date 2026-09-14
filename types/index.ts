@@ -97,7 +97,7 @@ export type ModProfile = {
   name: string;
   createdAt: number;
   mods: ProfileModRef[];
-  savefile: string;
+  savefile?: string;
   startOnline: boolean;
   disableArxan: boolean;
   noMemPatch: boolean;
@@ -163,7 +163,7 @@ export type ImportModResult = ImportInstallTarget & {
 
 export type ProfileImportAnalysis = {
   profileName: string;
-  savefile: string;
+  savefile?: string;
   startOnline: boolean;
   disableArxan: boolean;
   noMemPatch: boolean;

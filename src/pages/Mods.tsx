@@ -73,7 +73,7 @@ const Mods = () => {
 
   useEffect(() => {
     setUseCustomSavefile(!!activeProfile?.savefile);
-  }, [activeProfile?.uuid]);
+  }, [activeProfile?.uuid, activeProfile?.savefile]);
 
   useEffect(() => {
     // Don't clobber in-progress typing with a value that's about to be overwritten
@@ -88,7 +88,7 @@ const Mods = () => {
     persistSavefile.cancel();
     setUseCustomSavefile(enabled);
     if (!enabled) {
-      updateActiveProfile({ savefile: '' });
+      updateActiveProfile({ savefile: undefined });
     } else {
       updateActiveProfile({
         savefile:
