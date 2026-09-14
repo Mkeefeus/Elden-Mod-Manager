@@ -1,15 +1,4 @@
-import {
-  Button,
-  Collapse,
-  Divider,
-  Group,
-  ScrollArea,
-  SimpleGrid,
-  Stack,
-  Switch,
-  Text,
-  TextInput,
-} from '@mantine/core';
+import { Button, Collapse, Divider, Group, ScrollArea, SimpleGrid, Stack, Text, TextInput } from '@mantine/core';
 import { useDebouncedCallback } from '@mantine/hooks';
 import ModTable from '@components/mods/ModTable';
 import { useEffect, useState } from 'react';
@@ -18,33 +7,12 @@ import { useModal } from '@providers/ModalProvider';
 import PromptModsFolderModal from '@components/PromptModsFolderModal';
 import ProfileSelector from '@components/mods/ProfileSelector';
 import LoadOrderModal from '@components/LoadOrderModal';
+import SettingSwitch from '@components/shared/SettingSwitch';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { sendLog } from '@utils/rendererLogger';
 
 const OVERRIDE_EXE_TEXT_INPUT_STYLE = { flex: 7 };
 const OVERRIDE_EXE_BUTTON_STYLE = { flex: 1 };
-
-type SettingSwitchProps = {
-  label: string;
-  description: string;
-  checked: boolean;
-  onChange: (checked: boolean) => void;
-};
-
-// Mantine's Switch normally wraps its label/description in the same clickable element as the
-// track, so clicking the text toggles it too. Rendering the text separately, outside the Switch,
-// keeps the track itself as the only clickable target.
-const SettingSwitch = ({ label, description, checked, onChange }: SettingSwitchProps) => (
-  <Group wrap="nowrap" align="flex-start" gap="sm">
-    <Switch mt={2} checked={checked} onChange={(e) => onChange(e.currentTarget.checked)} />
-    <Stack gap={0} style={{ flex: 1 }}>
-      <Text size="sm">{label}</Text>
-      <Text size="xs" c="dimmed">
-        {description}
-      </Text>
-    </Stack>
-  </Group>
-);
 
 const Mods = () => {
   const { showModal, hideModal } = useModal();

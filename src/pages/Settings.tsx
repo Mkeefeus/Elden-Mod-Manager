@@ -1,6 +1,7 @@
 import { TextInput, Button, Stack, Group, Divider, Text } from '@mantine/core';
 import { sendLog } from '@utils/rendererLogger';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import SettingSwitch from '@components/shared/SettingSwitch';
 
 const TEXT_INPUT_STYLE = { flex: 7 };
 const BUTTON_STYLE = { flex: 1 };
@@ -16,7 +17,17 @@ const Settings = () => {
     queryFn: () => window.electronAPI.getToolsPath(),
     staleTime: Infinity,
   });
+  const { data: rememberLastPage } = useQuery({
+    queryKey: ['remember-last-page'],
+    queryFn: () => window.electronAPI.getRememberLastPage(),
+    staleTime: Infinity,
+  });
   const queryClient = useQueryClient();
+
+  const handleRememberLastPageToggle = (checked: boolean) => {
+    queryClient.setQueryData(['remember-last-page'], checked);
+    window.electronAPI.updateRememberLastPage(checked);
+  };
 
   const handleBrowseMods = async () => {
     const path = await window.electronAPI.browse('directory', 'Select Folder');
@@ -74,6 +85,16 @@ const Settings = () => {
           Browse
         </Button>
       </Group>
+      <Divider mt="sm" />
+      <Text size="sm" fw={500} c="dimmed">
+        General
+      </Text>
+      <SettingSwitch
+        label="Remember Last Page"
+        description="Reopen on whichever page you had open last time (default: on)"
+        checked={rememberLastPage ?? true}
+        onChange={handleRememberLastPageToggle}
+      />
       <Divider mt="sm" />
       <Text size="sm" fw={500} c="dimmed">
         Backup

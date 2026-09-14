@@ -15,6 +15,8 @@ import {
   getProfiles,
   getTools,
   setLastPage,
+  getRememberLastPage,
+  setRememberLastPage,
 } from './db/api';
 import {
   AddModFormValues,
@@ -272,6 +274,10 @@ const registerSettingsHandlers = () => {
     return importSettings(src);
   });
   ipcMain.handle('get-migration-notices', () => getMigrationNotices());
+  ipcMain.handle('get-remember-last-page', () => getRememberLastPage());
+  ipcMain.on('update-remember-last-page', (_, value: boolean) => {
+    setRememberLastPage(value);
+  });
 };
 
 const registerProfileHandlers = () => {

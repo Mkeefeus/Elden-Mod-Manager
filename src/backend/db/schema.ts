@@ -15,6 +15,7 @@ export type DBSchema = {
   activeProfileId: string;
   windowState: WindowState;
   lastPage: string;
+  rememberLastPage: boolean;
   nexusApiKey?: string;
 };
 
@@ -147,6 +148,10 @@ const schema: Schema<DBSchema> = {
   lastPage: {
     type: 'string',
     default: '/',
+  },
+  rememberLastPage: {
+    type: 'boolean',
+    default: true,
   },
 };
 

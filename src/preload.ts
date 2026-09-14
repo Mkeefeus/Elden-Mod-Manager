@@ -65,6 +65,8 @@ interface IElectronAPI {
   getToolsPath: () => Promise<string>;
   updateModsFolder: (path: string) => void;
   updateToolsFolder: (path: string) => void;
+  getRememberLastPage: () => Promise<boolean>;
+  updateRememberLastPage: (value: boolean) => void;
 
   // --- Get Mods Window ---
   openGetModsWindow: () => void;
@@ -170,6 +172,8 @@ const electronAPI: IElectronAPI = {
   getToolsPath: () => ipcRenderer.invoke('get-tools-path'),
   updateModsFolder: (path) => ipcRenderer.send('update-mods-folder', path),
   updateToolsFolder: (path) => ipcRenderer.send('update-tools-folder', path),
+  getRememberLastPage: () => ipcRenderer.invoke('get-remember-last-page'),
+  updateRememberLastPage: (value) => ipcRenderer.send('update-remember-last-page', value),
 
   // --- Get Mods Window ---
   openGetModsWindow: () => ipcRenderer.send('open-get-mods-window'),

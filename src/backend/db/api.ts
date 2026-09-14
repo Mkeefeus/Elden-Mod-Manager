@@ -317,9 +317,36 @@ export const setWindowState = (state: WindowState) => {
   }
 };
 
+// Matches schema.ts's `lastPage` default — used when "remember last page" is turned off.
+const DEFAULT_LAST_PAGE = '/';
+
+export const getRememberLastPage = (): boolean => {
+  debug('Getting remember last page setting');
+  try {
+    return store.get('rememberLastPage');
+  } catch (err) {
+    const msg = `An error occured while getting remember last page setting: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg, { cause: err });
+  }
+};
+
+export const setRememberLastPage = (value: boolean) => {
+  debug(`Setting remember last page: ${value}`);
+  try {
+    store.set('rememberLastPage', value);
+    return true;
+  } catch (err) {
+    const msg = `An error occured while setting remember last page: ${errToString(err)}`;
+    error(msg);
+    throw new Error(msg, { cause: err });
+  }
+};
+
 export const getLastPage = (): string => {
   debug('Getting last page');
   try {
+    if (!getRememberLastPage()) return DEFAULT_LAST_PAGE;
     return store.get('lastPage');
   } catch (err) {
     const msg = `An error occured while getting last page: ${errToString(err)}`;
