@@ -15,7 +15,7 @@ import {
 } from './db/api';
 import { handleAddTool, handleDeleteTool } from './tools';
 import { safeRemove } from './downloadManager';
-import { getMainWindow } from '~/main';
+import { getMainWindow } from './mainWindow';
 
 const { debug, error, warning } = logger;
 

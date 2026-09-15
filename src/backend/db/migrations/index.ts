@@ -20,10 +20,13 @@ const migrations: Migration[] = [launcherSettingsToProfiles];
 const appliedNotices: string[] = [];
 
 export const runMigrations = () => {
+  debug('Checking for migrations to run...');
+  let migrationsRan = 0;
   for (const migration of migrations) {
     try {
       const didMigrate = migration.run();
       if (didMigrate) {
+        migrationsRan++;
         debug(`Migration applied: ${migration.id} (${migration.description})`);
         if (migration.userNotice) appliedNotices.push(migration.userNotice);
       }
@@ -32,6 +35,11 @@ export const runMigrations = () => {
       error(msg);
       throw new Error(msg, { cause: err });
     }
+  }
+  if (migrationsRan > 0) {
+    debug(`Migrations complete — ${migrationsRan} migration(s) applied.`);
+  } else {
+    debug('Migrations complete — no migrations needed.');
   }
 };
 

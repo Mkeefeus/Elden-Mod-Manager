@@ -1,12 +1,9 @@
-import { app, autoUpdater, BrowserWindow, Menu, screen } from 'electron';
-import path from 'path';
-import '@backend/mainEvents';
+import { app, autoUpdater, BrowserWindow, Menu } from 'electron';
 import { template } from './menu';
 import check from './electron-squirrel-startup';
-import { getLastPage, getWindowState, setWindowState } from '@backend/db/api';
 import { logger } from './utils/mainLogger';
-import { initDownloadManager } from '@backend/downloadManager';
-import { getGetModsWindow } from '@backend/getModsWindow';
+import { createWindow, runStartupTasks } from '@backend/startup';
+import { errToString } from '@utils/utilities';
 import { type UpdateResult } from 'types';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -105,113 +102,24 @@ export const downloadAndInstallUpdate = (): Promise<UpdateResult> => {
   });
 };
 
-let mainWindow: BrowserWindow | null;
-
-export const getMainWindow = () => mainWindow;
 const menu = Menu.buildFromTemplate(template);
-// app.setPath('temp', path.join(app.getPath('temp'), 'elden-mod-manager'));
 
 Menu.setApplicationMenu(menu);
-
-const createWindow = () => {
-  // Create the browser window.
-  const savedState = getWindowState();
-
-  // On Linux, getBounds() unreliably reports x/y as 0,0 (X11/Wayland limitation),
-  // so position/display restoration is skipped — size only is restored.
-  // On other platforms, validate the saved display still exists and the window
-  // fits within its bounds; fall back to centered on primary if not.
-  let windowX: number | undefined;
-  let windowY: number | undefined;
-
-  if (!isLinux) {
-    const displays = screen.getAllDisplays();
-    const savedDisplay = displays.find((d) => d.id === savedState.displayId);
-    const targetDisplay = savedDisplay ?? screen.getPrimaryDisplay();
-    const { bounds } = targetDisplay;
-
-    const isOnScreen =
-      !!savedDisplay &&
-      savedState.x >= bounds.x &&
-      savedState.y >= bounds.y &&
-      savedState.x + savedState.width <= bounds.x + bounds.width &&
-      savedState.y + savedState.height <= bounds.y + bounds.height;
-
-    windowX = isOnScreen ? savedState.x : bounds.x + Math.floor((bounds.width - savedState.width) / 2);
-    windowY = isOnScreen ? savedState.y : bounds.y + Math.floor((bounds.height - savedState.height) / 2);
-  }
-
-  mainWindow = new BrowserWindow({
-    minWidth: 1280,
-    minHeight: 720,
-    width: savedState.width,
-    height: savedState.height,
-    x: windowX,
-    y: windowY,
-    // Start hidden and reveal once the renderer has painted, so an empty
-    // window is never shown (avoids a blank flash on launch).
-    show: false,
-    webPreferences: { preload: path.join(__dirname, 'preload.js') },
-  });
-
-  mainWindow.once('ready-to-show', () => {
-    mainWindow?.show();
-  });
-
-  // Persist window state on resize/move (debounced) and on close
-  const saveState = (source: string) => {
-    if (!mainWindow) return;
-    const winBounds = mainWindow.getBounds();
-    logger.debug(`Saving window state due to ${source}`);
-    if (isLinux) {
-      // Only save size on Linux — position is unreliable
-      setWindowState({ ...savedState, width: winBounds.width, height: winBounds.height });
-    } else {
-      const display = screen.getDisplayMatching(winBounds);
-      setWindowState({
-        width: winBounds.width,
-        height: winBounds.height,
-        x: winBounds.x,
-        y: winBounds.y,
-        displayId: display.id,
-      });
-    }
-  };
-
-  let saveTimeout: ReturnType<typeof setTimeout> | null = null;
-  const saveStateDebounced = (source: string) => {
-    if (saveTimeout) clearTimeout(saveTimeout);
-    saveTimeout = setTimeout(() => saveState(source), 500);
-  };
-
-  mainWindow.on('resize', () => saveStateDebounced('resize'));
-  mainWindow.on('moved', () => saveStateDebounced('move'));
-  mainWindow.on('close', () => {
-    saveState('close');
-    const gmWin = getGetModsWindow();
-    if (gmWin && !gmWin.isDestroyed()) gmWin.destroy();
-  });
-
-  // and load the index.html of the app, opening on the page the user was last on.
-  const lastPage = getLastPage();
-  if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-    mainWindow.loadURL(`${MAIN_WINDOW_VITE_DEV_SERVER_URL}#${lastPage}`).catch(console.error);
-  } else {
-    mainWindow
-      .loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`), { hash: lastPage })
-      .catch(console.error);
-  }
-};
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
-  // Squirrel hook run — the pending app.quit() hasn't landed yet. Creating a
-  // window here would briefly flash it on screen before the process exits.
+  // Squirrel hook run — the pending app.quit() hasn't landed yet. Running startup tasks
+  // (which includes creating a window) here would briefly flash it on screen before the
+  // process exits, and would consume any one-time startup work (e.g. a data migration and
+  // its user-facing notice) without ever having a window to show it in.
   if (check) return;
-  createWindow();
-  initDownloadManager(() => getGetModsWindow());
+  try {
+    runStartupTasks();
+  } catch (err) {
+    logger.error(`An error occured while starting app: ${errToString(err)}`);
+  }
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common

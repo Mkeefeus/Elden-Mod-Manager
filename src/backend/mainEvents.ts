@@ -57,10 +57,10 @@ import {
   analyzeProfileImport,
   completeProfileImport,
 } from './profiles';
-import { canAutoUpdate, downloadAndInstallUpdate, getMainWindow } from '../main';
+import { canAutoUpdate, downloadAndInstallUpdate } from '../main';
 import { getActiveDownloads, cancelDownload, dismissDownload, addLocalDownload } from './downloadManager';
 import { createOrFocusGetModsWindow, getGetModsWindow } from './getModsWindow';
-import { runStartupTasks } from './startup';
+import { getMainWindow } from './mainWindow';
 import { getMigrationNotices } from './db/migrations';
 import {
   handleAddTool,
@@ -340,7 +340,8 @@ const registerToolHandlers = () => {
   });
 };
 
-const registerIpcHandlers = () => {
+export const registerIpcHandlers = () => {
+  debug('Registering IPC handlers');
   registerShellHandlers();
   registerWindowHandlers();
   registerDownloadHandlers();
@@ -353,18 +354,3 @@ const registerIpcHandlers = () => {
   registerUpdateHandlers();
   registerToolHandlers();
 };
-
-app
-  .whenReady()
-  .then(() => {
-    debug('App starting');
-    debug('Registering IPC events');
-
-    registerIpcHandlers();
-    runStartupTasks();
-
-    debug('App started');
-  })
-  .catch((err) => {
-    error(`An error occured while starting app: ${errToString(err)}`);
-  });
