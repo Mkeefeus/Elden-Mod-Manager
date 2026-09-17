@@ -2,13 +2,13 @@ import { Box, Stack, Group, TextInput, Button, Checkbox, Text } from '@mantine/c
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
 import { useState } from 'react';
-import { Tool, ToolFormValues } from 'types';
+import { Tool, ToolFormValues, ToolSourceType } from 'types';
 
 type ToolInfoModalProps = {
   hideModal: () => void;
   tools: Tool[];
   onSubmit: (values: ToolFormValues) => void | Promise<void>;
-  type: 'archive' | 'file';
+  type: ToolSourceType;
   submitText?: string;
   tool?: Tool;
 };
@@ -25,6 +25,7 @@ const ToolInfoModal = ({ hideModal, tools, onSubmit, submitText, tool, type }: T
       copy: true,
       deleteSource: true,
       cleanupPath: '',
+      copyEntireFolder: type !== 'file',
     },
     validate: {
       name: (value) => {
@@ -99,6 +100,23 @@ const ToolInfoModal = ({ hideModal, tools, onSubmit, submitText, tool, type }: T
       } finally {
         setIsExtractingArchive(false);
       }
+    } else if (type === 'folder') {
+      const folderPath = await window.electronAPI.browse('directory', 'Select Tool Folder');
+      if (!folderPath) return;
+
+      const selectedExecutable = await window.electronAPI.browse(
+        'exe',
+        'Select Tool Executable from Folder',
+        folderPath
+      );
+      if (!selectedExecutable) return;
+
+      form.setValues({
+        path: selectedExecutable,
+        cleanupPath: '',
+        name: form.values.name || inferNameFromPath(selectedExecutable),
+        version: form.values.version || inferVersionFromPath(selectedExecutable),
+      });
     } else {
       const selected = await window.electronAPI.browse('exe', 'Select Tool Executable');
       if (!selected) return;
@@ -129,6 +147,11 @@ const ToolInfoModal = ({ hideModal, tools, onSubmit, submitText, tool, type }: T
               Select an archive, then choose the executable from the extracted files.
             </Text>
           )}
+          {type === 'folder' && (
+            <Text size="sm" c="dimmed">
+              Select a folder, then choose the tool&apos;s executable inside it.
+            </Text>
+          )}
           <Group gap="sm" align="flex-end">
             <TextInput
               label="Tool Path"
@@ -150,7 +173,7 @@ const ToolInfoModal = ({ hideModal, tools, onSubmit, submitText, tool, type }: T
               <Button type="submit" disabled={!form.values.path}>
                 {submitText || 'Submit'}
               </Button>
-              {type === 'file' && (
+              {(type === 'file' || type === 'folder') && (
                 <>
                   <Checkbox
                     label="Copy to data directory"
@@ -160,7 +183,11 @@ const ToolInfoModal = ({ hideModal, tools, onSubmit, submitText, tool, type }: T
                   {form.values.copy && (
                     <Checkbox
                       label="Delete source"
-                      description="Delete the original tool file after copying"
+                      description={
+                        type === 'folder'
+                          ? 'Delete the original folder after copying'
+                          : 'Delete the original tool file after copying'
+                      }
                       {...form.getInputProps('deleteSource', { type: 'checkbox' })}
                     ></Checkbox>
                   )}

@@ -2,7 +2,7 @@ import { Button, Divider, Group, Menu, ScrollArea, Stack } from '@mantine/core';
 import ToolTable from '@components/tools/ToolTable';
 import { useModal } from '~/providers/ModalProvider';
 import ToolInfoModal from '~/components/tools/ToolInfoModal';
-import { Tool, ToolFormValues } from 'types';
+import { Tool, ToolFormValues, ToolSourceType } from 'types';
 import { useQuery } from '@tanstack/react-query';
 import { sendLog } from '~/utils/rendererLogger';
 import { useQueryClient } from '@tanstack/react-query';
@@ -11,8 +11,6 @@ const Tools = () => {
   const { showModal, hideModal } = useModal();
   // const [tools] = useState<Tool[]>(PLACEHOLDER_TOOLS); // Placeholder state - would be loaded from DB via useQuery
   const queryClient = useQueryClient();
-
-  type AddToolSource = 'archive' | 'file';
 
   const { data: tools = [] } = useQuery({
     queryKey: ['tools'],
@@ -38,6 +36,7 @@ const Tools = () => {
       path: values.path.trim(),
       copy: values.copy,
       deleteSource: values.deleteSource,
+      copyEntireFolder: values.copyEntireFolder,
       ...(cleanupPath ? { cleanupPath } : {}),
     };
     await window.electronAPI.addTool(sanitizedValues);
@@ -45,8 +44,8 @@ const Tools = () => {
     hideModal();
   };
 
-  const showToolInfoModal = (source: AddToolSource) => {
-    const sourceLabel = source === 'archive' ? 'Archive' : 'File';
+  const showToolInfoModal = (source: ToolSourceType) => {
+    const sourceLabel = source === 'archive' ? 'Archive' : source === 'folder' ? 'Folder' : 'File';
 
     showModal({
       title: `Add Tool from ${sourceLabel}`,
@@ -79,6 +78,7 @@ const Tools = () => {
               <Menu.Label>Add Tool</Menu.Label>
               <Menu.Item onClick={() => showToolInfoModal('archive')}>From Archive</Menu.Item>
               <Menu.Item onClick={() => showToolInfoModal('file')}>From File</Menu.Item>
+              <Menu.Item onClick={() => showToolInfoModal('folder')}>From Folder</Menu.Item>
             </Menu.Dropdown>
           </Menu>
         </Group>

@@ -201,6 +201,8 @@ export type Tool = {
   executablePath: string;
 };
 
+export type ToolSourceType = 'archive' | 'file' | 'folder';
+
 export type ToolFormValues = {
   path: string;
   name: string;
@@ -208,6 +210,7 @@ export type ToolFormValues = {
   copy: boolean;
   deleteSource: boolean;
   cleanupPath?: string;
+  copyEntireFolder?: boolean;
 };
 
 type InitializerType = 'none' | 'delay' | 'function';

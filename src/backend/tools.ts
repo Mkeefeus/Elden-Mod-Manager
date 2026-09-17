@@ -4,7 +4,7 @@ import path from 'path';
 import os from 'os';
 import { spawn } from 'child_process';
 import { getTools, getToolsDirectory, saveTools, setToolsDirectory } from './db/api';
-import { CreateModPathFromName, generateUUID } from '~/utils/utilities';
+import { CreateModPathFromName, errToString, generateUUID } from '~/utils/utilities';
 import { logger } from '~/utils/mainLogger';
 import { getEldenRingInstallDir } from './steam';
 import { shell } from 'electron';
@@ -180,7 +180,12 @@ export const handleAddTool = (toolData: ToolFormValues, modID?: string): string 
         throw new Error(msg);
       }
 
-      fs.cpSync(sourceToolDir, copiedToolDir, { recursive: true, force: false, errorOnExist: true });
+      if (toolData.copyEntireFolder) {
+        fs.cpSync(sourceToolDir, copiedToolDir, { recursive: true, force: false, errorOnExist: true });
+      } else {
+        fs.mkdirSync(copiedToolDir, { recursive: true });
+        fs.copyFileSync(toolData.path, copiedExecutablePath);
+      }
       if (!fs.existsSync(copiedExecutablePath)) {
         const msg = `Copied tool executable not found at: ${copiedExecutablePath}`;
         error(msg);
@@ -189,8 +194,17 @@ export const handleAddTool = (toolData: ToolFormValues, modID?: string): string 
       executablePath = copiedExecutablePath;
 
       if (toolData.deleteSource) {
-        const cleanupPath = toolData.cleanupPath?.trim() || sourceToolDir;
-        fs.rmSync(cleanupPath, { recursive: true, force: true });
+        const cleanupPath =
+          toolData.cleanupPath?.trim() || (toolData.copyEntireFolder ? sourceToolDir : toolData.path);
+        try {
+          // maxRetries/retryDelay: Windows can briefly hold a lock (Explorer/AV) on a
+          // just-copied file, causing a transient EPERM/EBUSY here right after the copy above.
+          fs.rmSync(cleanupPath, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
+        } catch (cleanupErr) {
+          warning(
+            `Tool was copied but failed to delete source at ${cleanupPath}: ${errToString(cleanupErr)}`
+          );
+        }
       }
     }
 
