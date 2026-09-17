@@ -4,7 +4,7 @@ import { chmod, rm } from 'fs/promises';
 import { join } from 'path';
 import { DownloadState, ImportInstallTarget } from 'types';
 import { extractModArchive } from './fileSystem';
-import { parseNexusMetadata, resolveNexusFileDetails } from './nexus';
+import { parseNexusMetadata, resolveNexusFileById, resolveNexusFileDetails } from './nexus';
 import { logger } from '@utils/mainLogger';
 import { errToString, sleep } from '@utils/utilities';
 
@@ -48,7 +48,9 @@ const getNexusFileID = async (id: string) => {
     return;
 
   try {
-    const resolvedFile = await resolveNexusFileDetails(entry.nexusGameDomain, entry.nexusModId, entry.filename);
+    const resolvedFile = entry.nexusFileId
+      ? await resolveNexusFileById(entry.nexusGameDomain, entry.nexusModId, entry.nexusFileId)
+      : await resolveNexusFileDetails(entry.nexusGameDomain, entry.nexusModId, entry.filename);
     if (!resolvedFile) {
       debug(`No Nexus file match found for ${entry.filename}`);
       return;
@@ -70,16 +72,17 @@ const getNexusFileID = async (id: string) => {
 export const initDownloadManager = (windowGetter: () => BrowserWindow | null) => {
   getWindow = windowGetter;
 
-  session.fromPartition('persist:nexus').on('will-download', (_event, item) => {
+  session.fromPartition('persist:nexus').on('will-download', (_event, item, webContents) => {
     const id = randomUUID();
     const filename = item.getFilename();
     const savePath = join(app.getPath('temp'), 'elden-mod-manager', id, filename);
 
     item.setSavePath(savePath);
 
+    const pageUrl = webContents.getURL();
     debug(`Parsing Nexus metadata for download: ${filename}`);
-    debug(JSON.stringify({ urlChain: item.getURLChain() }, null, 2));
-    const nexusMeta = parseNexusMetadata(item.getURLChain());
+    debug(JSON.stringify({ pageUrl, urlChain: item.getURLChain() }, null, 2));
+    const nexusMeta = parseNexusMetadata(pageUrl, item.getURLChain());
     debug(`Parsed Nexus metadata: ${JSON.stringify(nexusMeta ?? null)}`);
 
     const state: DownloadState & { savePath: string; item: Electron.DownloadItem } = {
@@ -92,6 +95,7 @@ export const initDownloadManager = (windowGetter: () => BrowserWindow | null) =>
       item,
       nexusModId: nexusMeta?.modId,
       nexusGameDomain: nexusMeta?.gameDomain,
+      nexusFileId: nexusMeta?.fileId,
     };
     downloads.set(id, state);
 

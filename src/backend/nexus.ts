@@ -8,6 +8,7 @@ const NEXUS_GRAPHQL_API_URL = 'https://api.nexusmods.com/v2/graphql';
 export type NexusDownloadMeta = {
   modId: number;
   gameDomain: string;
+  fileId?: number;
 };
 
 export type ResolvedNexusFile = {
@@ -156,6 +157,11 @@ const stripArchiveExtension = (value: string) => value.replace(/\.(zip|7z|rar)$/
 const normalizeFilename = (value: string) =>
   stripArchiveExtension(safeDecode(value)).replace(/\+/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase();
 
+// Legacy fallback: some Nexus CDN hosts still serve download URLs shaped like
+// `https://<region>.nexus-cdn.com/<gameId>/<modId>/<filename>?...`. Newer CDN
+// tiers (e.g. supporter-files.nexus-cdn.com) instead use content-hash paths
+// (`/f8/06/b4/<uuid>`) that carry no game/mod info at all, so this alone is
+// no longer reliable and is only used when the page-URL parse below fails.
 const parseNexusMetadataFromUrl = (rawUrl: string): NexusDownloadMeta | undefined => {
   try {
     const url = new URL(rawUrl);
@@ -163,9 +169,12 @@ const parseNexusMetadataFromUrl = (rawUrl: string): NexusDownloadMeta | undefine
 
     const segments = url.pathname.split('/').filter(Boolean);
     if (segments.length < 2) return undefined;
+    debug(`Parsed Nexus metadata from URL ${rawUrl}: ${JSON.stringify(segments)}`);
 
     const gameId = Number.parseInt(segments[0], 10);
+    debug(`Parsed gameId: ${gameId}`);
     const modId = Number.parseInt(segments[1], 10);
+    debug(`Parsed modId: ${modId}`);
     const gameDomain = GAME_ID_MAP[gameId];
 
     if (!gameDomain || Number.isNaN(modId)) return undefined;
@@ -173,6 +182,39 @@ const parseNexusMetadataFromUrl = (rawUrl: string): NexusDownloadMeta | undefine
     return {
       modId,
       gameDomain,
+    };
+  } catch {
+    return undefined;
+  }
+};
+
+// Primary source: the mod page the user was browsing when they clicked
+// download, e.g. `https://www.nexusmods.com/eldenring/mods/510?tab=files&file_id=50243`.
+// This carries the game domain and mod ID directly (and usually the file ID),
+// regardless of what the CDN's download URL looks like.
+const parseNexusMetadataFromPageUrl = (rawUrl: string | undefined): NexusDownloadMeta | undefined => {
+  if (!rawUrl) return undefined;
+  try {
+    const url = new URL(rawUrl);
+    if (!url.hostname.endsWith('nexusmods.com')) return undefined;
+
+    const match = url.pathname.match(/^\/([a-z0-9]+)\/mods\/(\d+)/i);
+    if (!match) return undefined;
+
+    const gameDomain = match[1].toLowerCase();
+    if (!(gameDomain in GAME_DOMAIN_TO_ID_MAP)) return undefined;
+
+    const modId = Number.parseInt(match[2], 10);
+    if (Number.isNaN(modId)) return undefined;
+
+    const fileIdParam = url.searchParams.get('file_id');
+    const fileId = fileIdParam ? Number.parseInt(fileIdParam, 10) : undefined;
+    debug(`Parsed Nexus metadata from page URL ${rawUrl}: domain=${gameDomain} modId=${modId} fileId=${fileId}`);
+
+    return {
+      modId,
+      gameDomain,
+      fileId: fileId !== undefined && !Number.isNaN(fileId) ? fileId : undefined,
     };
   } catch {
     return undefined;
@@ -244,10 +286,10 @@ export const getModDetails = async (gameDomain: string, modId: number): Promise<
 const getSuggestedModNameFromDetails = (details: NexusModDetailsResponse): string | undefined =>
   buildSuggestedModName(details.data?.name ?? details.name);
 
-export const resolveNexusFileDetails = async (
+const resolveNexusFile = async (
   gameDomain: string,
   modId: number,
-  filename: string
+  findFile: (files: NexusModFile[]) => NexusModFile | undefined
 ): Promise<ResolvedNexusFile | undefined> => {
   const modNamePromise = getModDetails(gameDomain, modId)
     .then((details) => getSuggestedModNameFromDetails(details))
@@ -258,7 +300,7 @@ export const resolveNexusFileDetails = async (
 
   const [fileData, suggestedModName] = await Promise.all([getModFiles(gameDomain, modId), modNamePromise]);
   const files = fileData.files ?? [];
-  const matchedFile = findMatchingFile(files, filename);
+  const matchedFile = findFile(files);
   if (matchedFile) {
     return {
       fileId: matchedFile.file_id,
@@ -270,7 +312,27 @@ export const resolveNexusFileDetails = async (
   return undefined;
 };
 
-export const parseNexusMetadata = (urlChain: string[]): NexusDownloadMeta | undefined => {
+export const resolveNexusFileDetails = (
+  gameDomain: string,
+  modId: number,
+  filename: string
+): Promise<ResolvedNexusFile | undefined> =>
+  resolveNexusFile(gameDomain, modId, (files) => findMatchingFile(files, filename));
+
+// Preferred over resolveNexusFileDetails when the file ID is already known
+// (e.g. from the mod page URL's `file_id` query param) - an exact ID match is
+// strictly more reliable than fuzzy-matching the downloaded filename.
+export const resolveNexusFileById = (
+  gameDomain: string,
+  modId: number,
+  fileId: number
+): Promise<ResolvedNexusFile | undefined> =>
+  resolveNexusFile(gameDomain, modId, (files) => files.find((file) => file.file_id === fileId));
+
+export const parseNexusMetadata = (pageUrl: string | undefined, urlChain: string[]): NexusDownloadMeta | undefined => {
+  const pageMeta = parseNexusMetadataFromPageUrl(pageUrl);
+  if (pageMeta) return pageMeta;
+
   for (const url of urlChain) {
     const candidate = parseNexusMetadataFromUrl(url);
     if (candidate) return candidate;
