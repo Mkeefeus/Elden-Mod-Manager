@@ -61,6 +61,7 @@ import { canAutoUpdate, downloadAndInstallUpdate } from '../main';
 import { getActiveDownloads, cancelDownload, dismissDownload, addLocalDownload } from './downloadManager';
 import { createOrFocusGetModsWindow, getGetModsWindow } from './getModsWindow';
 import { getMainWindow } from './mainWindow';
+import { checkModsForUpdates } from './nexus';
 import { getMigrationNotices } from './db/migrations';
 import {
   handleAddTool,
@@ -217,6 +218,7 @@ const registerModHandlers = () => {
     return result;
   });
   ipcMain.handle('get-mod-path', (_, mod: Mod) => getModInstallPath(mod));
+  ipcMain.handle('check-mod-updates', () => checkModsForUpdates(loadMods()));
   ipcMain.on('open-mod-folder', (_, mod: Mod) => {
     openInstalledModFolder(mod);
   });

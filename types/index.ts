@@ -44,6 +44,12 @@ export type Mod = {
   nexusGameDomain?: string;
 };
 
+export type ModUpdateInfo = {
+  hasUpdate: boolean;
+  latestVersion?: string;
+  latestFileId?: number;
+};
+
 export type EditModFormValues = {
   name: string;
   version?: string;

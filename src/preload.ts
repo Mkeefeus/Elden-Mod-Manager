@@ -19,6 +19,7 @@ import {
   Tool,
   ToolFormValues,
   ProfileSettingsPatch,
+  ModUpdateInfo,
 } from 'types';
 
 interface IElectronAPI {
@@ -34,6 +35,8 @@ interface IElectronAPI {
   listIniFiles: (mod: Mod) => Promise<string[]>;
   readIniFile: (mod: Mod, filename: string) => Promise<string>;
   writeIniFile: (mod: Mod, filename: string, content: string) => Promise<void>;
+  /** Update info keyed by mod uuid, for Nexus-linked mods only. Nexus responses are cached for the session. */
+  checkModUpdates: () => Promise<Record<string, ModUpdateInfo>>;
 
   // --- Tools ---
   getTools: () => Promise<Tool[]>;
@@ -144,6 +147,7 @@ const electronAPI: IElectronAPI = {
   listIniFiles: (mod) => ipcRenderer.invoke('list-ini-files', mod),
   readIniFile: (mod, filename) => ipcRenderer.invoke('read-ini-file', mod, filename),
   writeIniFile: (mod, filename, content) => ipcRenderer.invoke('write-ini-file', mod, filename, content),
+  checkModUpdates: () => ipcRenderer.invoke('check-mod-updates'),
 
   // --- Tools ---
   getTools: () => ipcRenderer.invoke('get-tools'),
