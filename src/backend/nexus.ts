@@ -406,10 +406,14 @@ const getCachedModFiles = (gameDomain: string, modId: number): Promise<NexusModF
 // Files in these categories are never offered as an update
 const INACTIVE_FILE_CATEGORIES: NexusModFile['category'][] = ['ARCHIVED', 'REMOVED'];
 
-const checkModForUpdate = (mod: Mod, files: NexusModFile[]): ModUpdateInfo => {
-  const currentFile =
-    files.find((file) => file.fileId === mod.nexusFileId) ??
-    (mod.version ? files.find((file) => file.version === mod.version) : undefined);
+const findInstalledFile = (mod: Mod, files: NexusModFile[]): NexusModFile | undefined =>
+  files.find((file) => file.fileId === mod.nexusFileId) ??
+  (mod.version ? files.find((file) => file.version === mod.version) : undefined);
+
+// `installedFileIds` holds the Nexus files installed from this mod page across all mods, since several
+// versions of a mod can be installed side by side
+const checkModForUpdate = (mod: Mod, files: NexusModFile[], installedFileIds: Set<number>): ModUpdateInfo => {
+  const currentFile = findInstalledFile(mod, files);
   if (!currentFile) {
     debug(`Installed file for ${mod.name} not found on Nexus (${mod.nexusGameDomain}/mods/${mod.nexusModId})`);
     return { hasUpdate: false };
@@ -423,6 +427,10 @@ const checkModForUpdate = (mod: Mod, files: NexusModFile[]): ModUpdateInfo => {
   const candidates = groupFiles.length > 0 ? groupFiles : activeFiles.filter((file) => file.category === 'MAIN');
   const latestFile = candidates.reduce((latest, file) => (file.date > latest.date ? file : latest), currentFile);
   if (latestFile === currentFile) return { hasUpdate: false };
+  if (installedFileIds.has(latestFile.fileId)) {
+    debug(`${mod.name} is outdated, but its latest version (${latestFile.version}) is already installed`);
+    return { hasUpdate: false };
+  }
 
   return { hasUpdate: true, latestVersion: latestFile.version, latestFileId: latestFile.fileId };
 };
@@ -435,7 +443,13 @@ export const checkModsForUpdates = async (mods: Mod[]): Promise<Record<string, M
       if (nexusModId === undefined || !nexusGameDomain) return undefined;
       try {
         const files = await getCachedModFiles(nexusGameDomain, nexusModId);
-        return [mod.uuid, checkModForUpdate(mod, files)];
+        const installedFileIds = new Set(
+          mods
+            .filter((other) => other.nexusGameDomain === nexusGameDomain && other.nexusModId === nexusModId)
+            .map((other) => findInstalledFile(other, files)?.fileId)
+            .filter((fileId) => fileId !== undefined)
+        );
+        return [mod.uuid, checkModForUpdate(mod, files, installedFileIds)];
       } catch (err) {
         debug(`Failed to check ${nexusGameDomain}/mods/${nexusModId} for updates: ${errToString(err)}`);
         return [mod.uuid, { hasUpdate: false }];
