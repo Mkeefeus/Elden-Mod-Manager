@@ -77,7 +77,9 @@ const ModTable = () => {
             update?.hasUpdate && (
               <Tooltip
                 label={
-                  update.latestVersion ? `v${update.latestVersion} available on Nexus` : 'Update available on Nexus'
+                  update.latestVersion
+                    ? `Version ${update.latestVersion.trim().replace(/^v[.\s]?(?=\d)/i, '')} available on Nexus`
+                    : 'Update available on Nexus'
                 }
               >
                 <Badge

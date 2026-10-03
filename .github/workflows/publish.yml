@@ -3,13 +3,13 @@ name: Publish
 on:
   push:
     tags:
-      - "v*"
+      - 'v*'
   workflow_dispatch:
     inputs:
       tag:
-        description: "Tag name to use for the draft release (e.g. v0.3.0-test)"
+        description: 'Tag name to use for the draft release (e.g. v0.3.0-test)'
         required: true
-        default: "v0.0.0-test"
+        default: 'v0.0.0-test'
 
 jobs:
   publish:

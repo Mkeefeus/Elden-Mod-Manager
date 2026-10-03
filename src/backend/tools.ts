@@ -194,16 +194,13 @@ export const handleAddTool = (toolData: ToolFormValues, modID?: string): string 
       executablePath = copiedExecutablePath;
 
       if (toolData.deleteSource) {
-        const cleanupPath =
-          toolData.cleanupPath?.trim() || (toolData.copyEntireFolder ? sourceToolDir : toolData.path);
+        const cleanupPath = toolData.cleanupPath?.trim() || (toolData.copyEntireFolder ? sourceToolDir : toolData.path);
         try {
           // maxRetries/retryDelay: Windows can briefly hold a lock (Explorer/AV) on a
           // just-copied file, causing a transient EPERM/EBUSY here right after the copy above.
           fs.rmSync(cleanupPath, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
         } catch (cleanupErr) {
-          warning(
-            `Tool was copied but failed to delete source at ${cleanupPath}: ${errToString(cleanupErr)}`
-          );
+          warning(`Tool was copied but failed to delete source at ${cleanupPath}: ${errToString(cleanupErr)}`);
         }
       }
     }

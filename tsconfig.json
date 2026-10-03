@@ -15,24 +15,12 @@
     "baseUrl": ".",
     "ignoreDeprecations": "6.0",
     "paths": {
-      "~/*": [
-        "src/*"
-      ],
-      "@components/*": [
-        "src/components/*"
-      ],
-      "@pages/*": [
-        "src/pages/*"
-      ],
-      "@providers/*": [
-        "src/providers/*"
-      ],
-      "@utils/*": [
-        "src/utils/*"
-      ],
-      "@backend/*": [
-        "src/backend/*"
-      ]
+      "~/*": ["src/*"],
+      "@components/*": ["src/components/*"],
+      "@pages/*": ["src/pages/*"],
+      "@providers/*": ["src/providers/*"],
+      "@utils/*": ["src/utils/*"],
+      "@backend/*": ["src/backend/*"]
     }
   }
 }
