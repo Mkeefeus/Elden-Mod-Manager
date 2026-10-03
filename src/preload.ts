@@ -19,6 +19,8 @@ import {
   Tool,
   ToolFormValues,
   ProfileSettingsPatch,
+  ModUpdateInfo,
+  GeneralSettings,
 } from 'types';
 
 interface IElectronAPI {
@@ -34,6 +36,8 @@ interface IElectronAPI {
   listIniFiles: (mod: Mod) => Promise<string[]>;
   readIniFile: (mod: Mod, filename: string) => Promise<string>;
   writeIniFile: (mod: Mod, filename: string, content: string) => Promise<void>;
+  /** Update info keyed by mod uuid, for Nexus-linked mods only. Nexus responses are cached for the session. */
+  checkModUpdates: () => Promise<Record<string, ModUpdateInfo>>;
 
   // --- Tools ---
   getTools: () => Promise<Tool[]>;
@@ -65,12 +69,14 @@ interface IElectronAPI {
   getToolsPath: () => Promise<string>;
   updateModsFolder: (path: string) => void;
   updateToolsFolder: (path: string) => void;
-  getRememberLastPage: () => Promise<boolean>;
-  updateRememberLastPage: (value: boolean) => void;
+  getGeneralSettings: () => Promise<GeneralSettings>;
+  updateGeneralSettings: (value: Partial<GeneralSettings>) => Promise<void>;
 
   // --- Get Mods Window ---
   openGetModsWindow: () => void;
   openGetModsWithUrl: (url: string) => void;
+  /** Opens the mod's Nexus files tab; downloads from that page offer to replace this mod. */
+  openGetModsForUpdate: (mod: Mod) => void;
   openGetModsWithQueue: (mods: ImportModResult[]) => void;
   updateImportQueue: (mods: ImportModResult[]) => void;
 
@@ -144,6 +150,7 @@ const electronAPI: IElectronAPI = {
   listIniFiles: (mod) => ipcRenderer.invoke('list-ini-files', mod),
   readIniFile: (mod, filename) => ipcRenderer.invoke('read-ini-file', mod, filename),
   writeIniFile: (mod, filename, content) => ipcRenderer.invoke('write-ini-file', mod, filename, content),
+  checkModUpdates: () => ipcRenderer.invoke('check-mod-updates'),
 
   // --- Tools ---
   getTools: () => ipcRenderer.invoke('get-tools'),
@@ -172,12 +179,13 @@ const electronAPI: IElectronAPI = {
   getToolsPath: () => ipcRenderer.invoke('get-tools-path'),
   updateModsFolder: (path) => ipcRenderer.send('update-mods-folder', path),
   updateToolsFolder: (path) => ipcRenderer.send('update-tools-folder', path),
-  getRememberLastPage: () => ipcRenderer.invoke('get-remember-last-page'),
-  updateRememberLastPage: (value) => ipcRenderer.send('update-remember-last-page', value),
+  getGeneralSettings: () => ipcRenderer.invoke('get-general-settings'),
+  updateGeneralSettings: (value) => ipcRenderer.invoke('update-general-settings', value),
 
   // --- Get Mods Window ---
   openGetModsWindow: () => ipcRenderer.send('open-get-mods-window'),
   openGetModsWithUrl: (url) => ipcRenderer.send('open-get-mods-with-url', url),
+  openGetModsForUpdate: (mod) => ipcRenderer.send('open-get-mods-for-update', mod),
   openGetModsWithQueue: (mods) => ipcRenderer.send('open-get-mods-with-queue', mods),
   updateImportQueue: (mods) => ipcRenderer.send('update-import-queue', mods),
 

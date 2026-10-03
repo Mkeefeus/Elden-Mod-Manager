@@ -1,5 +1,7 @@
 import { version } from 'package.json';
+import { Mod, ModUpdateInfo } from 'types';
 import { logger } from '@utils/mainLogger';
+import { errToString } from '@utils/utilities';
 
 const { debug } = logger;
 
@@ -23,22 +25,56 @@ export type NexusDownloadLink = {
   URI: string;
 };
 
+type NexusModFileCategory = 'MAIN' | 'UPDATE' | 'OPTIONAL' | 'OLD_VERSION' | 'MISCELLANEOUS' | 'REMOVED' | 'ARCHIVED';
+
+type NexusVirusScanStatus =
+  | 'NOT_SCANNED'
+  | 'QUEUED'
+  | 'WAITING_REPORT'
+  | 'VERIFIED'
+  | 'INTERNALLY_VERIFIED'
+  | 'QUARANTINED'
+  | 'MANUALLY_VERIFIED'
+  | 'MOD_DOES_NOT_EXIST'
+  | 'FILE_NOT_FOUND'
+  | 'REPORT_ERROR'
+  | 'TOO_LARGE'
+  | 'PARTIAL';
+
+// Mirrors the scalar fields of the v2 GraphQL `ModFile` type (object fields `game`, `mod`, `owner` omitted)
 type NexusModFile = {
-  id?: [number, number];
-  uid?: number;
-  file_id: number;
-  name?: string;
-  file_name?: string;
-  version?: string;
-  category_id?: number;
-  category_name?: string;
-  is_primary?: boolean;
-  uploaded_timestamp?: number;
-  uploaded_time?: string;
-  mod_version?: string;
-  description?: string | null;
-  changelog_html?: string | null;
-  content_preview_link?: string;
+  id: string;
+  uid: string;
+  sqid: string;
+  fileId: number;
+  modId: number;
+  modUid: string;
+  groupId: number | null;
+  name: string;
+  version: string;
+  description: string | null;
+  changelogText: string[];
+  category: NexusModFileCategory;
+  categoryId: number;
+  primary: number;
+  // Unix timestamp (seconds)
+  date: number;
+  // Size in KB
+  size: number;
+  // GraphQL BigInt, serialized as a string
+  sizeInBytes: string | null;
+  detectedFileExtension: string | null;
+  // The uploaded archive's filename, e.g. "My Mod-510-1-0-1653840008.zip"
+  uri: string;
+  reportLink: string;
+  requirementsAlert: number;
+  scanned: number;
+  scannedV2: NexusVirusScanStatus;
+  manager: number;
+  count: number;
+  uCount: number;
+  totalDownloads: number;
+  uniqueDownloads: number;
 };
 
 type NexusFilesResponse = {
@@ -73,19 +109,12 @@ type NexusGraphqlMod = {
   name: string;
 };
 
-type NexusGraphqlModFile = {
-  fileId: number;
-  name: string;
-  version: string;
-  uri: string;
-};
-
 type NexusGraphqlModDetailsResponse = {
   mod: NexusGraphqlMod | null;
 };
 
 type NexusGraphqlModFilesResponse = {
-  modFiles: NexusGraphqlModFile[];
+  modFiles: NexusModFile[];
 };
 
 const GRAPHQL_GET_MOD_DETAILS = `
@@ -99,10 +128,34 @@ const GRAPHQL_GET_MOD_DETAILS = `
 const GRAPHQL_GET_MOD_FILES = `
   query GetModFiles($gameId: ID!, $modId: ID!) {
     modFiles(gameId: $gameId, modId: $modId) {
+      id
+      uid
+      sqid
       fileId
+      modId
+      modUid
+      groupId
       name
       version
+      description
+      changelogText
+      category
+      categoryId
+      primary
+      date
+      size
+      sizeInBytes
+      detectedFileExtension
       uri
+      reportLink
+      requirementsAlert
+      scanned
+      scannedV2
+      manager
+      count
+      uCount
+      totalDownloads
+      uniqueDownloads
     }
   }
 `;
@@ -222,8 +275,7 @@ const parseNexusMetadataFromPageUrl = (rawUrl: string | undefined): NexusDownloa
 };
 
 const getFileVersion = (file: NexusModFile): string | undefined => {
-  const version = file.version ?? file.mod_version;
-  const trimmedVersion = version?.trim();
+  const trimmedVersion = file.version.trim();
   return trimmedVersion || undefined;
 };
 
@@ -235,7 +287,7 @@ const buildSuggestedModName = (modName?: string): string | undefined => {
 const findMatchingFile = (files: NexusModFile[], filename: string): NexusModFile | undefined => {
   const normalizedFilename = normalizeFilename(filename);
   const exactMatches = files.filter((file) => {
-    const candidates = [file.file_name, file.name].filter((value): value is string => !!value);
+    const candidates = [file.uri, file.name].filter((value) => !!value);
     return candidates.some((candidate) => normalizeFilename(candidate) === normalizedFilename);
   });
 
@@ -244,7 +296,7 @@ const findMatchingFile = (files: NexusModFile[], filename: string): NexusModFile
 
   const rawFilename = safeDecode(filename).trim().toLowerCase();
   const rawMatches = files.filter((file) => {
-    const candidates = [file.file_name, file.name].filter((value): value is string => !!value);
+    const candidates = [file.uri, file.name].filter((value) => !!value);
     return candidates.some((candidate) => safeDecode(candidate).trim().toLowerCase() === rawFilename);
   });
 
@@ -260,14 +312,7 @@ export const getModFiles = async (gameDomain: string, modId: number): Promise<Ne
     modId: String(modId),
   });
 
-  return {
-    files: data.modFiles.map((file) => ({
-      file_id: file.fileId,
-      name: file.name,
-      file_name: file.uri,
-      version: file.version,
-    })),
-  };
+  return { files: data.modFiles };
 };
 
 export const getModDetails = async (gameDomain: string, modId: number): Promise<NexusModDetailsResponse> => {
@@ -280,6 +325,7 @@ export const getModDetails = async (gameDomain: string, modId: number): Promise<
 
   return {
     name: data.mod?.name,
+    ...data.mod,
   };
 };
 
@@ -303,7 +349,7 @@ const resolveNexusFile = async (
   const matchedFile = findFile(files);
   if (matchedFile) {
     return {
-      fileId: matchedFile.file_id,
+      fileId: matchedFile.fileId,
       suggestedModName,
       modVersion: getFileVersion(matchedFile),
     };
@@ -327,7 +373,7 @@ export const resolveNexusFileById = (
   modId: number,
   fileId: number
 ): Promise<ResolvedNexusFile | undefined> =>
-  resolveNexusFile(gameDomain, modId, (files) => files.find((file) => file.file_id === fileId));
+  resolveNexusFile(gameDomain, modId, (files) => files.find((file) => file.fileId === fileId));
 
 export const parseNexusMetadata = (pageUrl: string | undefined, urlChain: string[]): NexusDownloadMeta | undefined => {
   const pageMeta = parseNexusMetadataFromPageUrl(pageUrl);
@@ -339,4 +385,76 @@ export const parseNexusMetadata = (pageUrl: string | undefined, urlChain: string
   }
 
   return undefined;
+};
+
+// Session-lifetime cache of file lists, keyed by `${gameDomain}/${modId}`. Caching the promise means mods
+// sharing a Nexus page (and overlapping checks) share a single request.
+const modFilesCache = new Map<string, Promise<NexusModFile[]>>();
+
+const getCachedModFiles = (gameDomain: string, modId: number): Promise<NexusModFile[]> => {
+  const key = `${gameDomain}/${modId}`;
+  let cached = modFilesCache.get(key);
+  if (!cached) {
+    cached = getModFiles(gameDomain, modId).then((data) => data.files ?? []);
+    // Don't cache failures, so a transient network error is retried on the next check
+    cached.catch(() => modFilesCache.delete(key));
+    modFilesCache.set(key, cached);
+  }
+  return cached;
+};
+
+// Files in these categories are never offered as an update
+const INACTIVE_FILE_CATEGORIES: NexusModFile['category'][] = ['ARCHIVED', 'REMOVED'];
+
+const findInstalledFile = (mod: Mod, files: NexusModFile[]): NexusModFile | undefined =>
+  files.find((file) => file.fileId === mod.nexusFileId) ??
+  (mod.version ? files.find((file) => file.version === mod.version) : undefined);
+
+// `installedFileIds` holds the Nexus files installed from this mod page across all mods, since several
+// versions of a mod can be installed side by side
+const checkModForUpdate = (mod: Mod, files: NexusModFile[], installedFileIds: Set<number>): ModUpdateInfo => {
+  const currentFile = findInstalledFile(mod, files);
+  if (!currentFile) {
+    debug(`Installed file for ${mod.name} not found on Nexus (${mod.nexusGameDomain}/mods/${mod.nexusModId})`);
+    return { hasUpdate: false };
+  }
+
+  // Nexus links successive uploads of the same file via groupId - comparing within the group keeps
+  // newer optional/variant files on the same mod page from registering as updates. Authors sometimes
+  // retire a whole group (e.g. a major version starts a new one), so fall back to the mod's main files.
+  const activeFiles = files.filter((file) => !INACTIVE_FILE_CATEGORIES.includes(file.category));
+  const groupFiles = activeFiles.filter((file) => currentFile.groupId !== null && file.groupId === currentFile.groupId);
+  const candidates = groupFiles.length > 0 ? groupFiles : activeFiles.filter((file) => file.category === 'MAIN');
+  const latestFile = candidates.reduce((latest, file) => (file.date > latest.date ? file : latest), currentFile);
+  if (latestFile === currentFile) return { hasUpdate: false };
+  if (installedFileIds.has(latestFile.fileId)) {
+    debug(`${mod.name} is outdated, but its latest version (${latestFile.version}) is already installed`);
+    return { hasUpdate: false };
+  }
+
+  return { hasUpdate: true, latestVersion: latestFile.version, latestFileId: latestFile.fileId };
+};
+
+// Returns update info keyed by mod uuid, for Nexus-linked mods only
+export const checkModsForUpdates = async (mods: Mod[]): Promise<Record<string, ModUpdateInfo>> => {
+  const results = await Promise.all(
+    mods.map(async (mod): Promise<[string, ModUpdateInfo] | undefined> => {
+      const { nexusModId, nexusGameDomain } = mod;
+      if (nexusModId === undefined || !nexusGameDomain) return undefined;
+      try {
+        const files = await getCachedModFiles(nexusGameDomain, nexusModId);
+        const installedFileIds = new Set(
+          mods
+            .filter((other) => other.nexusGameDomain === nexusGameDomain && other.nexusModId === nexusModId)
+            .map((other) => findInstalledFile(other, files)?.fileId)
+            .filter((fileId) => fileId !== undefined)
+        );
+        return [mod.uuid, checkModForUpdate(mod, files, installedFileIds)];
+      } catch (err) {
+        debug(`Failed to check ${nexusGameDomain}/mods/${nexusModId} for updates: ${errToString(err)}`);
+        return [mod.uuid, { hasUpdate: false }];
+      }
+    })
+  );
+  return Object.fromEntries(results.filter((result) => result !== undefined));
 };

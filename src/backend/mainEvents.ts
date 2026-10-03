@@ -15,13 +15,14 @@ import {
   getProfiles,
   getTools,
   setLastPage,
-  getRememberLastPage,
-  setRememberLastPage,
+  setGeneralSettings,
+  getGeneralSettings,
 } from './db/api';
 import {
   AddModFormValues,
   BrowseType,
   EditModFormValues,
+  GeneralSettings,
   ImportInstallTarget,
   ImportModResult,
   LogEntry,
@@ -58,9 +59,16 @@ import {
   completeProfileImport,
 } from './profiles';
 import { canAutoUpdate, downloadAndInstallUpdate } from '../main';
-import { getActiveDownloads, cancelDownload, dismissDownload, addLocalDownload } from './downloadManager';
+import {
+  getActiveDownloads,
+  cancelDownload,
+  dismissDownload,
+  addLocalDownload,
+  registerUpdateReferral,
+} from './downloadManager';
 import { createOrFocusGetModsWindow, getGetModsWindow } from './getModsWindow';
 import { getMainWindow } from './mainWindow';
+import { checkModsForUpdates } from './nexus';
 import { getMigrationNotices } from './db/migrations';
 import {
   handleAddTool,
@@ -114,6 +122,7 @@ const exportActiveProfile = (uuid: string) => {
 };
 
 const getLatestVersion = async () => {
+  if (!getGeneralSettings().checkForAppUpdatesOnStartup) return null;
   try {
     const res = await fetch('https://api.github.com/repos/Mkeefeus/Elden-Mod-Manager/releases/latest', {
       headers: { 'User-Agent': 'Elden-Mod-Manager' },
@@ -146,7 +155,7 @@ const registerWindowHandlers = () => {
   ipcMain.on('open-get-mods-window', () => {
     createOrFocusGetModsWindow();
   });
-  ipcMain.on('open-get-mods-with-url', (_, url: string) => {
+  const openGetModsWithUrl = (url: string) => {
     const win = createOrFocusGetModsWindow();
     const sendNav = () => win.webContents.send('navigate-nexus-to', url);
     if (win.webContents.isLoading()) {
@@ -154,6 +163,16 @@ const registerWindowHandlers = () => {
     } else {
       sendNav();
     }
+  };
+  ipcMain.on('open-get-mods-with-url', (_, url: string) => openGetModsWithUrl(url));
+  ipcMain.on('open-get-mods-for-update', (_, mod: Mod) => {
+    if (!mod.nexusGameDomain || mod.nexusModId === undefined) return;
+    registerUpdateReferral(mod.nexusGameDomain, mod.nexusModId, {
+      uuid: mod.uuid,
+      name: mod.name,
+      version: mod.version,
+    });
+    openGetModsWithUrl(`https://www.nexusmods.com/${mod.nexusGameDomain}/mods/${mod.nexusModId}?tab=files`);
   });
   ipcMain.on('open-get-mods-with-queue', (_, mods: ImportModResult[]) => {
     const win = createOrFocusGetModsWindow();
@@ -217,6 +236,10 @@ const registerModHandlers = () => {
     return result;
   });
   ipcMain.handle('get-mod-path', (_, mod: Mod) => getModInstallPath(mod));
+  ipcMain.handle('check-mod-updates', () => {
+    if (!getGeneralSettings().checkForModUpdatesOnStartup) return {};
+    return checkModsForUpdates(loadMods());
+  });
   ipcMain.on('open-mod-folder', (_, mod: Mod) => {
     openInstalledModFolder(mod);
   });
@@ -274,9 +297,9 @@ const registerSettingsHandlers = () => {
     return importSettings(src);
   });
   ipcMain.handle('get-migration-notices', () => getMigrationNotices());
-  ipcMain.handle('get-remember-last-page', () => getRememberLastPage());
-  ipcMain.on('update-remember-last-page', (_, value: boolean) => {
-    setRememberLastPage(value);
+  ipcMain.handle('get-general-settings', () => getGeneralSettings());
+  ipcMain.handle('update-general-settings', (_, value: Partial<GeneralSettings>) => {
+    setGeneralSettings({ ...getGeneralSettings(), ...value });
   });
 };
 

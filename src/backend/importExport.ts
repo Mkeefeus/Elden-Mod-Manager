@@ -1,5 +1,5 @@
 import { existsSync, readFileSync, writeFileSync } from 'fs';
-import { ExportedSettings } from 'types';
+import { ExportedSettings, GeneralSettings } from 'types';
 import {
   getModsFolder,
   getToolsDirectory,
@@ -7,6 +7,8 @@ import {
   setModsFolder,
   setToolsDirectory,
   setEldenRingFolder,
+  getGeneralSettings,
+  setGeneralSettings,
 } from './db/api';
 import { logger } from '@utils/mainLogger';
 import { errToString } from '@utils/utilities';
@@ -21,6 +23,7 @@ export const exportSettings = (destPath: string): void => {
       modFolderPath: getModsFolder(),
       toolFolderPath: getToolsDirectory(),
       eldenRingFolder: getEldenRingFolder(),
+      generalSettings: getGeneralSettings(),
     };
     writeFileSync(destPath, JSON.stringify(settings, null, 2), 'utf-8');
     debug('Settings exported successfully');
@@ -38,8 +41,20 @@ const isValidExportedSettings = (obj: unknown): obj is ExportedSettings => {
     o['version'] === 1 &&
     typeof o['modFolderPath'] === 'string' &&
     (o['toolFolderPath'] === undefined || typeof o['toolFolderPath'] === 'string') &&
-    typeof o['eldenRingFolder'] === 'string'
+    typeof o['eldenRingFolder'] === 'string' &&
+    (o['generalSettings'] === undefined || (typeof o['generalSettings'] === 'object' && o['generalSettings'] !== null))
   );
+};
+
+// Keeps only the known settings whose imported value has the same type as the current one, so a hand-edited or
+// older export file can't write a malformed value (which the store's schema would reject) or unknown keys.
+const pickValidGeneralSettings = (imported: unknown, current: GeneralSettings): Partial<GeneralSettings> => {
+  const source = imported as Record<string, unknown>;
+  const patch: Record<string, unknown> = {};
+  for (const [key, currentValue] of Object.entries(current)) {
+    if (typeof source[key] === typeof currentValue) patch[key] = source[key];
+  }
+  return patch;
 };
 
 export const importSettings = (srcPath: string): ExportedSettings => {
@@ -67,6 +82,11 @@ export const importSettings = (srcPath: string): ExportedSettings => {
       setEldenRingFolder(parsed.eldenRingFolder);
     } else if (parsed.eldenRingFolder) {
       warning(`Imported Elden Ring folder does not exist on this machine, skipping: ${parsed.eldenRingFolder}`);
+    }
+
+    if (parsed.generalSettings) {
+      const currentSettings = getGeneralSettings();
+      setGeneralSettings({ ...currentSettings, ...pickValidGeneralSettings(parsed.generalSettings, currentSettings) });
     }
 
     // Note: launcher settings (boot boost, intro logos, steam init, override exe) used to live here

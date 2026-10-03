@@ -2,7 +2,7 @@ import { BrowserWindow, app, session } from 'electron';
 import { randomUUID } from 'crypto';
 import { chmod, rm } from 'fs/promises';
 import { join } from 'path';
-import { DownloadState, ImportInstallTarget } from 'types';
+import { DownloadState, ImportInstallTarget, UpdateReferral } from 'types';
 import { extractModArchive } from './fileSystem';
 import { parseNexusMetadata, resolveNexusFileById, resolveNexusFileDetails } from './nexus';
 import { logger } from '@utils/mainLogger';
@@ -15,6 +15,16 @@ const downloads = new Map<string, DownloadState & { savePath: string; item?: Ele
 const asOptionalString = (value: unknown): string | undefined => (typeof value === 'string' ? value : undefined);
 
 let getWindow: (() => BrowserWindow | null) | null = null;
+
+// Nexus pages opened from a mod's "Update" badge, keyed by `${gameDomain}/${modId}`. Any download started
+// from that page is tagged with the mod it updates. Cleared when the Get Mods window closes.
+const updateReferrals = new Map<string, UpdateReferral>();
+
+export const registerUpdateReferral = (gameDomain: string, modId: number, referral: UpdateReferral) => {
+  updateReferrals.set(`${gameDomain}/${modId}`, referral);
+};
+
+export const clearUpdateReferrals = () => updateReferrals.clear();
 
 const sendToWindow = (channel: string, payload: unknown) => {
   const win = getWindow?.();
@@ -84,6 +94,7 @@ export const initDownloadManager = (windowGetter: () => BrowserWindow | null) =>
     debug(JSON.stringify({ pageUrl, urlChain: item.getURLChain() }, null, 2));
     const nexusMeta = parseNexusMetadata(pageUrl, item.getURLChain());
     debug(`Parsed Nexus metadata: ${JSON.stringify(nexusMeta ?? null)}`);
+    const updateReferral = nexusMeta ? updateReferrals.get(`${nexusMeta.gameDomain}/${nexusMeta.modId}`) : undefined;
 
     const state: DownloadState & { savePath: string; item: Electron.DownloadItem } = {
       id,
@@ -96,6 +107,7 @@ export const initDownloadManager = (windowGetter: () => BrowserWindow | null) =>
       nexusModId: nexusMeta?.modId,
       nexusGameDomain: nexusMeta?.gameDomain,
       nexusFileId: nexusMeta?.fileId,
+      replacesMod: updateReferral ? { ...updateReferral } : undefined,
     };
     downloads.set(id, state);
 
@@ -168,6 +180,7 @@ const toPublicState = (entry: DownloadState & { savePath: string }): DownloadSta
   nexusSuggestedModName: typeof entry.nexusSuggestedModName === 'string' ? entry.nexusSuggestedModName : undefined,
   nexusVersion: asOptionalString((entry as Record<string, unknown>).nexusVersion),
   importTarget: entry.importTarget ? { ...entry.importTarget } : undefined,
+  replacesMod: entry.replacesMod ? { ...entry.replacesMod } : undefined,
 });
 
 export const getActiveDownloads = (): DownloadState[] => [...downloads.values()].map(toPublicState);

@@ -44,6 +44,12 @@ export type Mod = {
   nexusGameDomain?: string;
 };
 
+export type ModUpdateInfo = {
+  hasUpdate: boolean;
+  latestVersion?: string;
+  latestFileId?: number;
+};
+
 export type EditModFormValues = {
   name: string;
   version?: string;
@@ -72,6 +78,8 @@ export type AddModFormValues = {
   nexusModId?: number;
   nexusFileId?: number;
   nexusGameDomain?: string;
+  /** Installed mod this one replaces: its profile refs move to the new mod, then it is deleted. */
+  replaceModUuid?: string;
 };
 
 export type NewsComponentProps = {
@@ -142,6 +150,7 @@ export type ExportedSettings = {
   modFolderPath: string;
   toolFolderPath?: string;
   eldenRingFolder: string;
+  generalSettings?: GeneralSettings;
 };
 
 export type ImportInstallTarget = {
@@ -190,6 +199,15 @@ export type DownloadState = {
   nexusSuggestedModName?: string;
   nexusVersion?: string;
   importTarget?: ImportInstallTarget;
+  /** Set when the download came from a Nexus page opened via a mod's "Update" badge. */
+  replacesMod?: UpdateReferral;
+};
+
+/** The installed mod a Nexus page was opened to update. */
+export type UpdateReferral = {
+  uuid: string;
+  name: string;
+  version?: string;
 };
 
 export type Tool = {
@@ -220,4 +238,11 @@ export type ModConfigFormValues = AddModFormValues & {
   initializerType: InitializerType;
   initializerDelayMs: number;
   initializerFunction: string;
+  replacePrevious: boolean;
+};
+
+export type GeneralSettings = {
+  rememberLastPage: boolean;
+  checkForModUpdatesOnStartup: boolean;
+  checkForAppUpdatesOnStartup: boolean;
 };

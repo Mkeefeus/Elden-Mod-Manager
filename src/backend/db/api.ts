@@ -1,7 +1,7 @@
 import { errToString } from '@utils/utilities';
 import { logger } from '@utils/mainLogger';
 import store from './init';
-import { Mod, ModProfile, ProfileModRef, ProfileSettingsPatch, Tool, WindowState } from 'types';
+import { GeneralSettings, Mod, ModProfile, ProfileModRef, ProfileSettingsPatch, Tool, WindowState } from 'types';
 import { join } from 'path';
 import { app } from 'electron';
 
@@ -320,24 +320,24 @@ export const setWindowState = (state: WindowState) => {
 // Matches schema.ts's `lastPage` default — used when "remember last page" is turned off.
 const DEFAULT_LAST_PAGE = '/';
 
-export const getRememberLastPage = (): boolean => {
-  debug('Getting remember last page setting');
+export const getGeneralSettings = (): GeneralSettings => {
+  debug('Getting general settings');
   try {
-    return store.get('rememberLastPage');
+    return store.get('generalSettings');
   } catch (err) {
-    const msg = `An error occured while getting remember last page setting: ${errToString(err)}`;
+    const msg = `An error occured while getting general settings: ${errToString(err)}`;
     error(msg);
     throw new Error(msg, { cause: err });
   }
 };
 
-export const setRememberLastPage = (value: boolean) => {
-  debug(`Setting remember last page: ${value}`);
+export const setGeneralSettings = (value: GeneralSettings) => {
+  debug(`Setting general settings: ${JSON.stringify(value)}`);
   try {
-    store.set('rememberLastPage', value);
+    store.set('generalSettings', value);
     return true;
   } catch (err) {
-    const msg = `An error occured while setting remember last page: ${errToString(err)}`;
+    const msg = `An error occured while setting general settings: ${errToString(err)}`;
     error(msg);
     throw new Error(msg, { cause: err });
   }
@@ -346,7 +346,7 @@ export const setRememberLastPage = (value: boolean) => {
 export const getLastPage = (): string => {
   debug('Getting last page');
   try {
-    if (!getRememberLastPage()) return DEFAULT_LAST_PAGE;
+    if (!getGeneralSettings().rememberLastPage) return DEFAULT_LAST_PAGE;
     return store.get('lastPage');
   } catch (err) {
     const msg = `An error occured while getting last page: ${errToString(err)}`;

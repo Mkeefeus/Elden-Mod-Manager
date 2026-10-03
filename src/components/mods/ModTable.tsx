@@ -1,4 +1,4 @@
-import { Center, Checkbox, Table, Text } from '@mantine/core';
+import { Badge, Center, Checkbox, Table, Text, Tooltip } from '@mantine/core';
 import ModTableMenu from './ModTableMenu';
 import { useMods } from '@providers/ModsProvider';
 import SortableTableHeader from '../shared/SortableTableHeader';
@@ -28,7 +28,7 @@ const COLS: readonly ModColumn[] = [
 ];
 
 const ModTable = () => {
-  const { mods, saveMods } = useMods();
+  const { mods, modUpdates, saveMods } = useMods();
   const [sort, setSort] = useState<ModSortState>({ column: 'installDate', order: 'desc' });
 
   const sortedMods = useMemo(() => {
@@ -63,6 +63,7 @@ const ModTable = () => {
   };
 
   const rows = sortedMods.map((mod) => {
+    const update = modUpdates[mod.uuid];
     return (
       <Table.Tr key={mod.uuid} style={{ opacity: mod.enabled ? 1 : 0.4, transition: 'opacity 0.15s ease' }}>
         <Table.Td>
@@ -70,7 +71,29 @@ const ModTable = () => {
             <Checkbox aria-label="Toggle mod" checked={mod.enabled} onChange={() => handleCheckboxChange(mod.uuid)} />
           </Center>
         </Table.Td>
-        <TruncatedNameCell name={mod.name} />
+        <TruncatedNameCell
+          name={mod.name}
+          badge={
+            update?.hasUpdate && (
+              <Tooltip
+                label={
+                  update.latestVersion
+                    ? `Version ${update.latestVersion.trim().replace(/^v[.\s]?(?=\d)/i, '')} available on Nexus`
+                    : 'Update available on Nexus'
+                }
+              >
+                <Badge
+                  size="xs"
+                  variant="light"
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => window.electronAPI.openGetModsForUpdate(mod)}
+                >
+                  Update Available
+                </Badge>
+              </Tooltip>
+            )
+          }
+        />
         <Table.Td>
           <Text size="sm">
             {mod.version ?? (

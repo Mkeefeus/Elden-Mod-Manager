@@ -2,6 +2,7 @@ import { logger } from '@utils/mainLogger';
 import { errToString } from '@utils/utilities';
 import { Migration } from './types';
 import { launcherSettingsToProfiles } from './001-launcher-settings-to-profiles';
+import { addGeneralSettings } from './002-general-settings';
 
 const { debug, error } = logger;
 
@@ -14,7 +15,7 @@ const { debug, error } = logger;
  * 1. Create a new file here, e.g. `002-my-migration.ts`, exporting a `Migration` (see `types.ts`).
  * 2. Add it to this list, after any migrations it depends on.
  */
-const migrations: Migration[] = [launcherSettingsToProfiles];
+const migrations: Migration[] = [launcherSettingsToProfiles, addGeneralSettings];
 
 // User-facing messages from migrations that actually ran this session — see getMigrationNotices.
 const appliedNotices: string[] = [];
