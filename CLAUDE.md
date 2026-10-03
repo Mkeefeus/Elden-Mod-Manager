@@ -10,11 +10,19 @@ Elden Mod Manager (EMM) — an Electron + React desktop app for managing Elden R
 
 - `pnpm start` — run the app in dev mode (Electron Forge + Vite, hot reload)
 - `pnpm run lint` — ESLint over `.ts`/`.tsx`
+- `pnpm test` — run the Vitest suite once (`vitest.config.ts`); `pnpm run test:watch` re-runs on change. CI (`.github/workflows/test.yml`) runs lint and tests on Linux and Windows for every PR
 - `pnpm run pretty` — Prettier write-fix over the repo
 - `pnpm run package` — package the app without generating installers
 - `pnpm run make` — build platform installers (Squirrel/deb/rpm/zip) via Electron Forge
 
-There is no test suite/runner configured in this repo (no `test` script, no jest/vitest).
+Tests are Vitest, in `tests/` (mirroring `src/`, e.g. `tests/backend/mods.test.ts`) and named `*.test.ts`; they import the code under test via the path aliases. They cover main-process logic only — there is no renderer/React test setup. Shared test infrastructure:
+
+- `tests/setup.ts` (runs before every test file) mocks `@utils/mainLogger` and routes `@backend/db/init` to a per-test store, and cleans up temp dirs after each test.
+- `tests/mocks/electron.ts` replaces the `electron` module for all tests (via the alias in `vitest.config.ts`); `app.getPath()` resolves under a temp root. To override per test, import from `tests/mocks/electron` directly (same module instance as `'electron'`, but typed as mocks), e.g. `app.getPath.mockImplementation(...)`.
+- `tests/helpers/store.ts` — `openTestStore(initialConfig?)` opens a real `electron-store` with the real `schema.ts` in a temp dir, so the real `db/api.ts` runs against it (prefer this over mocking `db/api`). Pass an old-format config to test migrations; `readTestConfig()` returns the raw `config.json`.
+- `tests/helpers/tempDir.ts` (`makeTempDir`, `writeTree`), `tests/helpers/fixtures.ts` (`makeMod`/`makeProfile`/`makeTool`), `tests/helpers/nexus.ts` (fake Nexus GraphQL API via `stubNexusApi`).
+
+Modules with session-level state (`nexus.ts`'s file cache, `db/migrations`' notices) are re-imported per test with `vi.resetModules()` + dynamic `import()`.
 
 Typecheck via `tsc` is not exposed as its own script; ESLint's `recommendedTypeChecked` config runs full type-checking as part of `pnpm run lint`, so lint is the way to catch type errors.
 
