@@ -41,7 +41,8 @@ const ModsProvider = ({ children }: { children: ReactNode }) => {
   });
 
   // Runs once at startup since this provider mounts with the app; main caches Nexus responses for the
-  // session, so the refetch on mods-changed doesn't hit the network again
+  // session, so the refetch on mods-changed doesn't hit the network again. While "Check for Mod Updates on
+  // Startup" is off, main returns an empty result; the Settings page refetches this when that toggle changes.
   const { data: modUpdates = {} } = useQuery({
     queryKey: ['mod-updates'],
     queryFn: () => window.electronAPI.checkModUpdates(),

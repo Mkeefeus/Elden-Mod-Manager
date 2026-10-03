@@ -150,6 +150,7 @@ export type ExportedSettings = {
   modFolderPath: string;
   toolFolderPath?: string;
   eldenRingFolder: string;
+  generalSettings?: GeneralSettings;
 };
 
 export type ImportInstallTarget = {
@@ -238,4 +239,10 @@ export type ModConfigFormValues = AddModFormValues & {
   initializerDelayMs: number;
   initializerFunction: string;
   replacePrevious: boolean;
+};
+
+export type GeneralSettings = {
+  rememberLastPage: boolean;
+  checkForModUpdatesOnStartup: boolean;
+  checkForAppUpdatesOnStartup: boolean;
 };

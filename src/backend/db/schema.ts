@@ -1,4 +1,4 @@
-import { Mod, ModProfile, Tool, WindowState } from 'types';
+import { GeneralSettings, Mod, ModProfile, Tool, WindowState } from 'types';
 import { Schema } from 'electron-store';
 import { app } from 'electron';
 import { join } from 'path';
@@ -15,7 +15,7 @@ export type DBSchema = {
   activeProfileId: string;
   windowState: WindowState;
   lastPage: string;
-  rememberLastPage: boolean;
+  generalSettings: GeneralSettings;
   nexusApiKey?: string;
 };
 
@@ -149,9 +149,28 @@ const schema: Schema<DBSchema> = {
     type: 'string',
     default: '/',
   },
-  rememberLastPage: {
-    type: 'boolean',
-    default: true,
+  generalSettings: {
+    type: 'object',
+    properties: {
+      rememberLastPage: {
+        type: 'boolean',
+        default: true,
+      },
+      checkForModUpdatesOnStartup: {
+        type: 'boolean',
+        default: true,
+      },
+      checkForAppUpdatesOnStartup: {
+        type: 'boolean',
+        default: true,
+      },
+    },
+    // Used when the whole object is missing - keep in sync with the per-property defaults above
+    default: {
+      rememberLastPage: true,
+      checkForModUpdatesOnStartup: true,
+      checkForAppUpdatesOnStartup: true,
+    },
   },
 };
 

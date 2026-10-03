@@ -20,6 +20,7 @@ import {
   ToolFormValues,
   ProfileSettingsPatch,
   ModUpdateInfo,
+  GeneralSettings,
 } from 'types';
 
 interface IElectronAPI {
@@ -68,8 +69,8 @@ interface IElectronAPI {
   getToolsPath: () => Promise<string>;
   updateModsFolder: (path: string) => void;
   updateToolsFolder: (path: string) => void;
-  getRememberLastPage: () => Promise<boolean>;
-  updateRememberLastPage: (value: boolean) => void;
+  getGeneralSettings: () => Promise<GeneralSettings>;
+  updateGeneralSettings: (value: Partial<GeneralSettings>) => Promise<void>;
 
   // --- Get Mods Window ---
   openGetModsWindow: () => void;
@@ -178,8 +179,8 @@ const electronAPI: IElectronAPI = {
   getToolsPath: () => ipcRenderer.invoke('get-tools-path'),
   updateModsFolder: (path) => ipcRenderer.send('update-mods-folder', path),
   updateToolsFolder: (path) => ipcRenderer.send('update-tools-folder', path),
-  getRememberLastPage: () => ipcRenderer.invoke('get-remember-last-page'),
-  updateRememberLastPage: (value) => ipcRenderer.send('update-remember-last-page', value),
+  getGeneralSettings: () => ipcRenderer.invoke('get-general-settings'),
+  updateGeneralSettings: (value) => ipcRenderer.invoke('update-general-settings', value),
 
   // --- Get Mods Window ---
   openGetModsWindow: () => ipcRenderer.send('open-get-mods-window'),

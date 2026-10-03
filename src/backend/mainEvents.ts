@@ -15,13 +15,14 @@ import {
   getProfiles,
   getTools,
   setLastPage,
-  getRememberLastPage,
-  setRememberLastPage,
+  setGeneralSettings,
+  getGeneralSettings,
 } from './db/api';
 import {
   AddModFormValues,
   BrowseType,
   EditModFormValues,
+  GeneralSettings,
   ImportInstallTarget,
   ImportModResult,
   LogEntry,
@@ -121,6 +122,7 @@ const exportActiveProfile = (uuid: string) => {
 };
 
 const getLatestVersion = async () => {
+  if (!getGeneralSettings().checkForAppUpdatesOnStartup) return null;
   try {
     const res = await fetch('https://api.github.com/repos/Mkeefeus/Elden-Mod-Manager/releases/latest', {
       headers: { 'User-Agent': 'Elden-Mod-Manager' },
@@ -234,7 +236,10 @@ const registerModHandlers = () => {
     return result;
   });
   ipcMain.handle('get-mod-path', (_, mod: Mod) => getModInstallPath(mod));
-  ipcMain.handle('check-mod-updates', () => checkModsForUpdates(loadMods()));
+  ipcMain.handle('check-mod-updates', () => {
+    if (!getGeneralSettings().checkForModUpdatesOnStartup) return {};
+    return checkModsForUpdates(loadMods());
+  });
   ipcMain.on('open-mod-folder', (_, mod: Mod) => {
     openInstalledModFolder(mod);
   });
@@ -292,9 +297,9 @@ const registerSettingsHandlers = () => {
     return importSettings(src);
   });
   ipcMain.handle('get-migration-notices', () => getMigrationNotices());
-  ipcMain.handle('get-remember-last-page', () => getRememberLastPage());
-  ipcMain.on('update-remember-last-page', (_, value: boolean) => {
-    setRememberLastPage(value);
+  ipcMain.handle('get-general-settings', () => getGeneralSettings());
+  ipcMain.handle('update-general-settings', (_, value: Partial<GeneralSettings>) => {
+    setGeneralSettings({ ...getGeneralSettings(), ...value });
   });
 };
 
