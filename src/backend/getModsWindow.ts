@@ -1,6 +1,6 @@
 import { BrowserWindow, dialog } from 'electron';
 import path from 'path';
-import { dismissDownload, getActiveDownloads } from './downloadManager';
+import { clearUpdateReferrals, dismissDownload, getActiveDownloads } from './downloadManager';
 
 let getModsWindow: BrowserWindow | null = null;
 
@@ -52,6 +52,7 @@ export const createOrFocusGetModsWindow = () => {
     for (const download of getActiveDownloads()) {
       void dismissDownload(download.id);
     }
+    clearUpdateReferrals();
     if (getModsWindow === window) {
       getModsWindow = null;
     }

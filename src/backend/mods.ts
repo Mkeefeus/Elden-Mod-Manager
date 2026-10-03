@@ -1,7 +1,7 @@
 import { readdirSync, existsSync, cpSync, rmSync, renameSync } from 'fs';
 import { basename, extname, join } from 'path';
 import { errToString, CreateModPathFromName, generateUUID } from '@utils/utilities';
-import { AddModFormValues, EditModFormValues, Mod } from 'types';
+import { AddModFormValues, Dependent, EditModFormValues, Mod } from 'types';
 import { logger } from '@utils/mainLogger';
 import {
   getModsFolder,
@@ -24,6 +24,22 @@ const normalizeOptionalString = (value: unknown): string | undefined => {
 
   const trimmedValue = value.trim();
   return trimmedValue || undefined;
+};
+
+// Points every profile reference to `fromUuid` (the mod's own entry and any load-order rules naming it)
+// at `toUuid`, so a new version of a mod takes over the old one's enabled state and load order
+const transferProfileRefs = (fromUuid: string, toUuid: string) => {
+  const swap = (dependent: Dependent) => (dependent.id === fromUuid ? { ...dependent, id: toUuid } : dependent);
+  const profiles = getProfiles().map((profile) => ({
+    ...profile,
+    mods: profile.mods.map((profileMod) => ({
+      ...profileMod,
+      modUuid: profileMod.modUuid === fromUuid ? toUuid : profileMod.modUuid,
+      loadBefore: profileMod.loadBefore?.map(swap),
+      loadAfter: profileMod.loadAfter?.map(swap),
+    })),
+  }));
+  saveProfiles(profiles);
 };
 
 const validateMod = (path: string, isDll: boolean) => {
@@ -141,6 +157,18 @@ export const handleAddMod = async (formData: AddModFormValues) => {
   debug('Saving new mod to DB');
   const newMods = [...mods, newMod];
   saveMods(newMods);
+
+  const replacedMod = formData.replaceModUuid ? mods.find((mod) => mod.uuid === formData.replaceModUuid) : undefined;
+  if (replacedMod) {
+    debug(`Replacing previous version: ${replacedMod.name} (${replacedMod.uuid})`);
+    transferProfileRefs(replacedMod.uuid, newMod.uuid);
+    try {
+      await handleDeleteMod(replacedMod);
+    } catch (err) {
+      // Non-fatal: the new version is installed and already holds the old one's place in every profile
+      error(`Installed ${newMod.name}, but failed to delete the previous version: ${errToString(err)}`);
+    }
+  }
 
   return true;
 };

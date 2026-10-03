@@ -1,6 +1,6 @@
 import { Badge, Center, Checkbox, Table, Text, Tooltip } from '@mantine/core';
 import ModTableMenu from './ModTableMenu';
-import { ModWithProfileState, useMods } from '@providers/ModsProvider';
+import { useMods } from '@providers/ModsProvider';
 import SortableTableHeader from '../shared/SortableTableHeader';
 import TruncatedNameCell from '../shared/TruncatedNameCell';
 import DateCell from '../shared/DateCell';
@@ -62,13 +62,6 @@ const ModTable = () => {
     void saveMods(newMods);
   };
 
-  const openNexusFilesTab = (mod: ModWithProfileState) => {
-    if (!mod.nexusGameDomain || mod.nexusModId === undefined) return;
-    window.electronAPI.openGetModsWithUrl(
-      `https://www.nexusmods.com/${mod.nexusGameDomain}/mods/${mod.nexusModId}?tab=files`
-    );
-  };
-
   const rows = sortedMods.map((mod) => {
     const update = modUpdates[mod.uuid];
     return (
@@ -87,7 +80,12 @@ const ModTable = () => {
                   update.latestVersion ? `v${update.latestVersion} available on Nexus` : 'Update available on Nexus'
                 }
               >
-                <Badge size="xs" variant="light" style={{ cursor: 'pointer' }} onClick={() => openNexusFilesTab(mod)}>
+                <Badge
+                  size="xs"
+                  variant="light"
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => window.electronAPI.openGetModsForUpdate(mod)}
+                >
                   Update Available
                 </Badge>
               </Tooltip>

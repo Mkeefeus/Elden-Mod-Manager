@@ -74,6 +74,8 @@ interface IElectronAPI {
   // --- Get Mods Window ---
   openGetModsWindow: () => void;
   openGetModsWithUrl: (url: string) => void;
+  /** Opens the mod's Nexus files tab; downloads from that page offer to replace this mod. */
+  openGetModsForUpdate: (mod: Mod) => void;
   openGetModsWithQueue: (mods: ImportModResult[]) => void;
   updateImportQueue: (mods: ImportModResult[]) => void;
 
@@ -182,6 +184,7 @@ const electronAPI: IElectronAPI = {
   // --- Get Mods Window ---
   openGetModsWindow: () => ipcRenderer.send('open-get-mods-window'),
   openGetModsWithUrl: (url) => ipcRenderer.send('open-get-mods-with-url', url),
+  openGetModsForUpdate: (mod) => ipcRenderer.send('open-get-mods-for-update', mod),
   openGetModsWithQueue: (mods) => ipcRenderer.send('open-get-mods-with-queue', mods),
   updateImportQueue: (mods) => ipcRenderer.send('update-import-queue', mods),
 

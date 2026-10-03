@@ -115,6 +115,7 @@ const getSuggestedNexusGameDomain = (download: DownloadState): string | undefine
 const ModConfigForm = ({ download, onSuccess, onDismiss }: Props) => {
   const [submitting, setSubmitting] = useState(false);
   const [installedModKeys, setInstalledModKeys] = useState<string[]>([]);
+  const [installedModUuids, setInstalledModUuids] = useState<string[]>([]);
   const [showAdvancedNativeSettings, setShowAdvancedNativeSettings] = useState(false);
   const lastDownloadIdRef = useRef(download.id);
   const lastSuggestedModNameRef = useRef(getSuggestedModName(download));
@@ -140,6 +141,7 @@ const ModConfigForm = ({ download, onSuccess, onDismiss }: Props) => {
       nexusModId: getSuggestedNexusModId(download),
       nexusFileId: getSuggestedNexusFileId(download),
       nexusGameDomain: getSuggestedNexusGameDomain(download),
+      replacePrevious: !!download.replacesMod,
     },
     validate: {
       modName: (v, values) => {
@@ -230,11 +232,23 @@ const ModConfigForm = ({ download, onSuccess, onDismiss }: Props) => {
     download.nexusGameDomain,
   ]);
 
+  useEffect(() => {
+    form.setFieldValue('replacePrevious', !!download.replacesMod);
+  }, [download.id, download.replacesMod?.uuid]);
+
+  // Only offer the replace while the previous version is still installed - an earlier download from the same
+  // Nexus page may have already replaced it
+  const replacesMod =
+    download.replacesMod && installedModUuids.includes(download.replacesMod.uuid) ? download.replacesMod : undefined;
+
   // Load names in use and auto-scan for dll/exe
   useEffect(() => {
     window.electronAPI
       .loadMods()
-      .then((mods) => setInstalledModKeys(mods.map((m) => buildModIdentity(m.name, m.version))))
+      .then((mods) => {
+        setInstalledModKeys(mods.map((m) => buildModIdentity(m.name, m.version)));
+        setInstalledModUuids(mods.map((m) => m.uuid));
+      })
       .catch(console.error);
 
     if (download.nexusModId && isKnownMod(download.nexusModId)) {
@@ -277,6 +291,7 @@ const ModConfigForm = ({ download, onSuccess, onDismiss }: Props) => {
       nexusModId: values.nexusModId,
       nexusFileId: values.nexusFileId,
       nexusGameDomain: values.nexusGameDomain,
+      replaceModUuid: values.replacePrevious ? replacesMod?.uuid : undefined,
     };
 
     setSubmitting(true);
@@ -511,6 +526,14 @@ const ModConfigForm = ({ download, onSuccess, onDismiss }: Props) => {
             )}
 
             <Checkbox label="Delete source after import?" {...form.getInputProps('delete', { type: 'checkbox' })} />
+
+            {replacesMod && (
+              <Checkbox
+                label="Delete previous version?"
+                description={`Removes ${replacesMod.name}${replacesMod.version ? ` (${replacesMod.version})` : ''}. The new version takes its place in your profiles, keeping its enabled state and load order.`}
+                {...form.getInputProps('replacePrevious', { type: 'checkbox' })}
+              />
+            )}
 
             <Group justify="flex-end" mt="md">
               <Button variant="subtle" color="dimmed" onClick={onDismiss}>

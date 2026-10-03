@@ -58,7 +58,13 @@ import {
   completeProfileImport,
 } from './profiles';
 import { canAutoUpdate, downloadAndInstallUpdate } from '../main';
-import { getActiveDownloads, cancelDownload, dismissDownload, addLocalDownload } from './downloadManager';
+import {
+  getActiveDownloads,
+  cancelDownload,
+  dismissDownload,
+  addLocalDownload,
+  registerUpdateReferral,
+} from './downloadManager';
 import { createOrFocusGetModsWindow, getGetModsWindow } from './getModsWindow';
 import { getMainWindow } from './mainWindow';
 import { checkModsForUpdates } from './nexus';
@@ -147,7 +153,7 @@ const registerWindowHandlers = () => {
   ipcMain.on('open-get-mods-window', () => {
     createOrFocusGetModsWindow();
   });
-  ipcMain.on('open-get-mods-with-url', (_, url: string) => {
+  const openGetModsWithUrl = (url: string) => {
     const win = createOrFocusGetModsWindow();
     const sendNav = () => win.webContents.send('navigate-nexus-to', url);
     if (win.webContents.isLoading()) {
@@ -155,6 +161,16 @@ const registerWindowHandlers = () => {
     } else {
       sendNav();
     }
+  };
+  ipcMain.on('open-get-mods-with-url', (_, url: string) => openGetModsWithUrl(url));
+  ipcMain.on('open-get-mods-for-update', (_, mod: Mod) => {
+    if (!mod.nexusGameDomain || mod.nexusModId === undefined) return;
+    registerUpdateReferral(mod.nexusGameDomain, mod.nexusModId, {
+      uuid: mod.uuid,
+      name: mod.name,
+      version: mod.version,
+    });
+    openGetModsWithUrl(`https://www.nexusmods.com/${mod.nexusGameDomain}/mods/${mod.nexusModId}?tab=files`);
   });
   ipcMain.on('open-get-mods-with-queue', (_, mods: ImportModResult[]) => {
     const win = createOrFocusGetModsWindow();

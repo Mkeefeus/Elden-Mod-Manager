@@ -71,6 +71,8 @@ const ModsProvider = ({ children }: { children: ReactNode }) => {
     window.electronAPI.onModsChanged(() => {
       queryClient.invalidateQueries({ queryKey: ['mods'] }).catch(console.error);
       queryClient.invalidateQueries({ queryKey: ['mod-updates'] }).catch(console.error);
+      // Installing an update can move profile refs from the old version to the new one
+      queryClient.invalidateQueries({ queryKey: ['active-profile'] }).catch(console.error);
     });
   }, []);
 
